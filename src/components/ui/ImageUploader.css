@@ -1,0 +1,16 @@
+.image-uploader-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.preview,.preview>*{
+    width: 500px;
+    height: 500px;
+    border: 1px solid gray;
+   
+}
+
+.hidden{
+    display:none;
+}
