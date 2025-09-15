@@ -8,9 +8,9 @@ import Image from "@/model/Image";
  * @param request 
  * @returns 
  */
-export  async function POST(request:NextRequest){
+export async function POST(request: NextRequest) {
     const data = await request.json();
     const body = data.body;
     Image.create(body);
-    return new Response(JSON.stringify({message: 'Image saved'}), {status: 200});
+    return new Response(JSON.stringify({ message: 'Image saved' }), { status: 200 });
 }
