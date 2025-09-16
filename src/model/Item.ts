@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import User from "./User";
 
-const UserSchema = new Schema(
+const ItemSchema = new Schema(
     {
         name: {
             required: true,
@@ -39,4 +39,4 @@ const UserSchema = new Schema(
 );
 
 export default mongoose.models?.Item ??
-    mongoose.model("Item", UserSchema);
+    mongoose.model("Item", ItemSchema);
