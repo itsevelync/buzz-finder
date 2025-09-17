@@ -2,6 +2,7 @@
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 import React, { useState } from "react";
 
+// TODO: Update to use MongoDB positions
 const positions = [
     {id: 1, position: { lat: 33.7780, lng: -84.3980 }, title: "wallet", description: "gucchi wallet", image: "/wallet.png", reportedDate: new Date()},
     {id: 2, position: { lat: 33.7783, lng: -84.3984 }, title: "purse", description: "louis vutton purse", image: "/wallet.png", reportedDate: new Date(new Date().setDate(new Date().getDate() - 1))},
