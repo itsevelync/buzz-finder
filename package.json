@@ -11,16 +11,20 @@
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
     "@getbrevo/brevo": "^3.0.1",
+    "@googlemaps/react-wrapper": "^1.2.0",
+    "@react-google-maps/api": "^2.20.7",
+    "@vis.gl/react-google-maps": "^1.5.5",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.18.0",
-    "mongoose": "^8.17.1",
+    "mongoose": "^8.18.1",
     "next": "15.4.6",
     "next-auth": "^5.0.0-beta.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "react-hot-toast": "^2.5.2"
+    "react-hot-toast": "^2.5.2",
+    "swr": "^2.3.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
