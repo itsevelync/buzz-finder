@@ -9,14 +9,22 @@ const positions = [
 
 const gtCampus = { lat: 33.7780, lng: -84.3980 };
 
-export default function GoogleMap() {
+/**
+ * 
+ * Call this Google Maps component to display google map every missing item
+ * Pins to each item will be clickable --> displays image and info about item
+ * 
+ * @param props height: height of component, width: width of component
+ * @returns View of Google Map
+ */
+export default function GoogleMap(props: { height: any; width: any; }) {
 
     const [openMarkerId, setOpenMarkerId] = useState<number | null>(null);;
     const selectedMarker = positions.find(p => p.id === openMarkerId);
 
     return (
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-            <div style={{height: '100vh', width: '100%'}}>
+            <div style={{height: props.height, width: props.width}}>
                 <Map 
                     defaultCenter={gtCampus}
                     defaultZoom={15}

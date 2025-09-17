@@ -12,8 +12,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <h1>Map</h1>
-        <GoogleMap />
+        <GoogleMap width="100%" height="100vh"/>
       </main>
     </div>
   );
