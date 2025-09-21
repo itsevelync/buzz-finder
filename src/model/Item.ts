@@ -3,23 +3,44 @@ import User from "./User";
 
 const ItemSchema = new Schema(
     {
-        name: {
+        id: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        title: {
             required: true,
             type: String,
-            trim: true,
+            trime: true,
+        },
+        status: {
+            required: true,
+            type: Boolean
+        },
+        image: {
+            type: String
+        },
+        item_description: {
+            type: String
+        },
+        retrieval_description: {
+            type: String
         },
         category: {
             type: String,
-            enum: ["lost", "found"],
-            default: "lost"
-        },
-        description: {
-            type: String,
+            required: true,
             enum: ["clothing", "electronics", "books", "buzzcard", "pets", "other"],
+            default: "other"
         },
-        location_pin: {
-            type: String,
-            trim: true,
+        position: {
+            lat: {
+                type: Number,
+                required: true
+            },
+            lon: {
+                type: Number,
+                required: true
+            }
         },
         location_details: {
             type: String,
@@ -34,6 +55,12 @@ const ItemSchema = new Schema(
         lostdate: {
             type: Date,
             default: Date.now
+        },
+        contact_info: {
+            type: String
+        },
+        comments: {
+            type: String
         }
     }
 );
