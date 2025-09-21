@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 import User from "./User";
+import { ObjectId } from "mongodb";
 
-const UserSchema = new Schema(
+const ItemSchema = new Schema(
     {
         name: {
             required: true,
@@ -26,10 +27,10 @@ const UserSchema = new Schema(
             trim: true,
         },
         person_found: {
-            type: User
+            type: ObjectId
         },
         person_lost: {
-            type: User
+            type: ObjectId
         },
         lostdate: {
             type: Date,
@@ -39,4 +40,4 @@ const UserSchema = new Schema(
 );
 
 export default mongoose.models?.Item ??
-    mongoose.model("Item", UserSchema);
+    mongoose.model("Item", ItemSchema);
