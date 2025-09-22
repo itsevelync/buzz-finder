@@ -4,11 +4,11 @@ import { ObjectId } from "mongodb";
 
 const ItemSchema = new Schema(
     {
-        id: {
-            type: String,
-            required: true,
-            unique: true
-        },
+        // id: {
+        //     type: ObjectId,
+        //     required: true,
+        //     unique: true,
+        // },
         title: {
             required: true,
             type: String,
@@ -16,7 +16,8 @@ const ItemSchema = new Schema(
         },
         status: {
             required: true,
-            type: Boolean
+            type: Boolean,
+            default: false //false = lost, true = found
         },
         image: {
             type: String

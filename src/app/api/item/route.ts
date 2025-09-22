@@ -13,7 +13,7 @@ import mongoose from "mongoose";
 export async function GET(req:NextRequest) {
     console.log("GET request received at /api/item");
     //seraching for specific item by id
-    const id = req.nextUrl.searchParams.get("id");
+    const id = req.nextUrl.searchParams.get("_id");
     if(id){
         if(!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
         ItemSchema.findById(req.nextUrl.searchParams.get("id")).then(item=>{
@@ -34,6 +34,8 @@ export async function POST(req:NextRequest) {
     const body = await req.json();
     try {
         await dbConnect();
+
+        
         const newItem = await ItemSchema.create(body);
         return new Response(JSON.stringify(newItem), { status: 201 });
     } catch (e: any) {
