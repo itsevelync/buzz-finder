@@ -1,9 +1,17 @@
 import User from '@/model/User';
 //import ItemSchema from './model/ItemSchema.ts';
 
+interface FetchingUsersOptions {
+    query?: Record<string, any>;
+    select?: string;
+    sort?: Record<string, 1 | -1>;
+    limit?: number;
+    skip?: number;
+}
+
 class Fetch {
     
-    static async fetchUser(options = {}) {
+    static async fetchUser(options: FetchingUsersOptions = {}) {
         const {
             query = {},
             select = 'name email username phoneNum userId description createdAt updatedAt',
