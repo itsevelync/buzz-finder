@@ -49,29 +49,9 @@ const ImageUploader = ( {file,setFile}:{file:File|null,setFile:React.Dispatch<Re
             }
         }
     }
-    //saves the image to the server, calls /api/upload, and then resets the file input
-    async function saveImage() {
-        if (!file) return;
-
-
-        let formData = new FormData();
-        formData.append('file', file);
-        fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-        }).then(res => res.json()).then(data => {
-            console.log(data);
-            alert('Image uploaded successfully');
-            setFile(null);
-            if (inputRef.current) inputRef.current.value = '';
-        }).catch(err => {
-            console.error(err);
-            alert('Error uploading image');
-        });
-
-    }
+    
     return (
-        <div className="flex flex-col items-center ">
+        <div className=" ">
             <div className="flex flex-col items-center justify-between"onDrop={(e) => {
                 e.preventDefault();
                 console.log(e.dataTransfer.files);
@@ -86,8 +66,8 @@ const ImageUploader = ( {file,setFile}:{file:File|null,setFile:React.Dispatch<Re
                 onDragLeave={(e) => {
                     e.preventDefault();
                 }}>
-            <div className='preview w-[500px] h-[500px] justify-between border-green-500  p-5 rounded-lg border-2'>
-                {file && <img className="w-[500px] h-[500px]"src={URL.createObjectURL(file)} alt="preview" height={500} width={500} />}
+            <div className='preview w-[500px] h-[500px] border-green-500 p-5 rounded-lg border-2 flex items-center justify-center overflow-hidden'>
+                {file && <img className="max-w-full max-h-full object-contain"src={URL.createObjectURL(file)} alt="preview" height={500} width={500} />}
             </div>
             <input className="hidden" ref={inputRef} type="file" id="file_input" accept="image/*" onChange={(e) => { setFileAndResize(e.target.files?.[0] ?? null) }}></input>
             
