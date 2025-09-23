@@ -18,7 +18,27 @@ const UserSchema = new Schema(
             trim: true,
             lowercase: true,
             unique: true,
+            match: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
         },
+        username: {
+            required: true,
+            type: String,
+            trim: true
+        },
+        phoneNum: {
+            required: false,
+            type: String,
+            trim: true,
+        },
+        userId: {
+            required: true,
+            type: Number,
+            trim: true,
+        },
+        description: {
+            required: false,
+            type: String,
+        }
     },
     { timestamps: true }
 );
