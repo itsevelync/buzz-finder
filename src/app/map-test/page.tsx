@@ -1,6 +1,8 @@
 import type { NextPage } from 'next';
 import Head from 'next/head'
 import GoogleMap from '@/components/maps/goolemap';
+import CenteredMap from '@/components/maps/centeredmap';
+import DropPin from '@/components/maps/droppin';
 
 const Home: NextPage = () => {
   return (
@@ -12,7 +14,9 @@ const Home: NextPage = () => {
       </Head>
 
       <main>
-        <GoogleMap width="100%" height="100vh"/>
+        <DropPin width = "90%" height="90vh"/>
+        {/* <CenteredMap width="100%" height="100vh" pinId={1}/> */}
+        {/* <GoogleMap width="100%" height="100vh"/> */}
       </main>
     </div>
   );

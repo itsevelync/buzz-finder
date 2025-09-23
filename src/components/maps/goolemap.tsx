@@ -12,7 +12,7 @@ const gtCampus = { lat: 33.7780, lng: -84.3980 };
 
 /**
  * 
- * Call this Google Maps component to display google map every missing item
+ * Call this Google Maps component to display google map with every missing item
  * Pins to each item will be clickable --> displays image and info about item
  * 
  * @param props height: height of component, width: width of component. This should be the same syntax as CSS / Tailwind CSS
