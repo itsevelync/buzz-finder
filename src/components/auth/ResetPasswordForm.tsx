@@ -5,7 +5,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { updateUser } from "@/actions/User";
-import bcrypt from "bcryptjs";
 
 type ErrorState = {
     message: string;
@@ -91,10 +90,8 @@ const ResetPasswordForm = () => {
             return;
         }
 
-        const hashedPassword = await bcrypt.hash(formData.newPassword, 10);
-
         // Call the server action to compare the codes
-        const response = await updateUser(formData.email, { password: hashedPassword }, true);
+        const response = await updateUser(formData.email, { password: formData.newPassword }, true);
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
