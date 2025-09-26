@@ -18,10 +18,10 @@ class GoogleOAuthError extends CredentialsSignin {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     adapter: MongoDBAdapter(client),
-  session: {
-    strategy: 'jwt',
-  },
-  jwt: { encode, decode },
+    session: {
+        strategy: 'jwt',
+    },
+    jwt: { encode, decode },
     providers: [
         Google,
         Credentials({
@@ -54,13 +54,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new InvalidLoginError()
                 }
 
-                const { password, ...userWithoutPassword } = user.toObject();
-                return userWithoutPassword;
+                const { password, _id, ...userWithoutPassword } = user.toObject();
+                return { id: user._id.toString(), ...userWithoutPassword };
             },
         }),
 
     ],
     pages: {
         signIn: "/login",
+    },
+    callbacks: {
+        async jwt({ token, user, trigger }) {
+            if (user) {
+                token.name = user.name;
+            }
+            
+            if (trigger === "update") {
+                const user = await User.findById(token.sub);
+                token.name = user.name;
+            }
+            
+            return token;
+        },
+        session({ session, token }) {
+            if (token.sub) {
+                session.user._id = token.sub;
+                session.user.name = token.name;
+            }
+            return session;
+        },
     },
 })
