@@ -60,7 +60,13 @@ export async function updateUser(
             return { error: "Invalid user ID." };
         }
 
-        const updatedUser = await User.findByIdAndUpdate(userToUpdate, userData, {
+        // Hash password
+        const dataToUpdate = { ...userData };
+        if (dataToUpdate.password) {
+            dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(userToUpdate, dataToUpdate, {
             new: true,
             runValidators: true,
         });
