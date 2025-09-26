@@ -7,15 +7,14 @@ import { redirect, useRouter } from "next/navigation";
 import Divider from "../ui/Divider";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { useSession } from "next-auth/react";
 
 
-const UpdateProfileForm = async () => {
+const UpdateProfileForm = ({ userID }: { userID: string }) => {
+    const { data: session, update } = useSession();
+    
     const router = useRouter();
     const [error, setError] = useState("");
-
-    const session = await auth();
-    
-    if (!session?.user) redirect("/login");
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -26,14 +25,14 @@ const UpdateProfileForm = async () => {
             password: string;
         };
 
-        const result = await updateUser(session?.user?.id!, values);
+        const result = await updateUser(userID, values);
         console.log(result);
 
         if (result.error) {
             setError(result.error);
             return;
         }
-
+        await update(values);
         router.push("/dashboard");
     }
 

@@ -18,7 +18,7 @@ export default async function Profile() {
         </div>
         
         <div>
-            <UpdateProfileForm />
+            <UpdateProfileForm userID={session.user._id}/>
         </div>
         
         </>
