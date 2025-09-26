@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { signupUser } from "@/actions/User";
 
 export default function SignUpForm() {
-
     const router = useRouter();
     const [error, setError] = useState("");
 
@@ -20,52 +19,38 @@ export default function SignUpForm() {
         if (response?.error) {
             setError(response.error);
         } else if (response?.success) {
-            alert('Account created successfully. Redirecting you to the login page.');
-            router.push('/login');
+            alert("Account created successfully. Redirecting you to the login page.");
+            router.push("/login");
         }
-    };
+    }
 
     return (
         <>
             {error && <div className="text-red-500">{error}</div>}
-            <form
-                className="form"
-                onSubmit={handleSubmit}
-            >
+            <form className="form" onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email">Name</label>
                     <input
                         type="text"
                         name="name"
                         id="name"
+                        placeholder="Enter your name"
                     />
                 </div>
                 <div>
                     <label htmlFor="email">Email Address</label>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                    />
+                    <input type="email" name="email" id="email" />
                 </div>
 
                 <div>
                     <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        name="password"
-                        id="password"
-                    />
+                    <input type="password" name="password" id="password" />
                 </div>
 
-                <button
-                    type="submit"
-                >
-                    Register
-                </button>
+                <button type="submit">Register</button>
             </form>
             <Divider text="or" />
             <SocialLogins />
         </>
     );
-};
+}
