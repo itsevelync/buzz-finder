@@ -4,7 +4,7 @@ import { compareResetCode, sendResetCode } from "@/actions/ResetCode";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { updateUser } from "@/actions/User";
+import { updateUserFromEmail } from "@/actions/User";
 
 type ErrorState = {
     message: string;
@@ -91,7 +91,7 @@ const ResetPasswordForm = () => {
         }
 
         // Call the server action to compare the codes
-        const response = await updateUser(formData.email, { password: formData.newPassword }, true);
+        const response = await updateUserFromEmail(formData.email, { password: formData.newPassword });
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page

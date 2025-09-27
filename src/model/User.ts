@@ -30,11 +30,6 @@ const UserSchema = new Schema(
             type: String,
             trim: true,
         },
-        userId: {
-            required: true,
-            type: Number,
-            trim: true,
-        },
         description: {
             required: false,
             type: String,
