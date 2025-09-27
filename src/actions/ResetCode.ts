@@ -21,7 +21,7 @@ export async function sendResetCode(email: string) {
             };
         }
 
-        const resetCode = await generateResetCode(user);
+        const resetCode = await generateResetCode(user._id.toString());
 
         const SibApiV3Sdk = require("@getbrevo/brevo");
 

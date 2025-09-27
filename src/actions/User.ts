@@ -5,6 +5,7 @@ import { dbConnect } from "@/lib/mongo";
 import { Types } from "mongoose";
 import { signIn, signOut } from "@/auth";
 import bcrypt from "bcryptjs";
+import { ObjectId } from 'mongodb';
 
 interface NewUser {
     name: string;
@@ -12,9 +13,23 @@ interface NewUser {
     password?: string;
 }
 
-interface UserUpdateData {
+interface UserData {
+    _id: ObjectId;
+    name: string;
     password?: string;
+    email: string;
+    username?: string;
+    phoneNum?: string;
+    description?: string;
+}
+
+interface UserUpdateData {
     name?: string;
+    password?: string;
+    email?: string;
+    username?: string;
+    phoneNum?: string;
+    description?: string;
 }
 
 export async function createUser(user: NewUser) {
@@ -27,38 +42,24 @@ export async function createUser(user: NewUser) {
 }
 
 // Finds a user by their email address.
-export async function getUserByEmail(email: string) {
+export async function getUserByEmail(email: string): Promise<UserData> {
     try {
         await dbConnect();
         const user = await User.findOne({ email });
         return user;
     } catch (e: any) {
-        console.error("Error finding user by email:", e);
-        return null;
+        throw new Error("Error finding user by email:", e);
     }
 }
 
-export async function updateUser(
-    userId: string,
-    userData: UserUpdateData,
-    is_email: boolean = false
-): Promise<{ success?: string; error?: string }> {
+export async function updateUser(userId: string, userData: UserUpdateData): Promise<{ success?: string; error?: string }> {
+    // Check if the userId is a valid ObjectId before updating
+    if (!Types.ObjectId.isValid(userId)) {
+        return { error: "Invalid user ID." };
+    }
+
     try {
         await dbConnect();
-        let userToUpdate = userId;
-
-        if (is_email) {
-            const user = await User.findOne({ email: userId });
-            if (!user) {
-                return { error: "User not found." };
-            }
-            userToUpdate = user._id.toString();
-        }
-
-        // Check if the userId is a valid ObjectId before updating
-        if (!Types.ObjectId.isValid(userToUpdate)) {
-            return { error: "Invalid user ID." };
-        }
 
         // Hash password
         const dataToUpdate = { ...userData };
@@ -66,22 +67,24 @@ export async function updateUser(
             dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
         }
 
-        const updatedUser = await User.findByIdAndUpdate(userToUpdate, dataToUpdate, {
+        const updatedUser = await User.findByIdAndUpdate(userId, dataToUpdate, {
             new: true,
             runValidators: true,
         });
 
         if (!updatedUser) {
-            return { error: "User not found or unable to update." };
+            return { error: "User not found." };
         }
 
         return { success: "User updated successfully." };
     } catch (e: any) {
-        if (e.name === 'ValidationError') {
-            return { error: e.message };
-        }
         return { error: "Unable to update user, please try again." };
     }
+}
+
+export async function updateUserFromEmail(email: string, userData: UserUpdateData): Promise<{ success?: string; error?: string }> {
+    const user = await getUserByEmail(email);
+    return await updateUser(user._id.toString(), userData)
 }
 
 // USER AUTHENTICATION
