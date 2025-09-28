@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { dbConnect } from "@/lib/mongo";
 import Navbar from '../components/navigation/Navbar';
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
+import './globals.css';
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,8 +32,12 @@ export default async function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <NextAuthProvider>
-                    <Navbar />
-                    {children}
+                    <div className="flex flex-row h-screen w-screen">
+                         <Navbar />
+                         <div className="w-full h-full flex flex-row justify-center align-center"> {children}</div>
+                            
+                    </div>
+                   
                 </NextAuthProvider>
             </body>
         </html>
