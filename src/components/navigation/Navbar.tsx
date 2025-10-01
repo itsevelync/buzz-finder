@@ -4,7 +4,7 @@ import { IoSettings } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from './NavItem';
 import Link from "next/link";
-import { navLinks } from "@/config/NavLinks";
+import { navLinks } from "@/constants/NavLinks";
 
 
 export default async function Navbar() {
