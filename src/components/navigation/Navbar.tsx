@@ -1,52 +1,55 @@
-import Link from 'next/link';
-import { FaHome } from "react-icons/fa";
-import { FaMap } from "react-icons/fa";
-import { IoMdChatboxes } from "react-icons/io";
-import { CgDetailsMore } from "react-icons/cg";
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import Logout from '../auth/Logout';
 import Image from "next/image";
-import { IoMdSettings } from "react-icons/io";
-import { IoMdAdd } from "react-icons/io";
+import { auth } from '@/auth';
+import { CgDetailsMore } from "react-icons/cg";
+import { IoHome, IoMap, IoChatboxEllipses, IoAddCircle, IoSettings } from "react-icons/io5";
+import { IoHomeOutline, IoMapOutline, IoChatboxEllipsesOutline, IoAddCircleOutline, IoSettingsOutline } from "react-icons/io5";
+import NavItem from './NavItem';
+import Link from "next/link";
 
-const Navbar = async () => {
+
+export default async function Navbar() {
     const session = await auth();
-    console.log(session);
+
+    const navLinks = [
+        { name: "Dashboard", href: "/dashboard", icon: IoHomeOutline, iconFill: IoHome, },
+        { name: "Map", href: "/map", icon: IoMapOutline, iconFill: IoMap, },
+        { name: "Chat", href: "/chat", icon: IoChatboxEllipsesOutline, iconFill: IoChatboxEllipses, },
+        { name: "Log Item", href: "/log-item", icon: IoAddCircleOutline, iconFill: IoAddCircle, },
+    ];
 
     return (
-        <div className="flex flex-col justify-between align-middle m-2 gap-20 ">
-            <div>
-                <Link href="/about" className=' relative group'><CgDetailsMore className={"group"}size={50} /><span className='tooltip'>About</span></Link>
+        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15">
+            <Link href="/" className="-mr-1">
+                <Image
+                    src="/buzzfinder-logo.png"
+                    alt="BuzzFinder Logo"
+                    width={50}
+                    height={50}
+                    className="w-12"
+                />
+            </Link>
+            <div className='flex flex-col items-center gap-[4vh]'>
+                {navLinks.map((link) => (
+                    <NavItem key={link.href} name={link.name} href={link.href} icon={link.icon} iconFill={link.iconFill} />
+                ))}
             </div>
-            <div className='flex flex-col justify-center align-middle text-center text-3xl font-bold gap-10'>
-                <Link href="/dashboard" className=' relative group'><FaHome className={"group"}size={50} /><span className='tooltip'>Dashboard</span></Link>
-                <Link href="/map-test" className=' relative group'><FaMap className={"group"}size={50} /><span className='tooltip'>Map</span></Link>
-                <Link href="/chat" className=' relative group'><IoMdChatboxes className={"group"}size={50} /><span className='tooltip'>Chat</span></Link>
-                <Link href="/logitem" className=' relative group'><IoMdAdd className={"group"}size={50} /><span className='tooltip'>Log Item</span></Link>
-            </div>
-            <div className="flex flex-col justify-between align-middle  gap-5">
-                <div className="flex items-center justify-center relative group">
-                    <Image
-                        src={session?.user?.image ?? "/default-icon.svg"}
-                        alt={session?.user?.name ?? "User avatar"}
-                        width={50}
-                        height={50}
-                        className="rounded-full cursor-pointer"
-                    />
+            <div className="flex flex-col items-center gap-[2vh]">
+                <div className="relative group">
+                    <Link href="/profile">
+                        <Image
+                            src={session?.user?.image ?? "/default-icon.svg"}
+                            alt={session?.user?.name ?? "User avatar"}
+                            width={50}
+                            height={50}
+                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-black transition-all duration-200"
+                        />
+                    </Link>
                     {/* Tooltip */}
-                    <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3
-                   px-2 py-1 rounded-md bg-gray-900 text-white text-sm shadow-lg
-                   opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100
-                   transition-all duration-200 ease-out whitespace-nowrap pointer-events-none">
-                        {session?.user?.name}
-                    </span>
+                    <span className="tooltip">{session?.user?.name ?? "Guest"}</span>
                 </div>
-                    <Link href="/profile" className=' relative group'><IoMdSettings className={"group"}size={50} /><span className='tooltip'>Account</span></Link>
+                <NavItem name="Settings" href="/settings" icon={IoSettingsOutline} iconFill={IoSettings} />
             </div>
 
         </div>
     );
 };
-
-export default Navbar;
