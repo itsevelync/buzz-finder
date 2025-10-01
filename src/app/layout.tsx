@@ -32,12 +32,10 @@ export default async function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <NextAuthProvider>
-                    <div className="flex flex-row h-screen w-screen">
+                    <div className="flex flex-row h-full w-full">
                          <Navbar />
-                         <div className="w-full h-full flex flex-row justify-center align-center"> {children}</div>
-                            
+                         <div className="pl-15">{children}</div>
                     </div>
-                   
                 </NextAuthProvider>
             </body>
         </html>
