@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 import User from "./User";
 import { ObjectId } from "mongodb";
 
@@ -14,10 +14,10 @@ const ItemSchema = new Schema(
             type: String,
             trime: true,
         },
-        status: {
+        isLost: {
             required: true,
             type: Boolean,
-            default: false //false = lost, true = found
+            default: false // true if lost, false if found
         },
         image: {
             type: String
@@ -66,6 +66,10 @@ const ItemSchema = new Schema(
         }
     }
 );
+type Item = InferSchemaType<typeof ItemSchema>& {
+    _id: ObjectId;
+};
+export type { Item };
 
 export default mongoose.models?.Item ??
-    mongoose.model("Item", ItemSchema);
+    mongoose.model<Item>("Item", ItemSchema);

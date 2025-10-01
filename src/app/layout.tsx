@@ -1,9 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { dbConnect } from "@/lib/mongo";
-import Navbar from '../components/navigation/Navbar';
+import Navbar from '@/components/navigation/Navbar';
+import TopBar from '@/components/navigation/TopBar';
+import BottomBar from "@/components/navigation/BottomBar";
 import NextAuthProvider from "@/components/providers/NextAuthProvider";
+import './globals.css';
+
+export const viewport: Viewport = {
+    initialScale: 1,
+    width: 'device-width',
+    maximumScale: 1,
+};
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -32,8 +40,18 @@ export default async function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <NextAuthProvider>
-                    <Navbar />
-                    {children}
+                    <div className="h-full w-full">
+                        <div className="fixed top-0 w-full md:hidden z-100">
+                            <TopBar />
+                        </div>
+                        <div className="hidden md:flex flex-row">
+                            <Navbar />
+                        </div>
+                        <div className="py-14 md:pl-15 md:py-0">{children}</div>
+                        <div className="fixed bottom-0 w-full md:hidden z-100">
+                            <BottomBar />
+                        </div>
+                    </div>
                 </NextAuthProvider>
             </body>
         </html>

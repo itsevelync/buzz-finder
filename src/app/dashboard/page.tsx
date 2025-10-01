@@ -1,24 +1,16 @@
-import Image from "next/image";
-import Logout from "@/components/auth/Logout";
+
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import LostFoundSelector from "@/components/ui/LostFoundSelector";
+import React from "react";
+import LostFoundDashboardContainer from "@/components/ui/LostFoundDashboardContainer";
 
 export default async function Home() {
     const session = await auth();
 
     if (!session?.user) redirect("/login");
 
+
     return (
-        <div>
-            <Image
-                src={session?.user?.image ?? "/default-icon.svg"}
-                alt={session?.user?.name ?? "User avatar"}
-                width={72}
-                height={72}
-                className="rounded-full"
-            />
-            <h1>Welcome, {session?.user?.name}</h1>
-            <Logout />
-        </div>
-    );
+        <LostFoundDashboardContainer/>);
 }

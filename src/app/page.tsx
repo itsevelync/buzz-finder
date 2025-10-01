@@ -5,7 +5,7 @@ export default async function Home() {
         <div>
             <Link className="link" href="sign-up">Register</Link>
             <Link className="link" href="login">Log In</Link>
-            <Link className="link" href="map-test">Maps</Link>
+            <Link className="link" href="map">Maps</Link>
         </div>
     );
 }

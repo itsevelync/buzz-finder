@@ -52,6 +52,24 @@ const LoginForm = () => {
             </form>
             <Divider text="or" />
             <SocialLogins />
+            <Divider text="or" />
+            {/* COntinue as guest */}
+            <div className="text-center">
+                <button className="rounded-2xl bg-blue-500 text-white w-full" onClick={
+                    async () => {
+                        const formData = new FormData();
+                        formData.append("isGuest", "true");
+                        const result = await doCredentialLogin(formData);
+                        console.log(result);
+                        if (result.error) {
+                            setError(result.error);
+                            return;
+                        }  
+                        router.push("/dashboard");
+                    }
+                }>Continue as Guest</button>
+                </div>
+
         </>
     );
 };

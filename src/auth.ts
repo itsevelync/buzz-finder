@@ -28,8 +28,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
+                isGuest : {default: false, type: "boolean"}
             },
             authorize: async (credentials) => {
+                if(credentials.isGuest) {
+                    return {id:'guest',name:"Guest User", isGuest: true};
+                }
+
+
                 if (
                     !credentials ||
                     typeof credentials.email !== "string" ||
@@ -55,9 +61,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 const { password, _id, ...userWithoutPassword } = user.toObject();
-                return { id: user._id.toString(), ...userWithoutPassword };
+                return { id: user._id.toString(), ...userWithoutPassword, isGuest:false };
             },
         }),
+        
 
     ],
     pages: {
