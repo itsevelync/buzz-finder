@@ -1,22 +1,15 @@
 import Image from "next/image";
 import { auth } from '@/auth';
-import { CgDetailsMore } from "react-icons/cg";
-import { IoHome, IoMap, IoChatboxEllipses, IoAddCircle, IoSettings } from "react-icons/io5";
-import { IoHomeOutline, IoMapOutline, IoChatboxEllipsesOutline, IoAddCircleOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoSettings } from "react-icons/io5";
+import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from './NavItem';
 import Link from "next/link";
+import { navLinks } from "@/config/NavLinks";
 
 
 export default async function Navbar() {
     const session = await auth();
-
-    const navLinks = [
-        { name: "Dashboard", href: "/dashboard", icon: IoHomeOutline, iconFill: IoHome, },
-        { name: "Map", href: "/map", icon: IoMapOutline, iconFill: IoMap, },
-        { name: "Chat", href: "/chat", icon: IoChatboxEllipsesOutline, iconFill: IoChatboxEllipses, },
-        { name: "Log Item", href: "/log-item", icon: IoAddCircleOutline, iconFill: IoAddCircle, },
-    ];
-
+    
     return (
         <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15">
             <Link href="/" className="-mr-1">
@@ -45,7 +38,7 @@ export default async function Navbar() {
                         />
                     </Link>
                     {/* Tooltip */}
-                    <span className="tooltip">{session?.user?.name ?? "Guest"}</span>
+                    <span className="tooltip tooltip-right">{session?.user?.name ?? "Guest"}</span>
                 </div>
                 <NavItem name="Settings" href="/settings" icon={IoSettingsOutline} iconFill={IoSettings} />
             </div>

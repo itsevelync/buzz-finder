@@ -73,9 +73,20 @@ button:hover {
   text-decoration: underline;
   cursor: pointer;
 }
-.tooltip{
-  @apply absolute left-full top-1/2 -translate-y-1/2 ml-3
-                   px-2 py-1 rounded-md bg-gray-900 text-white text-sm shadow-lg
-                   opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100
-                   transition-all duration-200 ease-out whitespace-nowrap pointer-events-none
+.tooltip {
+  @apply absolute px-2 py-1 rounded-md bg-gray-900 text-white text-sm shadow-lg
+         opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100
+         transition-all duration-200 ease-out whitespace-nowrap pointer-events-none;
+}
+
+.tooltip-top {
+  @apply bottom-full left-1/2 -translate-x-1/2 mb-3
+}
+
+.tooltip-bottom {
+  @apply top-full left-1/2 -translate-x-1/2 mt-3
+}
+
+.tooltip-right {
+  @apply left-full top-1/2 -translate-y-1/2 ml-3
 }
