@@ -11,7 +11,7 @@ export default async function BottomBar() {
     const session = await auth();
 
     return (
-        <div className='flex w-full justify-around items-center border-t border-t-gray-300 p-3 bg-white'>
+        <div className='flex w-full h-14 justify-around items-center border-t border-t-gray-300 p-3 bg-white'>
             {navLinks.map((link) => (
                 <NavItem key={link.href} name={link.name} href={link.href} icon={link.icon} iconFill={link.iconFill} direction="top" />
             ))}

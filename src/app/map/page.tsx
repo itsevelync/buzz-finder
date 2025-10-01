@@ -13,7 +13,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main className="-z-100">
         <DropPin width = "100vw" height="100vh"/>
         {/* <CenteredMap width="100%" height="100vh" pinId={1}/> */}
         {/* <GoogleMap width="100%" height="100vh"/> */}

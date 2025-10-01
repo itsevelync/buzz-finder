@@ -11,7 +11,7 @@ const LostFoundDashboardContainer = () => {
     
   return (
     <div>
-       <div className="flex flex-col justify-start align-middle w-screen h-screen">
+       <div className="flex flex-col justify-start align-middle w-full">
         <LostFoundSelector lostItemsSelected={lostItemsSelected} setLostItemsSelected={setLostItemsSelected}/>
         {error || items ==undefined?<div>Error loading items</div>:isLoading?<div>Loading...</div>:<></>}
         {!error &&!isLoading?<ItemList items={items?.filter(item=>(lostItemsSelected==item.isLost))??[]}  lostItemsSelected={lostItemsSelected}/>:<></>}
