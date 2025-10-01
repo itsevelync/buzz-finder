@@ -6,6 +6,7 @@ import SocialLogins from "./SocialLogins";
 
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/actions/User";
+import FormInput from "../ui/FormInput";
 
 export default function SignUpForm() {
     const router = useRouter();
@@ -27,28 +28,15 @@ export default function SignUpForm() {
     return (
         <>
             {error && <div className="text-red-500">{error}</div>}
-            <form className="form" onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="email">Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        placeholder="Enter your name"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="email">Email Address</label>
-                    <input type="email" name="email" id="email" />
-                </div>
 
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input type="password" name="password" id="password" />
-                </div>
+            <form className="form" onSubmit={handleSubmit}>
+                <FormInput label="Name" name="name" placeholder="George P. Burdell" />
+                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" />
+                <FormInput label="Password" name="password" type="password" placeholder="Password" />
 
                 <button type="submit">Register</button>
             </form>
+
             <Divider text="or" />
             <SocialLogins />
         </>

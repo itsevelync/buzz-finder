@@ -8,6 +8,7 @@ import Divider from "../ui/Divider";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { useSession } from "next-auth/react";
+import FormInput from "../ui/FormInput";
 
 
 const UpdateProfileForm = ({ userID }: { userID: string }) => {
@@ -42,18 +43,8 @@ const UpdateProfileForm = ({ userID }: { userID: string }) => {
             <form
                 className="form"
                 onSubmit={onSubmit}>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input type="text" name="password" id="password"
-                        placeholder="securePassword123!" />
-                </div>
-
-                <div>
-                    <label htmlFor="name">Name</label>
-                    <input type="text" name="name" id="name"
-                        placeholder="First Last" />
-                </div>
-
+                <FormInput label="Password" name="password" type="password" placeholder="securePassword123!" />
+                <FormInput label="Name" name="name" type="text" placeholder="First Last" />
                 <button type="submit">
                     Update Profile
                 </button>
