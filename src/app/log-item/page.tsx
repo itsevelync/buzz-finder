@@ -80,22 +80,22 @@ const page = () => {
 
 
   return (
-    <div className='flex flex-row justify-center items-center gap-10 m-10'>
+    <div className='flex flex-col md:flex-row gap-10 p-10'>
       <ImageUploader file={file} setFile={setFile} />
 
-      <form className={"flex flex-col justify-between"} onSubmit={handleFormSubmit}>
+      <form className={"flex flex-col justify-between w-full md:w-1/2 gap-4"} onSubmit={handleFormSubmit}>
         <LocationSelectMap height={400} width={400} selectedLocation={selectedLocation} setSelectedLocation={setSelectedLocation} />
-        <input type='text' name='title' placeholder='Title' className='border-2 border-green-500 rounded-lg p-2 m-2' />
-        <textarea name="item_description" placeholder={"Write a little item description here"} id="item_description" className='mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm leading-6 placeholder-gray-400
+        <input type='text' name='title' placeholder='Title' className='border-2 border-green-500 rounded-lg p-2' />
+        <textarea name="item_description" placeholder={"Write a little item description here"} id="item_description" className='block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm leading-6 placeholder-gray-400
                 focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none transition-colors hover:border-gray-400 resize-vertical'></textarea>
-        <div className={'flex flex-row W-full justify-between'}>
-          <input type="text" name='name' placeholder='Your Name' className={"border-2 border-gray-300 rounded-lg p-2 m-2"} />
-          <input type="text" name='contact_info' placeholder='Contact Info' className={"border-2 border-gray-300 rounded-lg p-2 m-2"} />
+        <div className={'flex flex-col md:flex-row gap-3 w-full justify-between'}>
+          <input type="text" name='name' placeholder='Your Name' className={"border-2 border-gray-300 rounded-lg p-2"} />
+          <input type="text" name='contact_info' placeholder='Contact Info' className={"border-2 border-gray-300 rounded-lg p-2"} />
 
         </div>
-        <textarea name="retrievel_description" id="retrieval_description" placeholder='How do you want this item to be retrieved?' className='mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-sm leading-6 placeholder-gray-400
+        <textarea name="retrievel_description" id="retrieval_description" placeholder='How do you want this item to be retrieved?' className='block w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-sm leading-6 placeholder-gray-400
                 focus:border-green-500 focus:ring-1 focus:ring-green-500 focus:outline-none transition-colors hover:border-gray-400 resize-vertical'></textarea>
-        <select name="category" id="category" defaultValue={"other"} className='border-2 border-gray-300 rounded-lg p-2 m-2'>
+        <select name="category" id="category" defaultValue={"other"} className='border-2 border-gray-300 rounded-lg p-2'>
           <option value="electronics">Electronics</option>
           <option value="clothing">Clothing</option>
           <option value="books">Books</option>
@@ -104,7 +104,7 @@ const page = () => {
         </select>
 
 
-        <button type="submit" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" >Upload Lost Item</button>
+        <button type="submit" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" >Upload Lost Item</button>
 
       </form>
 

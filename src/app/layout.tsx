@@ -41,13 +41,13 @@ export default async function RootLayout({
             >
                 <NextAuthProvider>
                     <div className="h-full w-full">
-                        <div className="sticky top-0 w-full md:hidden z-100">
+                        <div className="fixed top-0 w-full md:hidden z-100">
                             <TopBar />
                         </div>
                         <div className="hidden md:flex flex-row">
                             <Navbar />
                         </div>
-                        <div className="md:pl-15">{children}</div>
+                        <div className="py-14 md:pl-15 md:py-0">{children}</div>
                         <div className="fixed bottom-0 w-full md:hidden z-100">
                             <BottomBar />
                         </div>

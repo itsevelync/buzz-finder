@@ -10,7 +10,7 @@ export default async function TopBar() {
     const session = await auth();
 
     return (
-        <div className='flex w-full justify-between items-center border-b border-b-gray-300 py-3 px-5 bg-white'>
+        <div className='flex w-full h-14 justify-between items-center border-b border-b-gray-300 py-3 px-5 bg-white'>
                 <Link href="/" className="flex items-center gap-2">
                     <Image
                         src="/buzzfinder-logo.png"
