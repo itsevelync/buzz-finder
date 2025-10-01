@@ -1,6 +1,6 @@
 'use client'
 import LocationSelectMap from '@/components/maps/LocationSelectMap';
-import ImageUploader from '@/components/ui/ImageUploader'
+import ImageUploader from '@/components/report-item/ImageUploader'
 import React, { useState } from 'react'
 
 const page = () => {
