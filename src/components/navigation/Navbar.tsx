@@ -10,29 +10,20 @@ import Image from "next/image";
 import { IoMdSettings } from "react-icons/io";
 import { IoMdAdd } from "react-icons/io";
 
-
-
-
-
 const Navbar = async () => {
     const session = await auth();
     console.log(session);
 
     return (
-
         <div className="flex flex-col justify-between align-middle m-2 gap-20 ">
             <div>
                 <Link href="/about" className=' relative group'><CgDetailsMore className={"group"}size={50} /><span className='tooltip'>About</span></Link>
-
-
-               
             </div>
             <div className='flex flex-col justify-center align-middle text-center text-3xl font-bold gap-10'>
                 <Link href="/dashboard" className=' relative group'><FaHome className={"group"}size={50} /><span className='tooltip'>Dashboard</span></Link>
                 <Link href="/map-test" className=' relative group'><FaMap className={"group"}size={50} /><span className='tooltip'>Map</span></Link>
                 <Link href="/chat" className=' relative group'><IoMdChatboxes className={"group"}size={50} /><span className='tooltip'>Chat</span></Link>
                 <Link href="/logitem" className=' relative group'><IoMdAdd className={"group"}size={50} /><span className='tooltip'>Log Item</span></Link>
-
             </div>
             <div className="flex flex-col justify-between align-middle  gap-5">
                 <div className="flex items-center justify-center relative group">
@@ -51,7 +42,7 @@ const Navbar = async () => {
                         {session?.user?.name}
                     </span>
                 </div>
-                    <Link href="/account" className=' relative group'><IoMdSettings className={"group"}size={50} /><span className='tooltip'>Account</span></Link>
+                    <Link href="/profile" className=' relative group'><IoMdSettings className={"group"}size={50} /><span className='tooltip'>Account</span></Link>
             </div>
 
         </div>
