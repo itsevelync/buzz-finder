@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { updateUserFromEmail } from "@/actions/User";
+import FormInput from "../ui/FormInput";
 
 type ErrorState = {
     message: string;
@@ -132,26 +133,10 @@ const ResetPasswordForm = () => {
                 <form
                     className="form"
                     onSubmit={handlePasswordChange}>
-                    <div>
-                        <label htmlFor="newPassword">New Password</label>
-                        <input
-                            type="password"
-                            name="newPassword"
-                            id="newPassword"
-                            value={formData.newPassword}
-                            onChange={handleFormChange}
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="confirmNewPassword">Confirm New Password</label>
-                        <input
-                            type="password"
-                            name="confirmNewPassword"
-                            id="confirmNewPassword"
-                            value={formData.confirmNewPassword}
-                            onChange={handleFormChange}
-                        />
-                    </div>
+                    <FormInput label="New Password" name="newPassword" type="password"
+                               value={formData.newPassword} onInputChange={handleFormChange} />
+                    <FormInput label="Confirm New Password" name="confirmNewPassword" type="password"
+                               value={formData.confirmNewPassword} onInputChange={handleFormChange} />
 
                     <button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Processing...' : 'Reset Password'}
@@ -170,18 +155,9 @@ const ResetPasswordForm = () => {
                     className="form"
                     onSubmit={handleCodeSubmit}>
                     <div>
-                        <label htmlFor="resetCode">Verification Code</label>
-                        <input
-                            type="text"
-                            name="resetCode"
-                            id="resetCode"
-                            placeholder="XXXXXX"
-                            required
-                            minLength={6}
-                            maxLength={6}
-                            disabled={isSubmitting}
-                            value={formData.resetCode}
-                            onChange={handleFormChange}
+                        <FormInput label="Verification Code" name="resetCode" type="text"
+                            placeholder="XXXXXX" required minLength={6} maxLength={6} disabled={isSubmitting}
+                            value={formData.resetCode} onInputChange={handleFormChange}
                         />
                         <p className="text-sm text-gray-600">Not {formData.email}? Click <span className="link" onClick={handleClearMessage}>here</span> to enter a different email.</p>
                     </div>
@@ -213,11 +189,10 @@ const ResetPasswordForm = () => {
                 className="form"
                 onSubmit={handleEmailSubmit}>
                 <div>
-                    <label htmlFor="email">Email Address</label>
-                    <input type="email" name="email" id="email"
-                        placeholder="gburdell3@gatech.edu" required
-                        value={formData.email}
-                        onChange={handleFormChange} />
+                    <FormInput label="Email Address" name="email" type="email"
+                               placeholder="gburdell3@gatech.edu" required
+                               value={formData.email} onInputChange={handleFormChange}
+                    />
                 </div>
 
                 <button type="submit">

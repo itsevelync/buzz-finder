@@ -5,6 +5,8 @@
   --foreground: #262626;
   --buzz-gold: #b3a369;
   --buzz-blue: #003057;
+
+  --font-mona-sans: "Mona Sans", sans-serif;
 }
 
 @theme inline {
@@ -12,8 +14,8 @@
   --color-foreground: var(--foreground);
   --color-buzz-gold: var(--buzz-gold);
   --color-buzz-blue: var(--buzz-blue);
-  /* --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono); */
+
+  --font-sans: var(--font-mona-sans);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -26,7 +28,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  /* font-family: Arial, Helvetica, sans-serif; */
+  font-family: var(--font-sans);
 }
 
 button {
@@ -48,16 +50,15 @@ button:hover {
   gap: 13px;
 }
 
-.form div {
+.form .form-input {
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.form input {
-  border-radius: 5px;
-  border: solid 1px rgba(0, 0, 0, 0.5);
-  padding: 8px;
+.form input, textarea, select {
+  @apply border border-gray-300 hover:border-gray-400 rounded-lg px-3 py-2
+         focus:border-buzz-gold focus:ring-1 focus:ring-buzz-gold focus:outline-none transition-colors;
 }
 
 .form button[type="submit"] {
