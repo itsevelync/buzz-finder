@@ -9,5 +9,5 @@ export const navLinks = [
     { name: "Dashboard", href: "/dashboard", icon: IoHomeOutline, iconFill: IoHome },
     { name: "Map", href: "/map", icon: IoMapOutline, iconFill: IoMap },
     { name: "Chat", href: "/chat", icon: IoChatboxEllipsesOutline, iconFill: IoChatboxEllipses },
-    { name: "Log Item", href: "/log-item", icon: IoAddCircleOutline, iconFill: IoAddCircle },
+    { name: "Report Item", href: "/report-item", icon: IoAddCircleOutline, iconFill: IoAddCircle },
 ];

@@ -4,11 +4,6 @@ import { ObjectId } from "mongodb";
 
 const ItemSchema = new Schema(
     {
-        // id: {
-        //     type: ObjectId,
-        //     required: true,
-        //     unique: true,
-        // },
         title: {
             required: true,
             type: String,
