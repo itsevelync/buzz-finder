@@ -38,7 +38,7 @@ export default async function Navbar() {
                         />
                     </Link>
                     {/* Tooltip */}
-                    <span className="tooltip tooltip-right">{session?.user?.name ?? "Guest"}</span>
+                    <span className="tooltip tooltip-right">Profile</span>
                 </div>
                 <NavItem name="Settings" href="/settings" icon={IoSettingsOutline} iconFill={IoSettings} />
             </div>

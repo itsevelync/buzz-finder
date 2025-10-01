@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Divider from "../ui/Divider";
 import Link from "next/link";
+import FormInput from "../ui/FormInput";
 
 
 const LoginForm = () => {
@@ -30,26 +31,17 @@ const LoginForm = () => {
     return (
         <>
             <div className="text-red-500">{error}</div>
-            <form
-                className="form"
-                onSubmit={onSubmit}>
+            
+            <form className="form" onSubmit={onSubmit}>
+                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" />
                 <div>
-                    <label htmlFor="email">Email Address</label>
-                    <input type="email" name="email" id="email"
-                        placeholder="gburdell3@gatech.edu" />
-                </div>
-
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input type="password" name="password" id="password"
-                        placeholder="Password" />
+                    <FormInput label="Password" name="password" type="password" placeholder="Password" />
                     <Link className="link text-sm text-gray-600" href="/reset-password">Forgot Password?</Link>
                 </div>
 
-                <button type="submit">
-                    Login
-                </button>
+                <button type="submit">Login</button>
             </form>
+
             <Divider text="or" />
             <SocialLogins />
             <Divider text="or" />
@@ -64,11 +56,11 @@ const LoginForm = () => {
                         if (result.error) {
                             setError(result.error);
                             return;
-                        }  
+                        }
                         router.push("/dashboard");
                     }
                 }>Continue as Guest</button>
-                </div>
+            </div>
 
         </>
     );
