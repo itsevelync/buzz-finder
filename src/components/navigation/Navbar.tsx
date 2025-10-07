@@ -11,7 +11,7 @@ export default async function Navbar() {
     const session = await auth();
     
     return (
-        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15">
+        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15 z-100">
             <Link href="/" className="-mr-1">
                 <Image
                     src="/buzzfinder-logo.png"
