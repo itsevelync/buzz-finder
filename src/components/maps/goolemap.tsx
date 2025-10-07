@@ -1,9 +1,8 @@
 'use client';
+
 import { Item } from "@/model/Item";
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
-import React, { useEffect, useState } from "react";
-import LostItemCard from "../dashboard/LostItemCard";
-import FoundItemCard from "../dashboard/FoundItemCard";
+import { useEffect, useState } from "react";
 
 
 const gtCampus = { lat: 33.7780, lng: -84.3980 };
@@ -37,12 +36,8 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
         }, [openMarkerId]);//dependent on openMarkerId
 
     return (
-        <div>
+        <>
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-            {/* ItemLsit div w absolute positioning to be over the map w slight opactiy */}
-            <div className="absolute h-full w-[20vw] z-10 bg-blue-400/50 flex flex-col overflow-scroll p-5" >
-                {props.items.map((item) => <div id={item._id.toString()} key={item._id.toString()}><FoundItemCard  key={item._id.toString()} item={item} includeMapLink={false} /></div>)}
-            </div>
             <div style={{height: props.height, width: props.width}}>
                 <Map 
                     defaultCenter={selectedItem?.position||gtCampus}
@@ -91,6 +86,6 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
                 </Map>
             </div>
         </APIProvider>
-        </div>
+        </>
     );
 }
