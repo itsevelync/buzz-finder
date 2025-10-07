@@ -1,10 +1,25 @@
 import type { NextPage } from 'next';
 import Head from 'next/head'
+import ItemModel from '@/model/Item';
 import GoogleMap from '@/components/maps/goolemap';
-import CenteredMap from '@/components/maps/centeredmap';
-import DropPin from '@/components/maps/droppin';
+import type {Item} from '@/model/Item';
 
-const Home: NextPage = () => {
+const Home = async ({searchParams}:{ searchParams: Promise<{ [key: string]: string | string[] | undefined }>}) => {
+  //Check Search Params to see if there is a item we want to focus
+  const params = await searchParams;
+  const itemId = params.itemId as string|null;
+
+  //Get all items from the database adn convret them to plain Item objects
+  const dbItems = await ItemModel.find().lean<Item[]>().exec();
+  const items:any[] = dbItems.map(item => ({
+    ...item,
+    _id: item._id.toString(),
+  }));
+
+
+
+
+
   return (
     <div className="w-full h-full flex">
       <Head>
@@ -12,12 +27,11 @@ const Home: NextPage = () => {
         <meta name="description" content="A Next.js app with an interactive Google Map" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div>
+        
+      </div>
 
-      <main>
-        <DropPin width = "100vw" height="100vh"/>
-        {/* <CenteredMap width="100%" height="100vh" pinId={1}/> */}
-        {/* <GoogleMap width="100%" height="100vh"/> */}
-      </main>
+        <GoogleMap width="100vw" height="100vh" defaultMarkerId={itemId} items={items}/>
     </div>
   );
 };

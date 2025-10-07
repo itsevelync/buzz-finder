@@ -1,7 +1,6 @@
 
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import LostFoundSelector from "@/components/dashboard/LostFoundSelector";
 import React from "react";
 import LostFoundDashboardContainer from "@/components/dashboard/LostFoundDashboardContainer";
 

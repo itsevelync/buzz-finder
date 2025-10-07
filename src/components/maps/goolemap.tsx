@@ -1,12 +1,10 @@
 'use client';
+import { Item } from "@/model/Item";
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import LostItemCard from "../dashboard/LostItemCard";
+import FoundItemCard from "../dashboard/FoundItemCard";
 
-// TODO: Update to use MongoDB positions
-const positions = [
-    {id: 1, position: { lat: 33.7780, lng: -84.3980 }, title: "wallet", description: "gucchi wallet", image: "/wallet.png", reportedDate: new Date()},
-    {id: 2, position: { lat: 33.7783, lng: -84.3984 }, title: "purse", description: "louis vutton purse", image: "/wallet.png", reportedDate: new Date(new Date().setDate(new Date().getDate() - 1))},
-]
 
 const gtCampus = { lat: 33.7780, lng: -84.3980 };
 
@@ -18,50 +16,72 @@ const gtCampus = { lat: 33.7780, lng: -84.3980 };
  * @param props height: height of component, width: width of component. This should be the same syntax as CSS / Tailwind CSS
  * @returns View of Google Map
  */
-export default function GoogleMap(props: { height: any; width: any; }) {
+export default function GoogleMap(props: { height: any; width: any; defaultMarkerId:string|null,items:Item[] }) {
 
-    const [openMarkerId, setOpenMarkerId] = useState<number | null>(null);;
-    const selectedMarker = positions.find(p => p.id === openMarkerId);
+    const [openMarkerId, setOpenMarkerId] = useState<String | null>(props.defaultMarkerId);
+    const selectedItem:Item|undefined = props.items.find(item => item._id.toString() === openMarkerId);
+    // TODO: ADD FILTERS FOR ITEM PROPERTIES
+
+    //scrolls the item list to the item with the given itemId
+    function scrollToItem(itemId:string){
+        const itemElement = document.getElementById(''+itemId);
+        console.log(itemElement);
+        itemElement?.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+    //reloads every time openMarkerId changes, which is when a marker is clicked 
+    useEffect(() => {
+            
+        if (openMarkerId) {
+            setTimeout(()=>scrollToItem(openMarkerId.toString()),0);//set Timer pushes this to the end of the call stack, allowing the document to be fully loaded before we call document.getById....
+        }
+        }, [openMarkerId]);//dependent on openMarkerId
 
     return (
+        <div>
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+            {/* ItemLsit div w absolute positioning to be over the map w slight opactiy */}
+            <div className="absolute h-full w-[20vw] z-10 bg-blue-400/50 flex flex-col overflow-scroll p-5" >
+                {props.items.map((item) => <div id={item._id.toString()} key={item._id.toString()}><FoundItemCard  key={item._id.toString()} item={item} includeMapLink={false} /></div>)}
+            </div>
             <div style={{height: props.height, width: props.width}}>
                 <Map 
-                    defaultCenter={gtCampus}
-                    defaultZoom={15}
+                    defaultCenter={selectedItem?.position||gtCampus}
+                    defaultZoom={20}
+                    style={{height: props.height, width: props.width}}
                     // TODO: Figure out what TEMP_MAP_ID actually needs to be
                     mapId="TEMP_MAP_ID?"
                 >
-                    {positions.map(({id, position, title}) => 
+                    {props.items.map((item) => 
                         <AdvancedMarker 
-                            key={id}
-                            position={position}
-                            title={title}
+                            key={item._id.toString()}
+                            position={item.position}
+                            title={item.title}
                             clickable={true} 
-                            onClick={() => setOpenMarkerId(id)} 
+                            onClick={() => setOpenMarkerId(item._id.toString())} 
                         />
                     )}
+                    
 
-                    {selectedMarker && (
+                    {selectedItem && (
                         <InfoWindow
-                            position={selectedMarker.position}
+                            position={selectedItem.position}
                             onCloseClick={() => setOpenMarkerId(null)}
                         >
                             <div className="p-1 w-64">
                                 <img
                                     className="w-full h-32 object-cover rounded-lg mb-2"
-                                    src={selectedMarker.image}
-                                    alt={selectedMarker.title}
+                                    src={selectedItem.image as string || '/default-item.png'}
+                                    alt={selectedItem.title}
                                 />
                                 <div>
                                     <h2 className="text-lg font-bold capitalize">
-                                        {selectedMarker.title}
+                                        {selectedItem.title}
                                     </h2>
                                     <p className="text-sm text-gray-600">
-                                        {selectedMarker.description}
+                                        {selectedItem.item_description}
                                     </p>
                                     <p className="text-xs text-gray-500 mt-2">
-                                        Reported on: {selectedMarker.reportedDate.toLocaleString()}
+                                        Reported on: {selectedItem.lostdate.toLocaleDateString()}
                                     </p>
                                 </div>
                                 
@@ -71,5 +91,6 @@ export default function GoogleMap(props: { height: any; width: any; }) {
                 </Map>
             </div>
         </APIProvider>
+        </div>
     );
 }
