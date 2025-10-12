@@ -32,9 +32,9 @@ function UserInfo() {
 export default function LostItemCard() {
   return (
     <div className="rounded-lg w-full flex flex-col shadow p-3 gap-4">
-      <div className="flex flex-row items-center gap-7">
+      <div className="flex flex-row items-center gap-7 justify-between">
         <UserInfo />
-        <p className="text-xs">Date/time Here</p>
+        <p className="text-xs">Date Here</p>
       </div>
       <div>
         <h2 className="text-xl font-bold">Item Name</h2>
