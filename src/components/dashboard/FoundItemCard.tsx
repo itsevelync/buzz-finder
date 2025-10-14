@@ -15,7 +15,7 @@ export default function FoundItemCard({
     const formattedLostTime = new Date(item.lostdate).toLocaleTimeString()
 
     return (
-        <div className="transition-all border border-gray-200 bg-white shadow hover:shadow-lg hover:-translate-y-0.5 rounded-xl w-full">
+        <div id={item._id.toString()} className="transition-all border border-gray-200 bg-white shadow hover:shadow-lg hover:-translate-y-0.5 rounded-xl w-full">
             <Image
                 className="w-full h-50 max-h-full rounded-t-xl object-cover"
                 src={item.image?.url ?? "/img-placeholder.jpg"}
