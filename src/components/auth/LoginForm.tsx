@@ -45,21 +45,9 @@ const LoginForm = () => {
             <Divider text="or" />
             <SocialLogins />
             <Divider text="or" />
-            {/* COntinue as guest */}
+            {/* Continue as guest */}
             <div className="text-center">
-                <button className="rounded-2xl bg-blue-500 text-white w-full" onClick={
-                    async () => {
-                        const formData = new FormData();
-                        formData.append("isGuest", "true");
-                        const result = await doCredentialLogin(formData);
-                        console.log(result);
-                        if (result.error) {
-                            setError(result.error);
-                            return;
-                        }
-                        router.push("/dashboard");
-                    }
-                }>Continue as Guest</button>
+                <button className="rounded-2xl px-2 py-1 bg-buzz-blue text-white w-full" onClick={() => router.push("/dashboard")}>Continue as Guest</button>
             </div>
 
         </>

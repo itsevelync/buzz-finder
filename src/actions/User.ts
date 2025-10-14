@@ -116,13 +116,7 @@ export async function doLogout() {
 export async function doCredentialLogin(formData: FormData) {
     const email = formData.get("email");
     const password = formData.get("password");
-    const isGuest = formData.get("isGuest");
-    if(isGuest) {
-        return await signIn("credentials", {
-            isGuest: true,
-            redirect: false,
-        });
-    }
+
     if (typeof email !== "string" || typeof password !== "string") {
         return { error: "Invalid login credentials." };
     }
