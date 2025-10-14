@@ -23,12 +23,6 @@ export default function LostFoundDashboardContainer() {
         isLoading,
     } = useSWR<Item[]>("/api/item", fetcher);
 
-    // Keep tab in URL synced
-    useEffect(() => {
-        const newTab = lostItemsSelected ? "lost" : "found";
-        router.replace(`?tab=${newTab}`);
-    }, [lostItemsSelected, router]);
-
     // Reset filtered items when data or tab changes
     useEffect(() => {
         if (items) {
@@ -36,7 +30,12 @@ export default function LostFoundDashboardContainer() {
                 items.filter((item) => item.isLost === lostItemsSelected)
             );
         }
-    }, [items, lostItemsSelected]);
+        if (searchParams.get("tab") || lostItemsSelected) {
+            const newTab = lostItemsSelected ? "lost" : "found";
+            router.replace(`?tab=${newTab}`);
+        }
+
+    }, [items, lostItemsSelected, router, searchParams]);
 
     return (
         <div>
