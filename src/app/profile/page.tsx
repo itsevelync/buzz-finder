@@ -12,7 +12,7 @@ export default async function Profile() {
     return (
         <><div>
             <h1>Welcome, {session?.user?.name}</h1>
-            <h1>Username: {session?.user?.name}</h1>
+            <h1>Username: {session?.user?.username}</h1>
             <h1>Email: {session?.user?.email}</h1>
             <Logout />
         </div>
