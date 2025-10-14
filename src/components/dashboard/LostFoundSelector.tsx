@@ -1,16 +1,37 @@
-'use client'
+"use client";
+
 /**
- * This componenet selcts between viewing and creating either a foud or a lsto item
+ * This component selects between viewing found or lost items.
  */
-import React from 'react'
-
-const LostFoundSelector = ({lostItemsSelected,setLostItemsSelected}:{lostItemsSelected:boolean,setLostItemsSelected:React.Dispatch<React.SetStateAction<boolean>>}) => {
-  return (
-    <div className="flex justify-center gap-10 my-4 h-{40px}">
-      <div className={lostItemsSelected?"":"border-b-amber-200 border-b-4 text-xl"} onClick={()=>setLostItemsSelected(false)}><h1>Found Items</h1></div>
-      <div className={lostItemsSelected?"border-b-amber-200 border-b-4 text-xl":""} onClick={()=>setLostItemsSelected(true)}><h1>Lost Items</h1></div>
-    </div>
-  )
-}
-
-export default LostFoundSelector
+export default function LostFoundSelector({
+    lostItemsSelected,
+    setLostItemsSelected,
+}: {
+    lostItemsSelected: boolean;
+    setLostItemsSelected: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+    return (
+        <div className="flex justify-center gap-10 mt-8 mb-1 h-{40px} border-b border-gray-200">
+            <div
+                className={
+                    `text-lg -mb-0.5 border-b-3 p-2 cursor-pointer ${lostItemsSelected
+                        ? "border-b-transparent"
+                        : "border-b-buzz-gold brightness-130 font-semibold"}`
+                }
+                onClick={() => setLostItemsSelected(false)}
+            >
+                <h1>Found Items</h1>
+            </div>
+            <div
+                className={
+                    `text-lg -mb-0.5 border-b-3 p-2 cursor-pointer ${lostItemsSelected
+                        ? "border-b-buzz-gold brightness-130 font-semibold"
+                        : "border-b-transparent"}`
+                }
+                onClick={() => setLostItemsSelected(true)}
+            >
+                <h1>Lost Items</h1>
+            </div>
+        </div>
+    );
+};
