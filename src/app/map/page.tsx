@@ -1,25 +1,33 @@
-import type { NextPage } from 'next';
-import Head from 'next/head'
-import GoogleMap from '@/components/maps/goolemap';
-import CenteredMap from '@/components/maps/centeredmap';
-import DropPin from '@/components/maps/droppin';
+import type { Metadata } from 'next';
+import ItemModel from '@/model/Item';
+import GoogleMap from '@/components/maps/GoogleMap';
+import ItemSidebar from "@/components/maps/ItemSidebar";
+import type { Item } from '@/model/Item';
 
-const Home: NextPage = () => {
-  return (
-    <div className="w-full h-full flex">
-      <Head>
-        <title>Interactive Google Map</title>
-        <meta name="description" content="A Next.js app with an interactive Google Map" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className="-z-100">
-        <DropPin width = "100vw" height="100vh"/>
-        {/* <CenteredMap width="100%" height="100vh" pinId={1}/> */}
-        {/* <GoogleMap width="100%" height="100vh"/> */}
-      </main>
-    </div>
-  );
+export const metadata: Metadata = {
+    title: "Map - BuzzFinder",
+    description: "An interactive map displaying lost items",
 };
 
-export default Home;
+interface SearchParams {
+    [key: string]: string | string[] | undefined;
+}
+
+export default async function Map({ searchParams }: { searchParams: SearchParams }) {
+    //Check Search Params to see if there is a item we want to focus
+    const itemId = (searchParams.itemId as string) ?? null;
+
+    //Get all items from the database and convert them to plain Item objects
+    const dbItems = await ItemModel.find().lean<Item[]>().exec();
+    const items: any[] = dbItems.map(item => ({
+        ...item,
+        _id: item._id.toString(),
+    }));
+
+    return (
+        <div className="w-full h-full flex">
+            <ItemSidebar items={items} />
+            <GoogleMap width="100%" height="100%" defaultMarkerId={itemId} items={items} />
+        </div>
+    );
+};

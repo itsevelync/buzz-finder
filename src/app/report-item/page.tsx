@@ -12,28 +12,36 @@ export default function ReportItem() {
 
     const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number }>(gtCampus)
 
-    //saves the image to the server, calls /api/upload, and then resets the file input returning fileName
-    async function saveImage() {
-        if (!file) return " ";
+    const uploadImage = async () => {
+        if(!file) return;
 
-        let formData = new FormData();
-        formData.append('file', file);
-        let res = await fetch('/api/upload', {
-            method: 'POST',
-            body: formData
-        });
-        let data = await res.json();
-        console.log("POST SUBMITTED")
-        console.log(res)
+        const formdata = new FormData();
 
-        return data.url;
+        formdata.append('file', file);
+        formdata.append("upload_preset", process.env.NEXT_PUBLIC_UPLOAD_PRESET as string);
+
+        try {
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`, {
+                method: "POST",
+                body: formdata
+            });
+
+            const data = await res.json();
+            const image = {
+                id: data["public_id"],
+                url: data['secure_url']
+            }
+
+            return image;
+        } catch(error) {
+            console.log(error)
+        }
     }
+
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
         console.log("Submitting form");
-        const url = (await saveImage());
-
-        console.log("Image saved with url: " + url);
+        const uploadedImage = (await uploadImage());
 
         const form = e.target as HTMLFormElement;
         const body = {
@@ -43,10 +51,10 @@ export default function ReportItem() {
             retrieval_description: (form.elements.namedItem('retrieval_description') as HTMLInputElement).value,
             contact_info: (form.elements.namedItem("name") as HTMLInputElement).value + " " + (form.elements.namedItem('contact_info') as HTMLInputElement).value,
             category: (form.elements.namedItem('category') as HTMLInputElement).value,
-            image: url,
+            image: uploadedImage,
             position: {
                 lat: selectedLocation.lat,
-                lon: selectedLocation.lng
+                lng: selectedLocation.lng
             }
         }
 
@@ -84,7 +92,7 @@ export default function ReportItem() {
                     setSelectedLocation={setSelectedLocation}
                 />
 
-                <FormInput label="Item Name" name="title" placeholder="Name of item" />
+                <FormInput label="Item Name" name="title" placeholder="Name of item" required />
                 <FormInput label="Item Description" name="item_description"
                            placeholder="Write an item description here" isTextarea />
                 <div className="flex flex-col md:flex-row gap-3 w-full">
@@ -92,7 +100,7 @@ export default function ReportItem() {
                     <FormInput label="Contact Information" name="contact_info"
                                placeholder="Phone number, email, Instagram, etc." className="grow" />
                 </div>
-                <FormInput label="Item Retrieval" name="retrievel_description"
+                <FormInput label="Item Retrieval" name="retrieval_description"
                            placeholder="How do you want this item to be retrieved?" isTextarea />
                 <FormInput label="Category" name="category" defaultValue="other" isSelect
                     selectOptions={[
@@ -108,3 +116,4 @@ export default function ReportItem() {
         </div>
     )
 }
+
