@@ -33,9 +33,9 @@ const LoginForm = () => {
             <div className="text-red-500">{error}</div>
             
             <form className="form" onSubmit={onSubmit}>
-                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" />
+                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" required />
                 <div>
-                    <FormInput label="Password" name="password" type="password" placeholder="Password" />
+                    <FormInput label="Password" name="password" type="password" placeholder="Password" required />
                     <Link className="link text-sm text-gray-600" href="/reset-password">Forgot Password?</Link>
                 </div>
 
