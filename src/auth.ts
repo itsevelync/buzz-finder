@@ -28,14 +28,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             credentials: {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
-                isGuest : {default: false, type: "boolean"}
             },
             authorize: async (credentials) => {
-                if(credentials.isGuest) {
-                    return {id:'guest',name:"Guest User", isGuest: true};
-                }
-
-
                 if (
                     !credentials ||
                     typeof credentials.email !== "string" ||
@@ -61,10 +55,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 const { password, _id, ...userWithoutPassword } = user.toObject();
-                return { id: user._id.toString(), ...userWithoutPassword, isGuest:false };
+                return { id: user._id.toString(), ...userWithoutPassword };
             },
         }),
-        
+
 
     ],
     pages: {
@@ -74,19 +68,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async jwt({ token, user, trigger }) {
             if (user) {
                 token.name = user.name;
+
+                const dbUser = await User.findById(token.sub);
+                if (dbUser) {
+                    token.username = dbUser.username;
+                }
             }
-            
+
             if (trigger === "update") {
-                const user = await User.findById(token.sub);
-                token.name = user.name;
+                const dbUser = await User.findById(token.sub);
+                if (dbUser) {
+                    token.name = dbUser.name;
+                    token.username = dbUser.username;
+                }
             }
-            
+
             return token;
         },
         session({ session, token }) {
             if (token.sub) {
                 session.user._id = token.sub;
                 session.user.name = token.name;
+                session.user.username = token.username;
             }
             return session;
         },
