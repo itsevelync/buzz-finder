@@ -2,6 +2,7 @@
 
 import { Item } from "@/model/Item";
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 
@@ -17,7 +18,7 @@ const gtCampus = { lat: 33.7780, lng: -84.3980 };
  */
 export default function GoogleMap(props: { height: any; width: any; defaultMarkerId:string|null,items:Item[] }) {
 
-    const [openMarkerId, setOpenMarkerId] = useState<String | null>(props.defaultMarkerId);
+    const [openMarkerId, setOpenMarkerId] = useState<string | null>(props.defaultMarkerId);
     const selectedItem:Item|undefined = props.items.find(item => item._id.toString() === openMarkerId);
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
@@ -63,10 +64,12 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
                             onCloseClick={() => setOpenMarkerId(null)}
                         >
                             <div className="p-1 w-64">
-                                <img
-                                    className="w-full h-32 object-cover rounded-lg mb-2"
-                                    src={selectedItem.image as string || '/default-item.png'}
+                                <Image
+                                    className="w-full h-38 object-cover rounded-lg mb-2"
+                                    src={selectedItem.image?.url as string || '/default-item.png'}
                                     alt={selectedItem.title}
+                                    width={200}
+                                    height={150}
                                 />
                                 <div>
                                     <h2 className="text-lg font-bold capitalize">

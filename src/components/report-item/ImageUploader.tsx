@@ -1,8 +1,8 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 /**
- * 
+ *
  * @returns Componenet to upload and automatically resize images
  */
 const ImageUploader = ( {file,setFile}:{file:File|null,setFile:React.Dispatch<React.SetStateAction<File | null>>}) => {
