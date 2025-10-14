@@ -24,7 +24,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     jwt: { encode, decode },
     providers: [
-        Google,
+        Google({allowDangerousEmailAccountLinking: true}),
         Credentials({
             credentials: {
                 email: { label: "Email", type: "text" },
