@@ -7,6 +7,7 @@ import { encode, decode } from 'next-auth/jwt';
 import User from "@/model/User";
 import bcrypt from "bcryptjs";
 import client from "./lib/db";
+import { updateUser, getUserByUsername, generateUsername } from "@/actions/User";
 
 class InvalidLoginError extends CredentialsSignin {
     code = "Email or password are incorrect."
@@ -70,8 +71,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.name = user.name;
 
                 const dbUser = await User.findById(token.sub);
-                if (dbUser) {
-                    token.username = dbUser.username;
+                if (dbUser && token.sub) {
+                    // If user logs in with Google and doesn't have a username, generate one
+                    if(!dbUser.username && user.email) {
+                        const username = await generateUsername(user.email)
+                        const updateResult = await updateUser(token.sub.toString(), { username });
+                        if (updateResult.error) {
+                            console.error("Failed to set username:", updateResult.error);
+                        } else {
+                            token.username = username;
+                        }
+                    } else {
+                        token.username = dbUser.username;
+                    }
                 }
             }
 
