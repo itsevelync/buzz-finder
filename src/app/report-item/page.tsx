@@ -92,7 +92,7 @@ export default function ReportItem() {
                     setSelectedLocation={setSelectedLocation}
                 />
 
-                <FormInput label="Item Name" name="title" placeholder="Name of item" />
+                <FormInput label="Item Name" name="title" placeholder="Name of item" required />
                 <FormInput label="Item Description" name="item_description"
                            placeholder="Write an item description here" isTextarea />
                 <div className="flex flex-col md:flex-row gap-3 w-full">

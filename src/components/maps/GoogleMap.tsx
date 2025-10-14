@@ -2,6 +2,7 @@
 
 import { Item } from "@/model/Item";
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 
@@ -63,10 +64,12 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
                             onCloseClick={() => setOpenMarkerId(null)}
                         >
                             <div className="p-1 w-64">
-                                <img
-                                    className="w-full h-32 object-cover rounded-lg mb-2"
+                                <Image
+                                    className="w-full h-38 object-cover rounded-lg mb-2"
                                     src={selectedItem.image?.url as string || '/default-item.png'}
                                     alt={selectedItem.title}
+                                    width={200}
+                                    height={150}
                                 />
                                 <div>
                                     <h2 className="text-lg font-bold capitalize">
