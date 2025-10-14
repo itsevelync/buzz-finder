@@ -10,6 +10,7 @@ import { ObjectId } from 'mongodb';
 interface NewUser {
     name: string;
     email: string;
+    username: string;
     password?: string;
 }
 
@@ -49,6 +50,17 @@ export async function getUserByEmail(email: string): Promise<UserData> {
         return user;
     } catch (e: any) {
         throw new Error("Error finding user by email:", e);
+    }
+}
+
+// Finds a user by their username.
+export async function getUserByUsername(username: string): Promise<UserData> {
+    try {
+        await dbConnect();
+        const user = await User.findOne({ username });
+        return user;
+    } catch (e: any) {
+        throw new Error("Error finding user by username:", e);
     }
 }
 
@@ -155,10 +167,21 @@ export async function signupUser(formData: FormData) {
         return { error: 'Email already in use.' };
     }
 
+    // Auto-generate username from email
+    let username = email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '');
+
+    // Ensure username is unique, append a number if needed
+    const baseUsername = username;
+    let counter = 1;
+    while (await getUserByUsername(username)) {
+        username = `${baseUsername}${counter}`;
+        counter++;
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     try {
-        await createUser({ name, email, password: hashedPassword });
+        await createUser({ name, username, email, password: hashedPassword });
         return { success: true };
     } catch (error) {
         console.error(error);
