@@ -42,7 +42,7 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
             <div style={{height: props.height, width: props.width}}>
                 <Map 
                     defaultCenter={selectedItem?.position||gtCampus}
-                    defaultZoom={20}
+                    defaultZoom={16}
                     style={{height: props.height, width: props.width}}
                     // TODO: Figure out what TEMP_MAP_ID actually needs to be
                     mapId="TEMP_MAP_ID?"
