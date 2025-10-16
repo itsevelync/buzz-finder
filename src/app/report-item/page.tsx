@@ -3,6 +3,7 @@
 import LocationSelectMap from '@/components/maps/LocationSelectMap';
 import ImageUploader from '@/components/report-item/ImageUploader';
 import FormInput from '@/components/ui/FormInput';
+import { categories } from '@/constants/Categories';
 import { useState } from 'react';
 
 export default function ReportItem() {
@@ -11,6 +12,11 @@ export default function ReportItem() {
     const gtCampus = { lat: 33.7780, lng: -84.3980 };
 
     const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number }>(gtCampus)
+    
+    const categoryOptions = Object.entries(categories).map(([key, value]) => ({
+        value: key,
+        label: value.label,
+    }));
 
     const uploadImage = async () => {
         if(!file) return;
@@ -103,13 +109,7 @@ export default function ReportItem() {
                 <FormInput label="Item Retrieval" name="retrieval_description"
                            placeholder="How do you want this item to be retrieved?" isTextarea />
                 <FormInput label="Category" name="category" defaultValue="other" isSelect
-                    selectOptions={[
-                        { value: "electronics", label: "Electronics", },
-                        { value: "clothing", label: "Clothing", },
-                        { value: "books", label: "Books", },
-                        { value: "buzzcard", label: "Buzzcard", },
-                        { value: "other", label: "Other", },
-                    ]}
+                    selectOptions={categoryOptions}
                 />
                 <button type="submit">Upload Lost Item</button>
             </form>
