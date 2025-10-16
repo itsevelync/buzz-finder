@@ -1,30 +1,50 @@
-'use client'
+"use client";
 
-import LocationSelectMap from '@/components/maps/LocationSelectMap';
-import ImageUploader from '@/components/report-item/ImageUploader';
-import FormInput from '@/components/ui/FormInput';
-import { categories } from '@/constants/Categories';
-import { useState } from 'react';
+import LocationSelectMap from "@/components/maps/LocationSelectMap";
+import ImageUploader from "@/components/report-item/ImageUploader";
+import FormInput from "@/components/ui/FormInput";
+import { categories } from "@/constants/Categories";
+import { useEffect, useState } from "react";
 
 export default function ReportItem() {
-
+    const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
-    const gtCampus = { lat: 33.7780, lng: -84.3980 };
+    const [currPositionFetched, setCurrPositionFetched] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number;}>(gtCampus);
 
-    const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number }>(gtCampus)
-    
+    useEffect(() => {
+        if (!currPositionFetched && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setSelectedLocation({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    });
+                    setCurrPositionFetched(true); // mark as fetched
+                },
+                (error) => {
+                    console.error("Error getting current location:", error);
+                    setCurrPositionFetched(true); // still mark as fetched to avoid retry
+                }
+            );
+        }
+    }, [currPositionFetched]);
+
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
         label: value.label,
     }));
 
     const uploadImage = async () => {
-        if(!file) return;
+        if (!file) return;
 
         const formdata = new FormData();
 
-        formdata.append('file', file);
-        formdata.append("upload_preset", process.env.NEXT_PUBLIC_UPLOAD_PRESET as string);
+        formdata.append("file", file);
+        formdata.append(
+            "upload_preset",
+            process.env.NEXT_PUBLIC_UPLOAD_PRESET as string
+        );
 
         try {
             const res = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`, {
@@ -35,23 +55,23 @@ export default function ReportItem() {
             const data = await res.json();
             const image = {
                 id: data["public_id"],
-                url: data['secure_url']
-            }
+                url: data["secure_url"],
+            };
 
             return image;
-        } catch(error) {
-            console.log(error)
+        } catch (error) {
+            console.log(error);
         }
-    }
+    };
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
         console.log("Submitting form");
-        const uploadedImage = (await uploadImage());
+        const uploadedImage = await uploadImage();
 
         const form = e.target as HTMLFormElement;
         const body = {
-            title: (form.elements.namedItem('title') as HTMLInputElement).value,
+            title: (form.elements.namedItem("title") as HTMLInputElement).value,
             status: false,
             item_description: (form.elements.namedItem('item_description') as HTMLInputElement).value,
             retrieval_description: (form.elements.namedItem('retrieval_description') as HTMLInputElement).value,
@@ -65,10 +85,10 @@ export default function ReportItem() {
         }
 
         console.log(body);
-        fetch('/api/item', {
-            method: 'POST',
+        fetch("/api/item", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(body)
         }).then(res => {
@@ -92,11 +112,14 @@ export default function ReportItem() {
             <ImageUploader file={file} setFile={setFile} />
 
             <form className="form w-full md:w-1/2" onSubmit={handleFormSubmit}>
-                <LocationSelectMap
-                    height={400} width={400}
-                    selectedLocation={selectedLocation}
-                    setSelectedLocation={setSelectedLocation}
-                />
+                <div className="h-100 rounded-lg overflow-hidden border-gray-300 border flex items-center justify-center">
+                    {currPositionFetched ? <LocationSelectMap
+                        height="100%" width="100%"
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
+                    /> : <p className="p-3 text-3xl">Loading map...</p>}
+
+                </div>
 
                 <FormInput label="Item Name" name="title" placeholder="Name of item" required />
                 <FormInput label="Item Description" name="item_description"
@@ -114,6 +137,5 @@ export default function ReportItem() {
                 <button type="submit">Upload Lost Item</button>
             </form>
         </div>
-    )
+    );
 }
-
