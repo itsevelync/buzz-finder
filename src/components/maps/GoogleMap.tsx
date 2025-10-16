@@ -1,9 +1,11 @@
 'use client';
-
+import MapPanController from './MapPanController'
 import { Item } from "@/model/Item";
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useLocation } from "@/context/LocationContext";
+import { useSelectedPin } from "@/context/PinContext";
 
 
 const gtCampus = { lat: 33.7780, lng: -84.3980 };
@@ -18,42 +20,52 @@ const gtCampus = { lat: 33.7780, lng: -84.3980 };
  */
 export default function GoogleMap(props: { height: any; width: any; defaultMarkerId:string|null,items:Item[] }) {
 
-    const [openMarkerId, setOpenMarkerId] = useState<string | null>(props.defaultMarkerId);
-    const selectedItem:Item|undefined = props.items.find(item => item._id.toString() === openMarkerId);
+    const { setLocation } = useLocation();
+    const { selectedId, setSelectedId } = useSelectedPin();
+
+    const selectedItem:Item|undefined = props.items.find(item => item._id.toString() === selectedId);
+    const initialItem = props.items.find(item => item._id.toString() === props.defaultMarkerId);
+
+    const [mapCenter] = useState(selectedItem?.position || gtCampus);
+    const [zoom] = useState(1);
+
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
     //scrolls the item list to the item with the given itemId
     function scrollToItem(itemId:string){
         const itemElement = document.getElementById(''+itemId);
-        console.log(itemElement);
         itemElement?.scrollIntoView({behavior: 'smooth', block: 'start'});
     }
     //reloads every time openMarkerId changes, which is when a marker is clicked 
-    useEffect(() => {
-            
-        if (openMarkerId) {
-            setTimeout(()=>scrollToItem(openMarkerId.toString()),0);//set Timer pushes this to the end of the call stack, allowing the document to be fully loaded before we call document.getById....
+    useEffect(() => {     
+        if (selectedId) {
+            setTimeout(()=>scrollToItem(selectedId.toString()),0);
         }
-        }, [openMarkerId]);//dependent on openMarkerId
+    }, [selectedId]);
 
     return (
         <>
         <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
             <div style={{height: props.height, width: props.width}}>
                 <Map 
-                    defaultCenter={selectedItem?.position||gtCampus}
-                    defaultZoom={16}
+                    defaultCenter={mapCenter}
+                    defaultZoom={zoom}
                     style={{height: props.height, width: props.width}}
                     // TODO: Figure out what TEMP_MAP_ID actually needs to be
                     mapId="TEMP_MAP_ID?"
                 >
+                    <MapPanController />
+
                     {props.items.map((item) => 
                         <AdvancedMarker 
                             key={item._id.toString()}
                             position={item.position}
                             title={item.title}
                             clickable={true} 
-                            onClick={() => setOpenMarkerId(item._id.toString())} 
+                            onClick={() => {
+                                setLocation(item.position);
+                                setSelectedId(item._id.toString());
+                            }}
                         />
                     )}
                     
@@ -61,7 +73,7 @@ export default function GoogleMap(props: { height: any; width: any; defaultMarke
                     {selectedItem && (
                         <InfoWindow
                             position={selectedItem.position}
-                            onCloseClick={() => setOpenMarkerId(null)}
+                            onCloseClick={() => setSelectedId(null)}
                         >
                             <div className="p-1 w-64">
                                 <Image
