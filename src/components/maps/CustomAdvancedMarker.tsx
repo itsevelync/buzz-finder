@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
+import { categories } from "@/constants/Categories";
 
 import { Item } from "@/model/Item";
 import Image from "next/image";
 
-export default function CustomAdvancedMarker({ item }: { item: Item }) {
+export default function CustomAdvancedMarker({
+    item,
+    disableClick = false,
+}: {
+    item: Item;
+    disableClick?: boolean;
+}) {
     const [clicked, setClicked] = useState(false);
     const [hovered, setHovered] = useState(false);
     const position = {
@@ -13,27 +20,44 @@ export default function CustomAdvancedMarker({ item }: { item: Item }) {
     };
 
     const updateClicked = () => {
-        if (clicked) {
-            setClicked(false);
-            setHovered(false);
-        } else {
-            setClicked(true);
-            setHovered(false);
+        if (!disableClick) {
+            if (clicked) {
+                setClicked(false);
+                setHovered(false);
+            } else {
+                setClicked(true);
+                setHovered(false);
+            }
         }
     };
+
+    const category = categories[item.category];
+    const Icon = category.icon;
+    const pinColor = category.color;
 
     const renderCustomPin = () => {
         return (
             <>
                 <div
                     className={`custom-pin relative transition-all duration-200 ease-in-out
-                      ${clicked ? "h-auto aspect-auto" : hovered ? "h-20 aspect-square" : "h-15 aspect-square"}
+                      ${
+                          clicked
+                              ? "h-auto aspect-auto"
+                              : hovered
+                              ? "h-20 aspect-square"
+                              : "h-15 aspect-square"
+                      }
                     `}
                 >
                     <div
+                        style={{ borderColor: pinColor }}
                         className={`image-container bg-white w-full h-full transition-all
-                          border-5 border-buzz-blue flex items-center justify-center overflow-hidden relative
-                          ${clicked ? "rounded-lg max-w-50" : "max-w-[84px] rounded-full"}
+                          border-5 flex items-center justify-center overflow-hidden relative
+                          ${
+                              clicked
+                                  ? "rounded-lg max-w-50"
+                                  : "max-w-[84px] rounded-full"
+                          }
                         `}
                     >
                         {!clicked ? (
@@ -41,16 +65,22 @@ export default function CustomAdvancedMarker({ item }: { item: Item }) {
                                 <Image
                                     width={50}
                                     height={50}
-                                    src={item.image?.url ?? "/img-placeholder.jpg"}
+                                    src={
+                                        item.image?.url ??
+                                        "/img-placeholder.jpg"
+                                    }
                                     alt="Item photo"
-                                    className={`w-full h-full ${hovered ? "" : "brightness-1000"}`}
+                                    className={`w-full h-full ${
+                                        hovered ? "" : "brightness-0 invert"
+                                    }`}
                                 />
                                 <span
-                                    className={`text-buzz-blue font-bold text-3xl icon absolute
+                                    style={{ color: pinColor }}
+                                    className={`font-bold text-3xl icon absolute
                                       ${hovered ? "opacity-0" : ""}
                                     `}
                                 >
-                                    ?
+                                    <Icon />
                                 </span>
                             </>
                         ) : (
@@ -62,8 +92,10 @@ export default function CustomAdvancedMarker({ item }: { item: Item }) {
                     </div>
                 </div>
 
-                <div className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-[8px]
-                    border-buzz-blue rounded-br-[3px] translate-y-[4px] -translate-x-1/2
+                <div
+                    style={{ borderColor: pinColor }}
+                    className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-[8px]
+                    rounded-br-[3px] translate-y-[4px] -translate-x-1/2
                     rotate-45 scale-[1.3] transition-all duration-200 ease-in-out`}
                 />
             </>
@@ -73,9 +105,11 @@ export default function CustomAdvancedMarker({ item }: { item: Item }) {
     return (
         <AdvancedMarker
             position={position}
-            title={"Lost item information."}
+            title={`${item.title} Location`}
             className={`item-marker cursor-pointer relative -translate-y-[5px] transition-all duration-200 ease-in-out
-              ${clicked ? " clicked" : ""}${hovered && !clicked ? " hovered" : ""}
+              ${clicked ? " clicked" : ""}${
+                hovered && !clicked ? " hovered" : ""
+            }
             `}
             onClick={updateClicked}
             onMouseEnter={() => setHovered(true)}

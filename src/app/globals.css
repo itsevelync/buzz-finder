@@ -100,3 +100,7 @@ button:hover {
 .tooltip-right {
   @apply left-full top-1/2 -translate-y-1/2 ml-3;
 }
+
+.tooltip-left {
+  @apply right-full top-1/2 -translate-y-1/2 mr-3;
+}
