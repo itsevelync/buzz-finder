@@ -59,7 +59,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
     });
 
     return (
-        <div className="p-5 sm:p-8 max-w-5xl m-auto flex flex-col gap-6">
+        <div className="p-5 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
             <Link
                 href="/dashboard"
                 className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all"
@@ -92,17 +92,18 @@ export default async function ItemPage({ params }: ItemPageProps) {
                 </div>
             </div>
             <div className="flex gap-6 flex-col md:flex-row">
-                <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-4">
+                <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-2">
                     <Image
                         src={item.image?.url ?? "/img-placeholder.jpg"}
                         alt={`${item.title} Image`}
-                        className="object-cover rounded-xl border-gray-300 shadow"
+                        className="object-cover rounded-xl border-gray-300 shadow mb-4"
                         width={280}
                         height={280}
                     />
                     <button className="bg-buzz-gold flex items-center gap-2 text-white text-xl px-6 shadow-md hover:brightness-110 hover:shadow filter hover:saturate-180 hover:translate-y-0.5 shadow-buzz-gold/50 py-1.5 rounded-full">
-                        <FaHandPaper className="text-base" /> Claim Item
+                        <FaHandPaper /> Claim Item
                     </button>
+                    <p className="underline opacity-80">Item no longer there?</p>
                 </div>
                 <div className="flex flex-col gap-10 grow">
                     <div className="h-90 w-full rounded-xl overflow-hidden border border-gray-300 shadow">
