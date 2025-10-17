@@ -25,7 +25,7 @@ export default function FormInput({
 }: FormInputProps) {
     return (
         <div className={`${className} form-input`}>
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name}>{label} {required && " *"}</label>
             {isSelect ? (
                 <select name={name} id={name} defaultValue={defaultValue} required={required} disabled={disabled}>
                     {selectOptions.map((option) => (

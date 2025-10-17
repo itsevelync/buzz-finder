@@ -11,7 +11,7 @@ export default async function Navbar() {
     const session = await auth();
     
     return (
-        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15">
+        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15 z-100">
             <Link href="/" className="-mr-1">
                 <Image
                     src="/buzzfinder-logo.png"
@@ -34,11 +34,11 @@ export default async function Navbar() {
                             alt={session?.user?.name ?? "User avatar"}
                             width={50}
                             height={50}
-                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-black transition-all duration-200"
+                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-foreground transition-all duration-200"
                         />
                     </Link>
                     {/* Tooltip */}
-                    <span className="tooltip tooltip-right">Profile</span>
+                    <span className="tooltip tooltip-right">{session?.user?.name ?? "Guest"}</span>
                 </div>
                 <NavItem name="Settings" href="/settings" icon={IoSettingsOutline} iconFill={IoSettings} />
             </div>

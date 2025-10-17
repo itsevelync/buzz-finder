@@ -25,6 +25,10 @@
   }
 } */
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -65,7 +69,7 @@ button:hover {
   margin: 4px auto;
   width: 100%;
   padding: 6px 12px;
-  background-color: rgb(32, 32, 32);
+  background-color: var(--buzz-blue);
   color: white;
   border-radius: 100px;
 }
@@ -82,7 +86,7 @@ button:hover {
 .tooltip {
   @apply absolute px-2 py-1 rounded-md bg-gray-900 text-white text-sm shadow-lg
          opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100
-         transition-all duration-200 ease-out whitespace-nowrap pointer-events-none z-1000;
+         transition-all duration-200 ease-out whitespace-nowrap pointer-events-none;
 }
 
 .tooltip-top {
@@ -95,4 +99,8 @@ button:hover {
 
 .tooltip-right {
   @apply left-full top-1/2 -translate-y-1/2 ml-3;
+}
+
+.tooltip-left {
+  @apply right-full top-1/2 -translate-y-1/2 mr-3;
 }

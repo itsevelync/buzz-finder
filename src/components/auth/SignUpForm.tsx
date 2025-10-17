@@ -30,9 +30,9 @@ export default function SignUpForm() {
             {error && <div className="text-red-500">{error}</div>}
 
             <form className="form" onSubmit={handleSubmit}>
-                <FormInput label="Name" name="name" placeholder="George P. Burdell" />
-                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" />
-                <FormInput label="Password" name="password" type="password" placeholder="Password" />
+                <FormInput label="Name" name="name" placeholder="George P. Burdell" required />
+                <FormInput label="Email Address" name="email" type="email" placeholder="gburdell3@gatech.edu" required />
+                <FormInput label="Password" name="password" type="password" placeholder="Password" required />
 
                 <button type="submit">Register</button>
             </form>

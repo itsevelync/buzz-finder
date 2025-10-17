@@ -39,6 +39,7 @@ export async function POST(req:NextRequest) {
         const newItem = await ItemSchema.create(body);
         return new Response(JSON.stringify(newItem), { status: 201 });
     } catch (e: any) {
+        console.error("POST /api/item error:", e);
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }

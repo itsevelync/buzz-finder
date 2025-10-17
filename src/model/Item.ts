@@ -1,5 +1,4 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
-import User from "./User";
 import { ObjectId } from "mongodb";
 
 const ItemSchema = new Schema(
@@ -7,7 +6,7 @@ const ItemSchema = new Schema(
         title: {
             required: true,
             type: String,
-            trime: true,
+            trim: true,
         },
         isLost: {
             required: true,
@@ -15,7 +14,8 @@ const ItemSchema = new Schema(
             default: false // true if lost, false if found
         },
         image: {
-            type: String
+            id: { type: String },
+            url: { type: String },
         },
         item_description: {
             type: String
@@ -26,18 +26,15 @@ const ItemSchema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ["clothing", "electronics", "books", "buzzcard", "pets", "other"],
-            default: "other"
+            enum: ["electronics", "buzzcard", "bags", "clothing", "books", "personal", "misc"],
+            default: "misc"
         },
         position: {
-            lat: {
-                type: Number,
-                required: true
+            type: {
+                lat: { type: Number, required: true },
+                lng: { type: Number, required: true },
             },
-            lon: {
-                type: Number,
-                required: true
-            }
+            required: true,
         },
         location_details: {
             type: String,
@@ -59,11 +56,14 @@ const ItemSchema = new Schema(
         comments: {
             type: String
         }
-    }
+    },
+    { timestamps: true }
 );
-type Item = InferSchemaType<typeof ItemSchema>& {
+
+type Item = InferSchemaType<typeof ItemSchema> & {
     _id: ObjectId;
 };
+
 export type { Item };
 
 export default mongoose.models?.Item ??

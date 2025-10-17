@@ -1,24 +1,81 @@
-'use client'
-import React from 'react'
-import LostFoundSelector from './LostFoundSelector';
-import {Item} from '@/model/Item';
-import ItemList from './ItemList';
-import useSWR from 'swr';
+"use client";
 
-const LostFoundDashboardContainer = () => {
-    const [lostItemsSelected, setLostItemsSelected] = React.useState<boolean | null>(null);
-    const {data:items, error, isLoading} = useSWR<Item[]>('/api/item', (url:string) => fetch(url).then(res => res.json()));
-    
-  return (
-    <div>
-       <div className="flex flex-col justify-start align-middle w-full">
-        <LostFoundSelector lostItemsSelected={lostItemsSelected} setLostItemsSelected={setLostItemsSelected}/>
-        {error || items ==undefined?<div>Error loading items</div>:isLoading?<div>Loading...</div>:<></>}
-        {!error &&!isLoading?<ItemList items={items?.filter(item=>(lostItemsSelected==item.isLost))??[]}  lostItemsSelected={lostItemsSelected}/>:<></>}
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import LostFoundSelector from "./LostFoundSelector";
+import { Item } from "@/model/Item";
+import ItemList from "./ItemList";
+import useSWR from "swr";
+import SearchBar from "../ui/SearchBar";
+
+export default function LostFoundDashboardContainer() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [lostItemsSelected, setLostItemsSelected] = useState<boolean>(
+        searchParams.get("tab") === "lost"
+    );
+    const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+    const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+    const {
+        data: items,
+        error,
+        isLoading,
+    } = useSWR<Item[]>("/api/item", fetcher);
+
+    // Reset filtered items when data or tab changes
+    useEffect(() => {
+        if (items) {
+            setFilteredItems(
+                items.filter((item) => item.isLost === lostItemsSelected)
+            );
+        }
+        if (searchParams.get("tab") || lostItemsSelected) {
+            const newTab = lostItemsSelected ? "lost" : "found";
+            router.replace(`?tab=${newTab}`);
+        }
+
+    }, [items, lostItemsSelected, router, searchParams]);
+
+    return (
+        <div>
+            <div className="flex flex-col justify-start align-middle w-full">
+                <div className="sticky top-0 z-10 bg-white">
+                    <LostFoundSelector
+                        lostItemsSelected={lostItemsSelected}
+                        setLostItemsSelected={setLostItemsSelected}
+                    />
+                    {!lostItemsSelected && (
+                        <div className="p-4 bg-white shadow-md rounded-lg">
+                            <SearchBar<Item>
+                                placeholder="Search by title, description, or location"
+                                items={items || []}
+                                setFilteredItems={setFilteredItems}
+                                searchableFields={[
+                                    "title",
+                                    "item_description",
+                                    "retrieval_description",
+                                    "category",
+                                    "location_details",
+                                ]}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className="p-5">
+                    {isLoading ? (
+                        <div>Loading...</div>
+                    ) : error || !items ? (
+                        <div>Error loading items</div>
+                    ) : (
+                        <ItemList
+                            items={filteredItems}
+                            lostItemsSelected={lostItemsSelected}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
-    
-    </div>
-  )
+    );
 }
-
-export default LostFoundDashboardContainer
