@@ -45,3 +45,5 @@ export const categories = {
         icon: FaBoxOpen,
     },
 };
+
+export const CATEGORY_KEYS = Object.keys(categories) as Array<keyof typeof categories>;
