@@ -17,6 +17,9 @@ const LocationSelectMap = (props: { height: number|string, width: number|string,
                     // TODO: Figure out what TEMP_MAP_ID actually needs to be
                     mapId="TEMP_MAP_ID?"
                     onClick={handleMapClick}
+                    streetViewControl={false}
+                    mapTypeControl={false}
+                    fullscreenControl={false}
                 >
                     <AdvancedMarker
                         position={props.selectedLocation}
