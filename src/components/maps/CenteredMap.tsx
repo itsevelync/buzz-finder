@@ -1,38 +1,96 @@
-'use client';
+"use client";
+
 import { Item } from "@/model/Item";
-import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import CustomAdvancedMarker from "./CustomAdvancedMarker";
+import { MdMyLocation } from "react-icons/md";
 
 /**
- * 
- * Call this component to display map centered on passed in pinID
- * 
- * @param props (height width pinId) height: height of component, width: width of component. 
- * This should be the same syntax as CSS / Tailwind CSS,
- * pinId: the id of the pin the map should be centered on
- * @returns View of Google Map centered on the pin
+ *
+ * Displays a Google Map centered on the given pin.
+ *
+ * @param props.height, props.width - CSS/Tailwind style size values
+ * @param props.pin - the Item with a `.position` { lat, lng }
  */
-export default function CenteredMap(props: { height: string; width: string; pin: Item; }) {
-    
-    if (!props.pin) {
+export default function CenteredMap({
+    height,
+    width,
+    pin,
+    disableHover = false,
+    disableClick = disableHover,
+}: {
+    height: string;
+    width: string;
+    pin: Item;
+    disableHover?: boolean;
+    disableClick?: boolean;
+}) {
+    if (!pin) {
         return <div>Item not found!</div>;
     }
 
     return (
-        <div className="custom-marker w-full h-full">
-        <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-            <div style={{height: props.height, width: props.width}}>
-                <Map 
-                    defaultCenter={props.pin.position}
-                    defaultZoom={17}
-                    // TODO: Figure out what TEMP_MAP_ID actually needs to be
-                    mapId="TEMP_MAP_ID?"
-                    options={{ disableDefaultUI: true }}
+        <div className="custom-marker w-full h-full relative">
+            <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+                <MapWrapper
+                    height={height}
+                    width={width}
+                    pin={pin}
+                    disableHover={disableHover}
+                    disableClick={disableClick}
+                />
+            </APIProvider>
+        </div>
+    );
+}
+
+/**
+ * Dev Note: useMap() only works inside an <APIProvider> context
+ */
+function MapWrapper({
+    height,
+    width,
+    pin,
+    disableHover = false,
+    disableClick = disableHover,
+}: {
+    height: string;
+    width: string;
+    pin: Item;
+    disableHover?: boolean;
+    disableClick?: boolean;
+}) {
+    const mapRef = useMap();
+
+    const handleCenterClick = () => {
+        if (mapRef && pin?.position) {
+            mapRef.panTo(pin.position);
+            mapRef.setZoom(17);
+        }
+    };
+
+    return (
+        <div style={{ height, width }}>
+            <Map
+                defaultCenter={pin.position}
+                defaultZoom={17}
+                mapId="TEMP_MAP_ID?"
+                disableDefaultUI={true}
+            >
+                <CustomAdvancedMarker item={pin} disableClick={disableClick} />
+            </Map>
+
+            {/* Floating re-center button */}
+            <div className="absolute group bottom-3 right-2">
+                <button
+                    onClick={handleCenterClick}
+                    className="cursor-pointer hover:brightness-95 transition-all flex items-center justify-center text-2xl rounded-full w-10 h-10 bg-white border shadow border-gray-300"
+                    aria-label="Center map on item"
                 >
-                <CustomAdvancedMarker item={props.pin} />
-                </Map>
+                    <MdMyLocation />
+                </button>
+                <span className="tooltip tooltip-left">Center Item on Map</span>
             </div>
-        </APIProvider>
         </div>
     );
 }

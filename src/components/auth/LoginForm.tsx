@@ -47,7 +47,7 @@ const LoginForm = () => {
             <Divider text="or" />
             {/* Continue as guest */}
             <div className="text-center">
-                <button className="rounded-2xl px-2 py-1 bg-buzz-blue text-white w-full" onClick={() => router.push("/dashboard")}>Continue as Guest</button>
+                <button className="rounded-2xl px-2 py-1.5 bg-buzz-blue text-white w-full" onClick={() => router.push("/dashboard")}>Continue as Guest</button>
             </div>
 
         </>
