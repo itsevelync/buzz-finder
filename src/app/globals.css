@@ -69,7 +69,7 @@ button:hover {
   margin: 4px auto;
   width: 100%;
   padding: 6px 12px;
-  background-color: rgb(32, 32, 32);
+  background-color: var(--buzz-blue);
   color: white;
   border-radius: 100px;
 }
@@ -99,4 +99,8 @@ button:hover {
 
 .tooltip-right {
   @apply left-full top-1/2 -translate-y-1/2 ml-3;
+}
+
+.tooltip-left {
+  @apply right-full top-1/2 -translate-y-1/2 mr-3;
 }

@@ -161,6 +161,20 @@ export async function signupUser(formData: FormData) {
         return { error: 'Email already in use.' };
     }
 
+    const username = await generateUsername(email);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    try {
+        await createUser({ name, username, email, password: hashedPassword });
+        return { success: true };
+    } catch (error) {
+        console.error(error);
+        return { error: 'Failed to create account. Please try again in a few moments.' };
+    }
+}
+
+export async function generateUsername(email: string) {
     // Auto-generate username from email
     let username = email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '');
 
@@ -172,13 +186,5 @@ export async function signupUser(formData: FormData) {
         counter++;
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    try {
-        await createUser({ name, username, email, password: hashedPassword });
-        return { success: true };
-    } catch (error) {
-        console.error(error);
-        return { error: 'Failed to create account. Please try again in a few moments.' };
-    }
+    return username;
 }
