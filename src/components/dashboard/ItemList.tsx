@@ -3,17 +3,23 @@ import React from "react";
 import FoundItemCard from "./FoundItemCard";
 import LostItemCard from "./LostItemCard";
 
-const ItemList = ({
+export default function ItemList({
   items,
   lostItemsSelected,
 }: {
   items: Item[];
-  lostItemsSelected: boolean | null;
-}) => {
+  lostItemsSelected: boolean;
+}) {
   return (
-    <div className="m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-3 p-5 gap-4">
-      {/* {lostItemsSelected ? items.map((item: Item) => (<LostItemCard key={item.title} item={item} />)) : items.map((item: Item) => (<FoundItemCard key={item.title} item={item} includeMapLink={true}/>))} */}
+    <div className="m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
       {lostItemsSelected ? (
+        // commented out to display one LostItemCard component for testing
+        // TO DO: integrate it with the lost item schema
+
+        // ? items.map((item: Item) => (
+        //     <LostItemCard key={item.title} item={item} />
+        //   ))
+
         <LostItemCard />
       ) : (
         items.map((item: Item) => (
@@ -22,6 +28,4 @@ const ItemList = ({
       )}
     </div>
   );
-};
-
-export default ItemList;
+}

@@ -14,6 +14,7 @@ import React from "react";
 
 // export default LostItemCard;
 
+// TO DO: integrate with lost item schema
 function UserInfo() {
   return (
     <div className="flex flex-row items-center gap-2">
