@@ -26,18 +26,15 @@ const ItemSchema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ["clothing", "electronics", "books", "buzzcard", "pets", "other"],
-            default: "other"
+            enum: ["electronics", "buzzcard", "bags", "clothing", "books", "personal", "misc"],
+            default: "misc"
         },
         position: {
-            lat: {
-                type: Number,
-                required: true
+            type: {
+                lat: { type: Number, required: true },
+                lng: { type: Number, required: true },
             },
-            lng: {
-                type: Number,
-                required: true
-            }
+            required: true,
         },
         location_details: {
             type: String,

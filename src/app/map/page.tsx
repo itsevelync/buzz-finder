@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import ItemModel from '@/model/Item';
-import GoogleMap from '@/components/maps/GoogleMap';
-import ItemSidebar from "@/components/maps/ItemSidebar";
 import type { Item } from '@/model/Item';
+import MapClient from './MapClient';
 
 export const metadata: Metadata = {
     title: "Map - BuzzFinder",
@@ -25,9 +24,6 @@ export default async function Map({ searchParams }: { searchParams: SearchParams
     }));
 
     return (
-        <div className="w-full h-full flex">
-            <ItemSidebar items={items} />
-            <GoogleMap width="100%" height="100%" defaultMarkerId={itemId} items={items} />
-        </div>
+        <MapClient itemId={itemId} items={items} />
     );
 };

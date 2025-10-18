@@ -30,7 +30,7 @@ export default async function TopBar() {
                             alt={session?.user?.name ?? "User avatar"}
                             width={50}
                             height={50}
-                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-black transition-all duration-200"
+                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-foreground transition-all duration-200"
                         />
                     </Link>
                     {/* Tooltip */}
