@@ -70,6 +70,48 @@ export default function ReportItem() {
         }
     };
 
+    async function handleTestSubmit() {
+        console.log("Creating test lost item");
+        
+        const testLostItem = {
+            title: "Test Lost Airpods",
+            isLost: true, // This makes it a lost item
+            item_description: "Black Apple AirPods Pro with charging case. Lost somewhere on campus.",
+            retrieval_description: "Please contact me if found. Can meet anywhere on campus.",
+            contact_info: "Test User test@gatech.edu",
+            category: "electronics",
+            image: {
+                id: "test_image",
+                url: "/img-placeholder.jpg"
+            },
+            position: {
+                lat: 33.778,
+                lng: -84.398
+            },
+            location_details: "Student Center",
+            lostdate: new Date()
+        };
+
+        try {
+            const response = await fetch("/api/item", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(testLostItem),
+            });
+
+            if (response.ok) {
+                alert("Test lost item created successfully! Check the Lost Items tab.");
+            } else {
+                alert("Error creating test item");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error creating test item");
+        }
+    }
+
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
         console.log("Submitting form");
@@ -193,7 +235,16 @@ export default function ReportItem() {
                         isSelect
                         selectOptions={categoryOptions}
                     />
-                    <button type="submit">Submit Found Item</button>
+                    <div className="flex gap-3">
+                        <button type="submit" className="flex-1">Submit Found Item</button>
+                        <button 
+                            type="button" 
+                            onClick={handleTestSubmit}
+                            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                        >
+                            TEST
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

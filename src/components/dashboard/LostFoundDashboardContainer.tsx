@@ -45,22 +45,20 @@ export default function LostFoundDashboardContainer() {
                         lostItemsSelected={lostItemsSelected}
                         setLostItemsSelected={setLostItemsSelected}
                     />
-                    {!lostItemsSelected && (
-                        <div className="p-4 bg-white shadow-md rounded-lg">
-                            <SearchBar<Item>
-                                placeholder="Search by title, description, or location"
-                                items={items || []}
-                                setFilteredItems={setFilteredItems}
-                                searchableFields={[
-                                    "title",
-                                    "item_description",
-                                    "retrieval_description",
-                                    "category",
-                                    "location_details",
-                                ]}
-                            />
-                        </div>
-                    )}
+                    <div className="p-4 bg-white shadow-md rounded-lg">
+                        <SearchBar<Item>
+                            placeholder={lostItemsSelected ? "Search lost items by title, description, or location" : "Search by title, description, or location"}
+                            items={items || []}
+                            setFilteredItems={setFilteredItems}
+                            searchableFields={[
+                                "title",
+                                "item_description",
+                                "retrieval_description",
+                                "category",
+                                "location_details",
+                            ]}
+                        />
+                    </div>
                 </div>
 
                 <div className="p-5">
