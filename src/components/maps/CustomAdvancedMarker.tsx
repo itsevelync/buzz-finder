@@ -70,7 +70,7 @@ export default function CustomAdvancedMarker({
                                         "/img-placeholder.jpg"
                                     }
                                     alt="Item photo"
-                                    className={`w-full h-full ${
+                                    className={`w-full h-full object-cover ${
                                         hovered ? "" : "brightness-0 invert"
                                     }`}
                                 />
