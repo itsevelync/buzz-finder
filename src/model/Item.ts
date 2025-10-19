@@ -31,6 +31,7 @@ const ItemSchema = new Schema(
             default: "misc"
         },
         position: {
+            _id: false,
             type: {
                 lat: { type: Number, required: true },
                 lng: { type: Number, required: true },
