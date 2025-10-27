@@ -98,6 +98,27 @@ export async function updateUser(userId: string, userData: UserUpdateData): Prom
     }
 }
 
+export async function deleteUser(userId: string): Promise<{ success?: string; error?: string }> {
+    // Check if the userId is a valid ObjectId before updating
+    if (!Types.ObjectId.isValid(userId)) {
+        return { error: "Invalid user ID." };
+    }
+
+    try {
+        await dbConnect();
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+        if (!deletedUser) {
+            return { error: "User not found." };
+        }
+        
+        return { success: "User deleted successfully." };
+    } catch (e: any) {
+        return { error: "Unable to delete user, please try again." };
+    }
+}
+
 export async function updateUserFromEmail(email: string, userData: UserUpdateData): Promise<{ success?: string; error?: string }> {
     const user = await getUserByEmail(email);
     return await updateUser(user._id.toString(), userData)
