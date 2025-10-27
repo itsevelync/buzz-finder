@@ -14,3 +14,17 @@ export async function PATCH(
 
     return NextResponse.json(result, { status: 200 });
 }
+
+export async function DELETE(
+    req: Request,
+    { params }: { params: { id: string } }
+) {
+    const body = await req.json();
+    const result = await deleteUser(params.id);
+
+    if (result.error) {
+        return NextResponse.json(result, { status: 400 });
+    }
+
+    return NextResponse.json(result, { status: 200 });
+}
