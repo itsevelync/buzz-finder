@@ -24,7 +24,7 @@ export default function FoundItemCard({
                 width={200}
             />
             <div className="w-full p-3">
-                <a href={"item/" + item._id}>
+                <a href={"/item/" + item._id}>
                     <h2 className="font-bold text-lg hover:underline">
                         {item.title}
                     </h2>
