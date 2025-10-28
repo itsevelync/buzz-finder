@@ -13,10 +13,10 @@ interface ProfilePageProps {
 
 export default async function Profile({ params }: ProfilePageProps) {
     const session = await auth();
+    params = await params;
 
     let userProfile: User | null = null;
     try {
-        params = await params;
         userProfile = await getUserByUsername(params.username);
     } catch (error) {
         console.error("Error fetching user profile:", error);

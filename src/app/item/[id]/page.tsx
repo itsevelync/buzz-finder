@@ -45,6 +45,7 @@ async function getItem(id: string) {
 }
 
 export default async function ItemPage({ params }: ItemPageProps) {
+    params = await params;
     const item = (await getItem(params.id)) as Item;
     const category = categories[item.category];
 
