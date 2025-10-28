@@ -1,17 +1,13 @@
 'use client'
 
-import SocialLogins from "@/components/auth/SocialLogins";
 import { updateUser } from "@/actions/User";
 import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
-import Divider from "../ui/Divider";
-import Link from "next/link";
-import { auth } from "@/auth";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 
 
-const UpdateProfileForm = ({ userID }: { userID: string }) => {
+export default function UpdateProfileForm({ userID }: { userID: string }) {
     const { data: session, update } = useSession();
     
     const router = useRouter();
@@ -52,5 +48,3 @@ const UpdateProfileForm = ({ userID }: { userID: string }) => {
         </>
     );
 };
-
-export default UpdateProfileForm;

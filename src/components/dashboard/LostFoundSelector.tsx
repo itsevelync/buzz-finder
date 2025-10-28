@@ -11,7 +11,7 @@ export default function LostFoundSelector({
     setLostItemsSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     return (
-        <div className="flex justify-center gap-10 mt-4 md:mt-8 mb-1 h-{40px} border-b border-gray-200">
+        <div className="flex w-full justify-center gap-10 mt-4 md:mt-8 mb-1 h-{40px} border-b border-gray-200">
             <div
                 className={
                     `text-lg -mb-0.5 border-b-3 p-2 cursor-pointer ${lostItemsSelected
