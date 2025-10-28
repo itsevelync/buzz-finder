@@ -139,7 +139,7 @@ export default function ReportItem() {
                 >
                     <div className="w-full">
                         <h3 className="mb-2">Item Location *</h3>
-                        <div className="h-100 rounded-lg overflow-hidden border-buzz-blue/20 border flex items-center justify-center">
+                        <div className="h-100 rounded-lg overflow-hidden border-buzz-blue/20 border flex items-center justify-center shadow-md">
                             {currPositionFetched ? (
                                 <LocationSelectMap
                                     height="100%"
@@ -193,7 +193,9 @@ export default function ReportItem() {
                         isSelect
                         selectOptions={categoryOptions}
                     />
-                    <button type="submit">Submit Found Item</button>
+                    <button 
+                        type="submit"
+                    >Submit Found Item</button>
                 </form>
             </div>
         </div>
