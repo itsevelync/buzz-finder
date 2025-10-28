@@ -28,7 +28,7 @@ export default async function Navbar() {
             </div>
             <div className="flex flex-col items-center gap-[2vh]">
                 <div className="relative group">
-                    <Link href="/profile">
+                    <Link href={session?.user?.username ? `/user/${session.user.username}` : "/login"}>
                         <Image
                             src={session?.user?.image ?? "/default-icon.svg"}
                             alt={session?.user?.name ?? "User avatar"}

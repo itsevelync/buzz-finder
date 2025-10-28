@@ -12,20 +12,22 @@ import mongoose from "mongoose";
  */
 export async function GET(req:NextRequest) {
     console.log("GET request received at /api/item");
-    //seraching for specific item by id
+    // Searching for specific item by id
     const id = req.nextUrl.searchParams.get("_id");
-    if(id){
-        if(!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
-        ItemSchema.findById(req.nextUrl.searchParams.get("id")).then(item=>{
-            return new Response(JSON.stringify(item), { status: 200 });
-        })
+    const personFound = req.nextUrl.searchParams.get("person_found");
 
-     } 
-     else {
-        //otherwise return all items in db
-        const items = await ItemSchema.find({});
+    if (id) {
+        if (!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
+        const item = await ItemSchema.findById(id);
+        return new Response(JSON.stringify(item), { status: 200 });
+    } else {
+        const query: { person_found?: string } = {};
+        if (personFound) {
+            query.person_found = personFound;
+        }
+        const items = await ItemSchema.find(query);
         return new Response(JSON.stringify(items), { status: 200 });
-     }
+    }
 }
 /**
  * Creates a new item in the database matching the body of the request.

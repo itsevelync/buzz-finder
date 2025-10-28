@@ -34,7 +34,7 @@ export default function LostItemCard({
 
     return (
         <div className="rounded-lg w-full flex flex-col shadow p-3 gap-4">
-            <div className="flex flex-row items-center gap-7 justify-between">
+            <div className="flex flex-row items-center gap-2 justify-between flex-wrap">
                 <UserInfo lostItemPost={lostItemPost} />
                 <p className="text-xs">{formattedLostDate}, {formattedLostTime}</p>
             </div>
