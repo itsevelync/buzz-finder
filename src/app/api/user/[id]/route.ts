@@ -11,6 +11,7 @@ export async function GET(
         if (mongoose.connection.readyState !== 1) {
             await mongoose.connect(process.env.MONGODB_URI as string);
         }
+        params = await params;
         const user = await User.findById(params.id).select("-password");
 
         if (!user) {
