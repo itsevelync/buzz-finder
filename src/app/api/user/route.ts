@@ -38,7 +38,7 @@ export async function PATCH(req:NextRequest) {
     }
 }
 
-/*export async function DELETE(req:NextRequest) {
+export async function DELETE(req:NextRequest) {
     const id = req.nextUrl.searchParams.get("id");
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return new Response(JSON.stringify({ error: "Invalid or missing ID." }), { status: 400 });
@@ -54,4 +54,4 @@ export async function PATCH(req:NextRequest) {
     catch (e: any) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
-}*/
+}
