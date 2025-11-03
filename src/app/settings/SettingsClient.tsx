@@ -2,7 +2,8 @@
 import { Session } from "next-auth";
 import Logout from "@/components/auth/Logout";
 import UpdateProfileForm from "@/components/profile/UpdateProfileForm";
-import React, { useState } from "react";
+import { useState } from "react";
+import { doLogout } from "@/actions/User"
 
 interface Props {
   session: Session | null;
@@ -22,7 +23,7 @@ async function handleDeleteAccount({ session }: Props) {
       return;
     }
     alert("Account deleted successfully.");
-    window.location.href = "/";
+    doLogout();
   } catch (err: any) {
     alert(`Error: ${err.message}`);
   }

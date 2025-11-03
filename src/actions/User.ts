@@ -60,6 +60,7 @@ export async function getUserByUsername(username: string): Promise<UserType> {
     try {
         await dbConnect();
         const userDoc = await User.findOne({ username });
+        if (!userDoc) return null;
         const user = userDoc.toObject();
         return { ...user, _id: user._id.toString() };
     } catch (e: any) {
