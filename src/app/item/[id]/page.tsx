@@ -44,9 +44,39 @@ async function getItem(id: string) {
     }
 }
 
+async function getPersonFound(id: string) {
+    try {
+        await dbConnect();
+        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${id}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cache: "no-store",
+        });
+
+        if (!res.ok) {
+            console.error(
+                `Failed to fetch user: ${res.status} ${res.statusText}`
+            );
+            return null;
+        }
+
+        const data = await res.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return null;
+    }
+}
+
 export default async function ItemPage({ params }: ItemPageProps) {
     params = await params;
     const item = (await getItem(params.id)) as Item;
+    let user = null;
+    if (item.person_found) {
+        user = await getPersonFound(item.person_found.toString());
+    }
     const category = categories[item.category];
 
     if (!item) {
@@ -104,7 +134,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
                     <button className="bg-buzz-gold flex items-center gap-2 text-white text-xl px-6 shadow-md hover:brightness-110 hover:shadow filter hover:saturate-180 hover:translate-y-0.5 shadow-buzz-gold/50 py-1.5 rounded-full">
                         <FaHandPaper /> Claim Item
                     </button>
-                    <p className="underline opacity-80">Item no longer there?</p>
+                    <p className="underline opacity-80">
+                        Item no longer there?
+                    </p>
                 </div>
                 <div className="flex flex-col gap-10 grow">
                     <div className="h-90 w-full rounded-xl overflow-hidden border border-gray-300 shadow">
@@ -139,7 +171,20 @@ export default async function ItemPage({ params }: ItemPageProps) {
                             <h3 className="font-bold text-buzz-blue">
                                 Contact Information
                             </h3>
-                            <p>{item.contact_info ?? "N/A"}</p>
+                            {user ? (
+                                <p>
+                                    {user.name} (
+                                    <Link
+                                        href={`/user/${user.username}`}
+                                        className="underline"
+                                    >
+                                        @{user.username}
+                                    </Link>
+                                    )
+                                </p>
+                            ) : (
+                                <p>{item.contact_info ?? "N/A"}</p>
+                            )}
                         </div>
                     </div>
                 </div>

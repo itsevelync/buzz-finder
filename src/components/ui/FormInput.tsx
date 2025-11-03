@@ -5,6 +5,7 @@ interface FormInputProps {
     placeholder?: string;
     className?: string;
     isTextarea?: boolean;
+    rows?: number;
     isSelect?: boolean;
     selectOptions?: { value: string; label: string }[];
     value?: string;
@@ -19,7 +20,7 @@ interface FormInputProps {
 export default function FormInput({
     label, name, type = "text", placeholder, className,
     required = false, disabled = false, minLength, maxLength,
-    isTextarea = false,
+    isTextarea = false, rows,
     isSelect = false, selectOptions = [], defaultValue,
     value, onInputChange,
 }: FormInputProps) {
@@ -35,7 +36,7 @@ export default function FormInput({
                     ))}
                 </select>
             ) : isTextarea ? (
-                <textarea name={name} id={name} placeholder={placeholder} required={required} disabled={disabled} />
+                <textarea name={name} id={name} placeholder={placeholder} required={required} rows={rows} disabled={disabled} />
             ) : (
                 <input type={type} name={name} id={name} placeholder={placeholder}
                        minLength={minLength} maxLength={maxLength}

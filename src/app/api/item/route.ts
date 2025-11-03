@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import ItemSchema from "@/model/Item";
 
 import {dbConnect} from "@/lib/mongo";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 /**
  * If an "id" query parameter is provided, returns the item with that ID.
@@ -37,6 +37,9 @@ export async function POST(req:NextRequest) {
     try {
         await dbConnect();
 
+        if (body.person_found && Types.ObjectId.isValid(body.person_found)) {
+            body.person_found = new Types.ObjectId(body.person_found as string);
+        }
         
         const newItem = await ItemSchema.create(body);
         return new Response(JSON.stringify(newItem), { status: 201 });

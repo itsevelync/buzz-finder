@@ -75,7 +75,7 @@ button:hover {
 }
 
 .form button[type="submit"]:hover {
-  filter: brightness(200%);
+  filter: brightness(130%);
 }
 
 .link {
