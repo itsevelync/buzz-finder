@@ -7,8 +7,14 @@ import { dbConnect } from "@/lib/mongo";
  */
 export async function GET(req: NextRequest) {
     console.log("GET request received at /api/lost-item-post");
+    const user = req.nextUrl.searchParams.get("user");
 
-    const lostItemPosts = await LostItemPostSchema.find({}).populate(
+    const query: { user?: string } = {};
+    if (user) {
+        query.user = user;
+    }
+
+    const lostItemPosts = await LostItemPostSchema.find(query).populate(
         "user",
         "username image"
     );

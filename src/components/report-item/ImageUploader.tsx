@@ -60,7 +60,7 @@ const ImageUploader = ({
         <div className="w-full lg:w-1/2 mx-auto flex flex-col items-center gap-2">
             <h3 className="w-full">Item Image *</h3>
             <div
-                className={`p-3 relative w-full h-80 md:h-100 mb-2 border-2 rounded-lg flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-200 cursor-pointer ${
+                className={`p-3 relative w-full h-80 md:h-100 mb-2 border rounded-lg flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-200 cursor-pointer ${
                     isDragging
                         ? "border-buzz-gold bg-buzz-gold/20 text-buzz-gold"
                         : "border-dashed border-buzz-blue/30 hover:border-buzz-gold text-buzz-blue/45"

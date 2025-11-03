@@ -42,8 +42,9 @@ export default function LostFoundDashboardContainer() {
         if (lostItemPosts) {
             setFilteredPosts(lostItemPosts);
         }
-        if (searchParams.get("tab") || lostItemsSelected) {
-            const newTab = lostItemsSelected ? "lost" : "found";
+        const currentTab = searchParams.get("tab");
+        const newTab = lostItemsSelected ? "lost" : "found";
+        if (currentTab !== newTab) {
             router.replace(`?tab=${newTab}`);
         }
     }, [items, lostItemPosts, lostItemsSelected, router, searchParams]);
