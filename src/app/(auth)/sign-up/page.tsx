@@ -9,7 +9,9 @@ export default function SignUpPage() {
             bottomText={
                 <>
                     Already have an account?{" "}
-                    <Link className="link" href="/login">Login</Link>
+                    <Link className="link" href="/login">
+                        Login
+                    </Link>
                 </>
             }
         >

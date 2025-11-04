@@ -14,9 +14,7 @@ const options = {
     },
 }
 
-let client: MongoClient
-
-client = new MongoClient(uri, options)
+const client = new MongoClient(uri, options)
 
 // Export a module-scoped MongoClient. By doing this in a
 // separate module, the client can be shared across functions.

@@ -1,6 +1,5 @@
 import { LostItemPost } from "@/model/LostItemPost";
 import Image from "next/image";
-import React from "react";
 
 function UserInfo({ lostItemPost }: { lostItemPost: LostItemPost }) {
     return (

@@ -14,7 +14,7 @@ const ResetCodeSchema = new Schema(
                 validator: function (v: string) {
                     return /^\d{6}$/.test(v); // Must be exactly 6 digits
                 },
-                message: (props: any) => `${props.value} is not a valid 6-digit reset code`,
+                message: (props: mongoose.ValidatorProps) => `${props.value} is not a valid 6-digit reset code`,
             },
         },
     },
@@ -35,4 +35,4 @@ ResetCodeSchema.pre("save", function (next) {
 });
 
 export default mongoose.models?.ResetCode ??
-  mongoose.model("ResetCode", ResetCodeSchema);
+    mongoose.model("ResetCode", ResetCodeSchema);

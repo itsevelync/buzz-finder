@@ -4,18 +4,16 @@ import LocationSelectMap from "@/components/maps/LocationSelectMap";
 import ImageUploader from "@/components/report-item/ImageUploader";
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import { useEffect, useState } from "react";
-
-type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
-    person_found: string;
-};
+import { useRouter } from "next/navigation";
 
 export default function ReportItemClient({
     userId,
 }: {
     userId: string | undefined;
 }) {
+    const router = useRouter();
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
@@ -86,7 +84,7 @@ export default function ReportItemClient({
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -94,7 +92,7 @@ export default function ReportItemClient({
         const uploadedImage = await uploadImage();
 
         const form = e.target as HTMLFormElement;
-        const body: Partial<ItemWithPersonFoundAsString> = {
+        const body: Partial<PlainItem> = {
             title: (form.elements.namedItem("title") as HTMLInputElement).value,
             item_description: (
                 form.elements.namedItem("item_description") as HTMLInputElement
@@ -134,8 +132,7 @@ export default function ReportItemClient({
             .then((res) => {
                 if (res.ok) {
                     alert("Item logged successfully");
-                    form.reset();
-                    setFile(null);
+                    router.push("/dashboard");
                 } else {
                     alert("Error logging item");
                 }

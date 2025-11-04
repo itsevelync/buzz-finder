@@ -1,9 +1,8 @@
-import { Item } from "@/model/Item";
-import React from "react";
+import { PlainItem } from "@/model/Item";
 import Image from "next/image";
 
 interface FoundItemCardProps {
-    item: Item;
+    item: PlainItem;
     includeMapLink: boolean;
 }
 
@@ -11,11 +10,14 @@ export default function FoundItemCard({
     item,
     includeMapLink = true,
 }: FoundItemCardProps) {
-    const formattedLostDate = new Date(item.lostdate).toLocaleDateString()
-    const formattedLostTime = new Date(item.lostdate).toLocaleTimeString()
+    const formattedLostDate = new Date(item.lostdate).toLocaleDateString();
+    const formattedLostTime = new Date(item.lostdate).toLocaleTimeString();
 
     return (
-        <div id={item._id.toString()} className="transition-all border border-gray-200 bg-white shadow hover:shadow-lg hover:-translate-y-0.5 rounded-xl w-full">
+        <div
+            id={item._id.toString()}
+            className="transition-all border border-gray-200 bg-white shadow hover:shadow-lg hover:-translate-y-0.5 rounded-xl w-full"
+        >
             <Image
                 className="w-full h-50 max-h-full rounded-t-xl object-cover"
                 src={item.image?.url ?? "/img-placeholder.jpg"}

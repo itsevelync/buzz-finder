@@ -10,7 +10,7 @@ interface FormInputProps {
     selectOptions?: { value: string; label: string }[];
     value?: string;
     defaultValue?: string;
-    onInputChange?: ((e: React.ChangeEvent<HTMLInputElement>) => void);
+    onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
     disabled?: boolean;
     minLength?: number;
@@ -18,17 +18,36 @@ interface FormInputProps {
 }
 
 export default function FormInput({
-    label, name, type = "text", placeholder, className,
-    required = false, disabled = false, minLength, maxLength,
-    isTextarea = false, rows,
-    isSelect = false, selectOptions = [], defaultValue,
-    value, onInputChange,
+    label,
+    name,
+    type = "text",
+    placeholder,
+    className,
+    required = false,
+    disabled = false,
+    minLength,
+    maxLength,
+    isTextarea = false,
+    rows,
+    isSelect = false,
+    selectOptions = [],
+    defaultValue,
+    value,
+    onInputChange,
 }: FormInputProps) {
     return (
         <div className={`${className} form-input`}>
-            <label htmlFor={name}>{label} {required && " *"}</label>
+            <label htmlFor={name}>
+                {label} {required && " *"}
+            </label>
             {isSelect ? (
-                <select name={name} id={name} defaultValue={defaultValue} required={required} disabled={disabled}>
+                <select
+                    name={name}
+                    id={name}
+                    defaultValue={defaultValue}
+                    required={required}
+                    disabled={disabled}
+                >
                     {selectOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}
@@ -36,12 +55,27 @@ export default function FormInput({
                     ))}
                 </select>
             ) : isTextarea ? (
-                <textarea name={name} id={name} placeholder={placeholder} required={required} rows={rows} disabled={disabled} />
+                <textarea
+                    name={name}
+                    id={name}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={rows}
+                    disabled={disabled}
+                />
             ) : (
-                <input type={type} name={name} id={name} placeholder={placeholder}
-                       minLength={minLength} maxLength={maxLength}
-                       required={required} disabled={disabled}
-                       {...(onInputChange ? { value, onChange: onInputChange } : { defaultValue })}
+                <input
+                    type={type}
+                    name={name}
+                    id={name}
+                    placeholder={placeholder}
+                    minLength={minLength}
+                    maxLength={maxLength}
+                    required={required}
+                    disabled={disabled}
+                    {...(onInputChange
+                        ? { value, onChange: onInputChange }
+                        : { defaultValue })}
                 />
             )}
         </div>

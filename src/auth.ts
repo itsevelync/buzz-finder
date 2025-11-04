@@ -2,12 +2,13 @@ import NextAuth, { CredentialsSignin } from "next-auth"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import { MongoDBAdapter } from "@auth/mongodb-adapter"
+import type { Adapter } from 'next-auth/adapters';
 import { encode, decode } from 'next-auth/jwt';
 
 import User from "@/model/User";
 import bcrypt from "bcryptjs";
 import client from "./lib/db";
-import { updateUser, getUserByUsername, generateUsername } from "@/actions/User";
+import { updateUser, generateUsername } from "@/actions/User";
 
 class InvalidLoginError extends CredentialsSignin {
     code = "Email or password are incorrect."
@@ -18,13 +19,13 @@ class GoogleOAuthError extends CredentialsSignin {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-    adapter: MongoDBAdapter(client),
+    adapter: MongoDBAdapter(client) as Adapter,
     session: {
         strategy: 'jwt',
     },
     jwt: { encode, decode },
     providers: [
-        Google({allowDangerousEmailAccountLinking: true}),
+        Google({ allowDangerousEmailAccountLinking: true }),
         Credentials({
             credentials: {
                 email: { label: "Email", type: "text" },
@@ -54,9 +55,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (!isMatch) {
                     throw new InvalidLoginError()
                 }
-
-                const { password, _id, ...userWithoutPassword } = user.toObject();
-                return { id: user._id.toString(), ...userWithoutPassword };
+                
+                const userObj = user.toObject();
+                delete userObj.password;
+                return userObj;
             },
         }),
 
@@ -73,7 +75,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 const dbUser = await User.findById(token.sub);
                 if (dbUser && token.sub) {
                     // If user logs in with Google and doesn't have a username, generate one
-                    if(!dbUser.username && user.email) {
+                    if (!dbUser.username && user.email) {
                         const username = await generateUsername(user.email)
                         const updateResult = await updateUser(token.sub.toString(), { username });
                         if (updateResult.error) {

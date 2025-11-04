@@ -3,13 +3,13 @@ import NextImage from "next/image";
 import { useRef, useState } from "react";
 import { FaImage, FaCloudUploadAlt } from "react-icons/fa";
 
-const ImageUploader = ({
+export default function ImageUploader({
     file,
     setFile,
 }: {
     file: File | null;
     setFile: React.Dispatch<React.SetStateAction<File | null>>;
-}) => {
+}) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
 
@@ -137,6 +137,4 @@ const ImageUploader = ({
             </div>
         </div>
     );
-};
-
-export default ImageUploader;
+}

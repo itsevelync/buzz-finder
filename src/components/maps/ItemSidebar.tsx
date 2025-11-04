@@ -2,7 +2,7 @@
 
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import FoundItemCard from "../dashboard/FoundItemCard";
 import SearchBar from "../ui/SearchBar";
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
@@ -13,9 +13,9 @@ export default function ItemSidebar({
     filteredItems,
     setFilteredItems,
 }: {
-    items: Item[];
-    filteredItems: Item[];
-    setFilteredItems: (items: Item[]) => void;
+    items: PlainItem[];
+    filteredItems: PlainItem[];
+    setFilteredItems: (items: PlainItem[]) => void;
 }) {
     const [collapsed, setCollapsed] = useState(false);
     const [width, setWidth] = useState(320);
@@ -82,7 +82,7 @@ export default function ItemSidebar({
             >
                 {/* Search bar */}
                 <div className="p-5 shadow top-0 sticky bg-white">
-                    <SearchBar<Item>
+                    <SearchBar<PlainItem>
                         placeholder="Search items"
                         items={items}
                         setFilteredItems={setFilteredItems}
@@ -135,6 +135,7 @@ export default function ItemSidebar({
             >
                 <div className="h-full border-r border-gray-300"></div>
             </div>
+
             {/* Collapse/Expand button */}
             <div
                 onClick={() => {

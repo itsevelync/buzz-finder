@@ -56,9 +56,6 @@ async function getPersonFound(id: string) {
         });
 
         if (!res.ok) {
-            console.error(
-                `Failed to fetch user: ${res.status} ${res.statusText}`
-            );
             return null;
         }
 
