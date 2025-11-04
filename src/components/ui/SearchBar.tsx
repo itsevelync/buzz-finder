@@ -59,7 +59,7 @@ export default function SearchBar<T extends Record<string, unknown>>({
                 placeholder={placeholder}
                 value={searchTerm}
                 onChange={handleChange}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:border-buzz-gold/20 focus:ring-2 focus:ring-buzz-gold/20 focus:outline-none"
+                className="min-w-0 flex-1 px-4 py-2 border border-gray-300 rounded-full focus:border-buzz-gold/20 focus:ring-2 focus:ring-buzz-gold/20 focus:outline-none"
             />
             <div className="absolute right-1.5 flex items-center gap-2">
                 {searchTerm && (
