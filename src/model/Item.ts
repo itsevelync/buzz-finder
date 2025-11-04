@@ -1,5 +1,6 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
 import { ObjectId } from "mongodb";
+import { CATEGORY_KEYS } from "@/constants/Categories";
 
 const ItemSchema = new Schema(
     {
@@ -26,10 +27,11 @@ const ItemSchema = new Schema(
         category: {
             type: String,
             required: true,
-            enum: ["electronics", "buzzcard", "bags", "clothing", "books", "personal", "misc"],
+            enum: CATEGORY_KEYS,
             default: "misc"
         },
         position: {
+            _id: false,
             type: {
                 lat: { type: Number, required: true },
                 lng: { type: Number, required: true },
@@ -41,10 +43,12 @@ const ItemSchema = new Schema(
             trim: true,
         },
         person_found: {
-            type: ObjectId
+            type: Schema.Types.ObjectId,
+            ref: "User",
         },
         person_lost: {
-            type: ObjectId
+            type: Schema.Types.ObjectId,
+            ref: "User",
         },
         lostdate: {
             type: Date,

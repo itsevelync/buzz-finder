@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import ItemSchema from "@/model/Item";
 
 import {dbConnect} from "@/lib/mongo";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 /**
  * If an "id" query parameter is provided, returns the item with that ID.
@@ -12,20 +12,22 @@ import mongoose from "mongoose";
  */
 export async function GET(req:NextRequest) {
     console.log("GET request received at /api/item");
-    //seraching for specific item by id
+    // Searching for specific item by id
     const id = req.nextUrl.searchParams.get("_id");
-    if(id){
-        if(!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
-        ItemSchema.findById(req.nextUrl.searchParams.get("id")).then(item=>{
-            return new Response(JSON.stringify(item), { status: 200 });
-        })
+    const personFound = req.nextUrl.searchParams.get("person_found");
 
-     } 
-     else {
-        //otherwise return all items in db
-        const items = await ItemSchema.find({});
+    if (id) {
+        if (!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
+        const item = await ItemSchema.findById(id);
+        return new Response(JSON.stringify(item), { status: 200 });
+    } else {
+        const query: { person_found?: string } = {};
+        if (personFound) {
+            query.person_found = personFound;
+        }
+        const items = await ItemSchema.find(query);
         return new Response(JSON.stringify(items), { status: 200 });
-     }
+    }
 }
 /**
  * Creates a new item in the database matching the body of the request.
@@ -35,6 +37,9 @@ export async function POST(req:NextRequest) {
     try {
         await dbConnect();
 
+        if (body.person_found && Types.ObjectId.isValid(body.person_found)) {
+            body.person_found = new Types.ObjectId(body.person_found as string);
+        }
         
         const newItem = await ItemSchema.create(body);
         return new Response(JSON.stringify(newItem), { status: 201 });
@@ -79,6 +84,28 @@ export async function DELETE(req:NextRequest) {
         return new Response(JSON.stringify(deletedItem), { status: 200 });
     }
     catch (e: any) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    }
+}
+
+export async function PATCH(req:NextRequest) {
+    const body = await req.json();
+    const { id, ...updateData } = body;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return new Response(JSON.stringify({ error: "Invalid or missing ID." }), { status: 400 });
+    }
+    try {
+        await dbConnect();
+        const updatedItem = await ItemSchema.findByIdAndUpdate(
+            id, 
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+        if (!updatedItem) {
+            return new Response(JSON.stringify({ error: "Item not found." }), { status: 404 });
+        }
+        return new Response(JSON.stringify(updatedItem), { status: 200 });
+    } catch (e: any) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }
