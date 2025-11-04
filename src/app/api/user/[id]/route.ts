@@ -44,7 +44,7 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     const body = await req.json();
-    const result = await deleteUser(params.id);
+    const result = await deleteUser(params.id, body);
 
     if (result.error) {
         return NextResponse.json(result, { status: 400 });

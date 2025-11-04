@@ -31,8 +31,8 @@ export default function LostItemPostForm() {
             }
         }
 
-        if (session?.user?._id) {
-            body.user = session.user._id;
+        if (session?.user) {
+            body.user = session.user;
         }
 
         fetch("/api/lost-item-post", {
