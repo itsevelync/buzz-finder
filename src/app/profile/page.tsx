@@ -3,6 +3,7 @@ import Logout from "@/components/auth/Logout";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import UpdateProfileForm from "@/components/profile/UpdateProfileForm";
+import DeleteProfileForm from "@/components/profile/DeleteProfileForm";
 
 export default async function Profile() {
     const session = await auth();
@@ -19,6 +20,10 @@ export default async function Profile() {
         
         <div>
             <UpdateProfileForm userID={session.user._id}/>
+        </div>
+
+        <div>
+            <DeleteProfileForm userID={session.user._id}/>
         </div>
         
         </>
