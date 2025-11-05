@@ -56,9 +56,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new InvalidLoginError()
                 }
                 
-                const userObj = user.toObject();
-                delete userObj.password;
-                return userObj;
+                const { password, _id, ...userWithoutPassword } = user.toObject();
+                return { id: user._id.toString(), ...userWithoutPassword };
             },
         }),
 
