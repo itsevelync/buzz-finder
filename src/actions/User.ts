@@ -117,7 +117,7 @@ export async function deleteUser(userId: string, userData: UserDeleteData): Prom
         if (!userToDelete) {
             return { error: "User not found." };
         }
-        
+
         doLogout();
         const deletedUser = await User.findByIdAndDelete(userId);
 
@@ -176,11 +176,15 @@ export async function doCredentialLogin(formData: FormData) {
             return {
                 error: err.code,
             };
+        } else if (err instanceof Error) {
+            return {
+                error: "An error occurred while logging in: " + err.message,
+            };
+        } else {
+            return {
+                error: "An unexpected error occurred while trying to log in. Please try again later.",
+            };
         }
-        return {
-            error: "An unexpected error occurred while trying to log in. Please try again later.",
-        };
-
     }
 }
 
