@@ -60,7 +60,7 @@ export async function getUserByEmail(email: string): Promise<UserData> {
 }
 
 // Finds a user by their username.
-export async function getUserByUsername(username: string): Promise<UserType> {
+export async function getUserByUsername(username: string) {
     try {
         await dbConnect();
         const userDoc = await User.findOne({ username });

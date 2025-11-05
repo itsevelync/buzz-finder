@@ -4,6 +4,7 @@ import Logout from "@/components/auth/Logout";
 import UpdateProfileForm from "@/components/profile/UpdateProfileForm";
 import { useState } from "react";
 import { doLogout } from "@/actions/User"
+import DeleteProfileForm from "@/components/profile/DeleteProfileForm";
 
 interface Props {
   session: Session | null;
@@ -43,7 +44,8 @@ export default function SettingsClient({ session }: Props) {
           <h2 className="text-xl font-semibold mb-4">Account Settings</h2>
           <UpdateProfileForm userID={session.user._id} />
           <Logout />
-          <button className="mt-4 text-red-600" onClick={() => handleDeleteAccount({ session })}>Delete Account</button>
+          {/* <button className="mt-4 text-red-600" onClick={() => handleDeleteAccount({ session })}>Delete Account</button> */}
+          <DeleteProfileForm userID={session.user._id} />
         </div>
       )}
 
