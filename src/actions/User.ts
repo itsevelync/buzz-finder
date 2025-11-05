@@ -5,6 +5,7 @@ import { dbConnect } from "@/lib/mongo";
 import { Types } from "mongoose";
 import { signIn, signOut } from "@/auth";
 import bcrypt from "bcryptjs";
+import type { User as UserType } from "@/model/User";
 import { ObjectId } from 'mongodb';
 
 interface NewUser {
@@ -17,6 +18,7 @@ interface NewUser {
 interface UserData {
     _id: ObjectId;
     name: string;
+    image: string;
     password?: string;
     email: string;
     username?: string;
@@ -58,11 +60,13 @@ export async function getUserByEmail(email: string): Promise<UserData> {
 }
 
 // Finds a user by their username.
-export async function getUserByUsername(username: string): Promise<UserData> {
+export async function getUserByUsername(username: string): Promise<UserType> {
     try {
         await dbConnect();
-        const user = await User.findOne({ username });
-        return user;
+        const userDoc = await User.findOne({ username });
+        if (!userDoc) return null;
+        const user = userDoc.toObject();
+        return { ...user, _id: user._id.toString() };
     } catch (e: any) {
         throw new Error("Error finding user by username:", e);
     }

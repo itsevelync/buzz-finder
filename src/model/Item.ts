@@ -43,10 +43,12 @@ const ItemSchema = new Schema(
             trim: true,
         },
         person_found: {
-            type: ObjectId
+            type: Schema.Types.ObjectId,
+            ref: "User",
         },
         person_lost: {
-            type: ObjectId
+            type: Schema.Types.ObjectId,
+            ref: "User",
         },
         lostdate: {
             type: Date,

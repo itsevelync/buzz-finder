@@ -20,6 +20,7 @@ export default async function Map({ searchParams }: { searchParams: SearchParams
     const dbItems = await ItemModel.find().lean<Item[]>().exec();
     const items: any[] = dbItems.map(item => ({
         ...item,
+        person_found: item.person_found ? item.person_found.toString() : undefined,
         _id: item._id.toString(),
     }));
 

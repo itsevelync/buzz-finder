@@ -21,6 +21,7 @@ export default function SearchBar<T extends Record<string, unknown>>({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
+        filterItems(e.target.value.toLowerCase());
     };
 
     const handleSubmit = (e: React.FormEvent) => {
