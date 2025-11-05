@@ -23,6 +23,10 @@ interface UserUpdateData {
     description?: string;
 }
 
+interface UserDeleteData {
+    confirmation?: string;
+}
+
 export async function createUser(user: NewUser) {
     try {
         await dbConnect();
@@ -92,6 +96,35 @@ export async function updateUser(userId: string, userData: UserUpdateData) {
         return { success: "User updated successfully." };
     } catch {
         return { error: "Unable to update user, please try again." };
+    }
+}
+
+export async function deleteUser(userId: string, userData: UserDeleteData): Promise<{ success?: string; error?: string }> {
+    // Check if the userId is a valid ObjectId before updating
+    if (!Types.ObjectId.isValid(userId)) {
+        return { error: "Invalid user ID." };
+    }
+
+    try {
+        await dbConnect();
+
+        if (userData.confirmation !== "Confirm Deletion") {
+            return { error: "Confirmation text does not match." };
+        }
+
+        const userToDelete = await User.findById(userId);
+
+        if (!userToDelete) {
+            return { error: "User not found." };
+        }
+        
+        doLogout();
+        const deletedUser = await User.findByIdAndDelete(userId);
+
+
+        return { success: "User deleted successfully." };
+    } catch (e: any) {
+        return { error: "Unable to delete user, please try again." };
     }
 }
 
