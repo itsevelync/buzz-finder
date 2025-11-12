@@ -92,6 +92,7 @@ export default function ReportItemClient({
         e.preventDefault();
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
+        console.log("Uploaded image:", uploadedImage);
 
         const form = e.target as HTMLFormElement;
         const body: Partial<ItemWithPersonFoundAsString> = {
@@ -106,12 +107,14 @@ export default function ReportItemClient({
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
                 .value as keyof typeof categories,
-            image: uploadedImage,
             position: {
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
             },
         };
+        if (uploadedImage) {
+            body.image = uploadedImage;
+        }
 
         if (useAccountInfo && userId) {
             body["person_found"] = userId;

@@ -6,6 +6,7 @@ import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
 import type { Item } from "@/model/Item";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
     person_found: string;
@@ -35,6 +36,8 @@ export default function EditItemClient({
     const [itemDescription, setItemDescription] = useState("");
     const [retrievalDescription, setRetrievalDescription] = useState("");
     const [category, setCategory] = useState("misc");
+
+    const router = useRouter();
 
     useEffect(() => {
     if (item) {
@@ -88,10 +91,15 @@ export default function EditItemClient({
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!itemId) {
+            alert("Error: Item ID is missing.");
+            return;
+        }
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
         const form = e.target as HTMLFormElement;
-        const body: Partial<ItemWithPersonFoundAsString> = {
+        const body: Partial<ItemWithPersonFoundAsString> & { id: string } = {
+            id: itemId,
             title: (form.elements.namedItem("title") as HTMLInputElement).value,
             item_description: (
                 form.elements.namedItem("item_description") as HTMLInputElement
@@ -137,6 +145,7 @@ export default function EditItemClient({
                     alert("Item updated successfully");
                     form.reset();
                     setFile(null);
+                    router.push("/")
                 } else {
                     alert("Error updating item");
                 }
