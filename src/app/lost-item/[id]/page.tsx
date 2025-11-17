@@ -88,7 +88,7 @@ function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
 
 function ItemDetails({ lostItemPost }: { lostItemPost: LostItemPost }) {
   return (
-    <div className="rounded-lg flex flex-col shadow p-5 gap-4">
+    <div className="rounded-lg flex flex-col shadow p-5 gap-4 max-w-[400px]">
       <p className="font-bold text-l">Item Details</p>
       <div>
         <p className="flex items-center">
@@ -103,7 +103,7 @@ function ItemDetails({ lostItemPost }: { lostItemPost: LostItemPost }) {
             </span>
           )}
         </p>
-        <p>Contact: {lostItemPost.contactInfo}</p>
+        <p>Contact: {lostItemPost.contactInfo ?? "N/A"}</p>
       </div>
     </div>
   );
