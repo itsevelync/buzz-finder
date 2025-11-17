@@ -1,4 +1,8 @@
+import { getUserByEmail } from "@/actions/User";
+import { dbConnect } from "@/lib/mongo";
 import { LostItemPost } from "@/model/LostItemPost";
+import User from "@/model/User";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 
@@ -17,11 +21,16 @@ function UserInfo({ lostItemPost }: { lostItemPost: LostItemPost }) {
     );
 }
 
+
+
 export default function LostItemCard({
     lostItemPost,
 }: {
     lostItemPost: LostItemPost;
 }) {
+
+    const session = useSession();
+    
     const formattedLostDate = new Date(
         lostItemPost.createdAt
     ).toLocaleDateString();
@@ -31,6 +40,32 @@ export default function LostItemCard({
         hour: "2-digit",
         minute: "2-digit",
     });
+
+    async function softDeleteItem({
+    lostItemPost, session
+}: {
+    lostItemPost: LostItemPost; session: ReturnType<typeof useSession>;
+}) {
+
+    if (!(lostItemPost?.user?._id == session.data?.user?._id)) return;
+
+    // const userMarker = (await (await fetch(`/api/users/6913b99673301f7059e12475`)).json());
+
+    await fetch("/api/lost-item-post", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+    id: lostItemPost._id,
+    user: null,
+  }),
+});
+}
+
+    async function handleDelete() {
+        await softDeleteItem({ lostItemPost, session});
+    }
+
+    if (lostItemPost.user === null) return;
 
     return (
         <div className="rounded-lg w-full flex flex-col shadow p-3 gap-4">
@@ -43,6 +78,7 @@ export default function LostItemCard({
                 <p className="text-sm">{lostItemPost.description}</p>
             </div>
             <p>Contact: {lostItemPost.contactInfo ?? "N/A"}</p>
+            <button onClick={handleDelete} className="bg-buzz-blue text-white px-4 py-2 rounded-md w-fit"> DELETE ITEM </button>
         </div>
     );
 }

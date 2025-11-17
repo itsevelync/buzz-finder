@@ -35,3 +35,34 @@ export async function POST(req: NextRequest) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }
+
+/**
+ * Updates an existing lost item post in the database.
+ */
+export async function PATCH(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const { id, ...updates } = body;
+
+        if (!id) {
+            return new Response(JSON.stringify({ error: "Missing post ID." }), { status: 400 });
+        }
+
+        await dbConnect();
+
+        const updatedPost = await LostItemPostSchema.findByIdAndUpdate(
+            id,
+            updates,
+            { new: true } // return the updated document
+        );
+
+        if (!updatedPost) {
+            return new Response(JSON.stringify({ error: "Post not found." }), { status: 404 });
+        }
+
+        return new Response(JSON.stringify(updatedPost), { status: 200 });
+    } catch (e: any) {
+        console.error("PATCH /api/lost-item-post error:", e);
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    }
+}
