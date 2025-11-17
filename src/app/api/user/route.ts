@@ -37,3 +37,21 @@ export async function PATCH(req:NextRequest) {
         return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }
+
+export async function DELETE(req:NextRequest) {
+    const id = req.nextUrl.searchParams.get("id");
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return new Response(JSON.stringify({ error: "Invalid or missing ID." }), { status: 400 });
+    }
+    try {
+        await dbConnect();
+        const deletedItem = await UserSchema.findByIdAndDelete(id); 
+        if (!deletedItem) {
+            return new Response(JSON.stringify({ error: "User not found." }), { status: 404 });
+        }  
+        return new Response(JSON.stringify(deletedItem), { status: 200 });
+    }
+    catch (e: any) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    }
+}
