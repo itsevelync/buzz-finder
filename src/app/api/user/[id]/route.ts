@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { updateUser } from "@/actions/User";
+import { deleteUser, updateUser } from "@/actions/User";
+
 import User from "@/model/User";
 import mongoose from "mongoose";
 

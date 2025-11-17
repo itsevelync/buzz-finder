@@ -174,16 +174,31 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                 Contact Information
                             </h3>
                             {user ? (
+                                <div className="space-y-1">
                                 <p>
                                     {user.name} (
-                                    <Link
-                                        href={`/user/${user.username}`}
-                                        className="underline"
-                                    >
+                                    <Link href={`/user/${user.username}`} className="underline">
                                         @{user.username}
                                     </Link>
                                     )
                                 </p>
+                    
+                                {user.email && (
+                                    <p>Email: {user.email}</p>
+                                )}
+                    
+                                {user.phoneNum && (
+                                    <p>Phone: {user.phoneNum}</p>
+                                )}
+                    
+                                {user.discord && (
+                                    <p>Discord: {user.discord}</p>
+                                )}
+                    
+                                {user.instagram && (
+                                    <p>Instagram: @{user.instagram}</p>
+                                )}
+                                </div>
                             ) : (
                                 <p>{item.contact_info ?? "N/A"}</p>
                             )}
