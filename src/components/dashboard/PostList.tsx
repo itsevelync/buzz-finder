@@ -12,6 +12,9 @@ export default function PostList({
     return <p>No posts found.</p>;
   }
 
+  const sortedPosts = [...lostItemPosts].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
   const gridColsClass =
     {
       1: "grid-cols-1",
@@ -23,7 +26,7 @@ export default function PostList({
   return (
     <div className="w-full flex flex-col gap-4">
       <div className={`grid ${gridColsClass} gap-4 p-5 justify-items-center`}>
-        {lostItemPosts.map((lostItemPost: LostItemPost) => (
+        {sortedPosts.map((lostItemPost: LostItemPost) => (
           <LostItemCard
             key={lostItemPost._id.toString()}
             lostItemPost={lostItemPost}
