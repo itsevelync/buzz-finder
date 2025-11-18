@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 
 import ItemSchema from "@/model/Item";
 
-import {dbConnect} from "@/lib/mongo";
+import { dbConnect } from "@/lib/mongo";
 import mongoose, { Types } from "mongoose";
 
 /**
@@ -10,7 +10,7 @@ import mongoose, { Types } from "mongoose";
  * Otherwise returns all items in the database.
  * 
  */
-export async function GET(req:NextRequest) {
+export async function GET(req: NextRequest) {
     console.log("GET request received at /api/item");
     // Searching for specific item by id
     const id = req.nextUrl.searchParams.get("_id");
@@ -21,18 +21,20 @@ export async function GET(req:NextRequest) {
         const item = await ItemSchema.findById(id);
         return new Response(JSON.stringify(item), { status: 200 });
     } else {
-        const query: { person_found?: string } = {};
+        const query: { person_found?: string; deletedAt: null } = {
+            deletedAt: null,
+        };
         if (personFound) {
             query.person_found = personFound;
         }
-        const items = await ItemSchema.find(query);
+        const items = await ItemSchema.find(query).sort({ lostdate: -1 });
         return new Response(JSON.stringify(items), { status: 200 });
     }
 }
 /**
  * Creates a new item in the database matching the body of the request.
  */
-export async function POST(req:NextRequest) {
+export async function POST(req: NextRequest) {
     const body = await req.json();
     try {
         await dbConnect();
@@ -40,19 +42,23 @@ export async function POST(req:NextRequest) {
         if (body.person_found && Types.ObjectId.isValid(body.person_found)) {
             body.person_found = new Types.ObjectId(body.person_found as string);
         }
-        
+
         const newItem = await ItemSchema.create(body);
         return new Response(JSON.stringify(newItem), { status: 201 });
-    } catch (e: any) {
-        console.error("POST /api/item error:", e);
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error("POST /api/item error:", e);
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/item." }), { status: 500 })
+
     }
 }
 /**
  * Pass in a body matching the Item schema, including the id of the item to update.
  * THe Items fields will be updated to match the body and the updated item will be returned.
  */
-export async function PUT(req:NextRequest) {
+export async function PUT(req: NextRequest) {
     const body = await req.json();
     const id = body.id;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -65,30 +71,35 @@ export async function PUT(req:NextRequest) {
             return new Response(JSON.stringify({ error: "Item not found." }), { status: 404 });
         }
         return new Response(JSON.stringify(updatedItem), { status: 200 });
-    } catch (e: any) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-    }   
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at PUT /api/item." }), { status: 500 })
+    }
 }
 
-export async function DELETE(req:NextRequest) {
+export async function DELETE(req: NextRequest) {
     const id = req.nextUrl.searchParams.get("id");
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
         return new Response(JSON.stringify({ error: "Invalid or missing ID." }), { status: 400 });
     }
     try {
         await dbConnect();
-        const deletedItem = await ItemSchema.findByIdAndDelete(id); 
+        const deletedItem = await ItemSchema.findByIdAndDelete(id);
         if (!deletedItem) {
             return new Response(JSON.stringify({ error: "Item not found." }), { status: 404 });
-        }  
+        }
         return new Response(JSON.stringify(deletedItem), { status: 200 });
-    }
-    catch (e: any) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at DELETE /api/item." }), { status: 500 })
     }
 }
 
-export async function PATCH(req:NextRequest) {
+export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { id, ...updateData } = body;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -97,7 +108,7 @@ export async function PATCH(req:NextRequest) {
     try {
         await dbConnect();
         const updatedItem = await ItemSchema.findByIdAndUpdate(
-            id, 
+            id,
             { $set: updateData },
             { new: true, runValidators: true }
         );
@@ -105,7 +116,10 @@ export async function PATCH(req:NextRequest) {
             return new Response(JSON.stringify({ error: "Item not found." }), { status: 404 });
         }
         return new Response(JSON.stringify(updatedItem), { status: 200 });
-    } catch (e: any) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at PATCH /api/item." }), { status: 500 })
     }
 }

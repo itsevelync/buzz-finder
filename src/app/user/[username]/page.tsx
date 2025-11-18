@@ -1,8 +1,7 @@
-import { auth } from "@/auth";
 import { getUserByUsername } from "@/actions/User";
 import UserProfileClient from "./UserProfileClient";
 import type { User } from "@/model/User";
-import type { Item } from "@/model/Item";
+import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 
 interface ProfilePageProps {
@@ -12,7 +11,6 @@ interface ProfilePageProps {
 }
 
 export default async function Profile({ params }: ProfilePageProps) {
-    const session = await auth();
     params = await params;
 
     let userProfile: User | null = null;
@@ -22,7 +20,7 @@ export default async function Profile({ params }: ProfilePageProps) {
         console.error("Error fetching user profile:", error);
     }
 
-    let foundItems: Item[] = [];
+    let foundItems: PlainItem[] = [];
     let lostItemPosts: LostItemPost[] = [];
     if (userProfile?._id) {
         try {
@@ -56,7 +54,6 @@ export default async function Profile({ params }: ProfilePageProps) {
     return (
         <UserProfileClient
             userProfile={userProfile}
-            sessionUserId={session?.user?._id}
             foundItems={foundItems}
             lostItemPosts={lostItemPosts}
         />

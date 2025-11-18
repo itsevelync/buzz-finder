@@ -1,6 +1,6 @@
 "use client";
 
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import CustomAdvancedMarker from "./CustomAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
@@ -21,7 +21,7 @@ export default function CenteredMap({
 }: {
     height: string;
     width: string;
-    pin: Item;
+    pin: PlainItem;
     disableHover?: boolean;
     disableClick?: boolean;
 }) {
@@ -56,7 +56,7 @@ function MapWrapper({
 }: {
     height: string;
     width: string;
-    pin: Item;
+    pin: PlainItem;
     disableHover?: boolean;
     disableClick?: boolean;
 }) {

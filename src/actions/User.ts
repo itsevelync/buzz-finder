@@ -5,25 +5,13 @@ import { dbConnect } from "@/lib/mongo";
 import { Types } from "mongoose";
 import { signIn, signOut } from "@/auth";
 import bcrypt from "bcryptjs";
-import type { User as UserType } from "@/model/User";
-import { ObjectId } from 'mongodb';
+import { CredentialsSignin } from "next-auth";
 
 interface NewUser {
     name: string;
     email: string;
-    username: string;
-    password?: string;
-}
-
-interface UserData {
-    _id: ObjectId;
-    name: string;
-    image: string;
-    password?: string;
-    email: string;
     username?: string;
-    phoneNum?: string;
-    description?: string;
+    password?: string;
 }
 
 interface UserUpdateData {
@@ -33,6 +21,7 @@ interface UserUpdateData {
     username?: string;
     phoneNum?: string;
     description?: string;
+    image?: string;
 }
 
 interface UserDeleteData {
@@ -43,19 +32,25 @@ export async function createUser(user: NewUser) {
     try {
         await dbConnect();
         await User.create(user);
-    } catch (e: any) {
-        throw new Error(e);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            throw new Error("Error creating user:", e);
+        }
+        throw new Error("Unexpected error creating user.");
     }
 }
 
 // Finds a user by their email address.
-export async function getUserByEmail(email: string): Promise<UserData> {
+export async function getUserByEmail(email: string) {
     try {
         await dbConnect();
         const user = await User.findOne({ email });
         return user;
-    } catch (e: any) {
-        throw new Error("Error finding user by email:", e);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            throw new Error("Error finding user by email:", e);
+        }
+        throw new Error("Unexpected error creating finding user by email.");
     }
 }
 
@@ -67,12 +62,15 @@ export async function getUserByUsername(username: string) {
         if (!userDoc) return null;
         const user = userDoc.toObject();
         return { ...user, _id: user._id.toString() };
-    } catch (e: any) {
-        throw new Error("Error finding user by username:", e);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            throw new Error("Error finding user by username:", e);
+        }
+        throw new Error("Unexpected error finding user by username.");
     }
 }
 
-export async function updateUser(userId: string, userData: UserUpdateData): Promise<{ success?: string; error?: string }> {
+export async function updateUser(userId: string, userData: UserUpdateData) {
     // Check if the userId is a valid ObjectId before updating
     if (!Types.ObjectId.isValid(userId)) {
         return { error: "Invalid user ID." };
@@ -97,7 +95,7 @@ export async function updateUser(userId: string, userData: UserUpdateData): Prom
         }
 
         return { success: "User updated successfully." };
-    } catch (e: any) {
+    } catch {
         return { error: "Unable to update user, please try again." };
     }
 }
@@ -120,18 +118,17 @@ export async function deleteUser(userId: string, userData: UserDeleteData): Prom
         if (!userToDelete) {
             return { error: "User not found." };
         }
-        
-        doLogout();
-        const deletedUser = await User.findByIdAndDelete(userId);
 
+        doLogout();
+        await User.findByIdAndDelete(userId);
 
         return { success: "User deleted successfully." };
-    } catch (e: any) {
+    } catch {
         return { error: "Unable to delete user, please try again." };
     }
 }
 
-export async function updateUserFromEmail(email: string, userData: UserUpdateData): Promise<{ success?: string; error?: string }> {
+export async function updateUserFromEmail(email: string, userData: UserUpdateData) {
     const user = await getUserByEmail(email);
     return await updateUser(user._id.toString(), userData)
 }
@@ -166,7 +163,6 @@ export async function doCredentialLogin(formData: FormData) {
         const response = await signIn("credentials", {
             email,
             password,
-            
             redirect: false,
         });
 
@@ -175,12 +171,20 @@ export async function doCredentialLogin(formData: FormData) {
         }
 
         return response;
-    } catch (err: any) {
-        return {
-            error:
-                err?.code ||
-                "An unexpected error occurred while trying to log in. Please try again later.",
-        };
+    } catch (err: unknown) {
+        if (err instanceof CredentialsSignin) {
+            return {
+                error: err.code,
+            };
+        } else if (err instanceof Error) {
+            return {
+                error: "An error occurred while logging in: " + err.message,
+            };
+        } else {
+            return {
+                error: "An unexpected error occurred while trying to log in. Please try again later.",
+            };
+        }
     }
 }
 

@@ -25,7 +25,13 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
 
         const form = e.target as HTMLFormElement;
         const body: Record<string, unknown> = {};
-        const fields = ["title", "description", "lastLocation", "category", "contactInfo"];
+        const fields = [
+            "title",
+            "description",
+            "lastLocation",
+            "category",
+            "contactInfo",
+        ];
 
         for (const field of fields) {
             const value = getInputValue(form, field);

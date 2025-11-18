@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import LostFoundSelector from "./LostFoundSelector";
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 import ItemList from "./ItemList";
 import useSWR from "swr";
@@ -18,7 +18,7 @@ export default function LostFoundDashboardContainer() {
     const [lostItemsSelected, setLostItemsSelected] = useState<boolean>(
         searchParams.get("tab") === "lost"
     );
-    const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+    const [filteredItems, setFilteredItems] = useState<PlainItem[]>([]);
     const [filteredPosts, setFilteredPosts] = useState<LostItemPost[]>([]);
     const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -26,7 +26,7 @@ export default function LostFoundDashboardContainer() {
         data: items,
         error: itemsError,
         isLoading: itemsLoading,
-    } = useSWR<Item[]>("/api/item", fetcher);
+    } = useSWR<PlainItem[]>("/api/item", fetcher);
 
     const {
         data: lostItemPosts,
@@ -78,7 +78,7 @@ export default function LostFoundDashboardContainer() {
                         </div>
                     ) : (
                         <div className="p-4 bg-white shadow-md rounded-lg">
-                            <SearchBar<Item>
+                            <SearchBar<PlainItem>
                                 placeholder="Search by title, description, or location"
                                 items={items || []}
                                 setFilteredItems={setFilteredItems}

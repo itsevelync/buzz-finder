@@ -55,10 +55,15 @@ const ItemSchema = new Schema(
             default: Date.now
         },
         contact_info: {
-            type: String
+            type: String,
+            trim: true
         },
         comments: {
             type: String
+        },
+        deletedAt: {
+            type: Date,
+            default: null
         }
     },
     { timestamps: true }
@@ -66,6 +71,11 @@ const ItemSchema = new Schema(
 
 type Item = InferSchemaType<typeof ItemSchema> & {
     _id: ObjectId;
+};
+
+export type PlainItem = Omit<Item, "_id" | "person_found"> & {
+    _id: string;
+    person_found?: string;
 };
 
 export type { Item };

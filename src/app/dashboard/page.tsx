@@ -1,8 +1,10 @@
-
-import React from "react";
+import { Suspense } from 'react';
 import LostFoundDashboardContainer from "@/components/dashboard/LostFoundDashboardContainer";
 
 export default async function Home() {
     return (
-        <LostFoundDashboardContainer/>);
+        <Suspense fallback={<div>Loading...</div>}>
+            <LostFoundDashboardContainer />
+        </Suspense>
+    );
 }

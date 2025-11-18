@@ -1,18 +1,14 @@
 'use client'
 
-import SocialLogins from "@/components/auth/SocialLogins";
-import { deleteUser, updateUser } from "@/actions/User";
+import { deleteUser } from "@/actions/User";
 import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
-import Divider from "../ui/Divider";
-import Link from "next/link";
-import { auth } from "@/auth";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 
 
 const DeleteProfileForm = ({ userID }: { userID: string }) => {
-    const { data: session, update } = useSession();
+    const { update } = useSession();
     
     const router = useRouter();
     const [error, setError] = useState("");

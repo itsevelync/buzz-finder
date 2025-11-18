@@ -1,11 +1,9 @@
-import { doLogout } from "@/actions/User"
+import { doLogout } from "@/actions/User";
 
-const Logout = () => {
+export default function Logout() {
     return (
         <form action={doLogout}>
             <button type="submit">Logout</button>
         </form>
-    )
-}
-
-export default Logout
+    );
+};
