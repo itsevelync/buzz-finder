@@ -55,7 +55,8 @@ const ItemSchema = new Schema(
             default: Date.now
         },
         contact_info: {
-            type: String
+            type: String,
+            trim: true
         },
         comments: {
             type: String

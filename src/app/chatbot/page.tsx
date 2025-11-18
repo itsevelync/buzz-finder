@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, type CSSProperties } from "react";
+import { useState, useEffect, useRef, type CSSProperties } from "react";
 import styles from "./chatbot.module.css";
 
 type ChatMessage = {
@@ -55,6 +55,12 @@ export default function ChatbotPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [bee, setBee] = useState<BeeConfig | null>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
 // first bee: only on client, start LEFT -> RIGHT
 useEffect(() => {
@@ -190,6 +196,7 @@ useEffect(() => {
                 BuzzBot is thinking…
               </div>
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           <form onSubmit={handleSubmit} className="mt-4 flex gap-2">

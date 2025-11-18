@@ -1,6 +1,5 @@
 "use client";
 
-import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import { PlainItem } from "@/model/Item";
 import FoundItemCard from "../dashboard/FoundItemCard";
@@ -23,7 +22,6 @@ export default function ItemSidebar({
 
     const sidebarRef = useRef<HTMLDivElement | null>(null);
 
-    const { setLocation } = useLocation();
     const { setSelectedId } = useSelectedPin();
 
     function handleSidebarResize(e: React.PointerEvent<HTMLDivElement>) {
@@ -114,7 +112,6 @@ export default function ItemSidebar({
                             key={item._id.toString()}
                             className="cursor-pointer"
                             onClick={() => {
-                                if (item.position) setLocation(item.position);
                                 setSelectedId(item._id.toString());
                             }}
                         >

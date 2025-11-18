@@ -7,6 +7,8 @@ import { categories } from "@/constants/Categories";
 import type { Item } from "@/model/Item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa";
 
 type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
     person_found: string;
@@ -33,6 +35,7 @@ export default function EditItemClient({
 
     const [title, setTitle] = useState("");
     const [itemDescription, setItemDescription] = useState("");
+    const [locationDetails, setLocationDetails] = useState("");
     const [retrievalDescription, setRetrievalDescription] = useState("");
     const [category, setCategory] = useState("misc");
 
@@ -45,6 +48,7 @@ export default function EditItemClient({
 
             setTitle(item.title || "");
             setItemDescription(item.item_description || "");
+            setLocationDetails(item.location_details || "")
             setRetrievalDescription(item.retrieval_description || "");
             setCategory(item.category || "misc");
             if (item.image?.url) {
@@ -125,6 +129,11 @@ export default function EditItemClient({
                     "retrieval_description"
                 ) as HTMLInputElement
             ).value,
+            location_details: (
+                form.elements.namedItem(
+                    "location_details"
+                ) as HTMLInputElement
+            ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
                 .value as keyof typeof categories,
             image: uploadedImage,
@@ -161,7 +170,7 @@ export default function EditItemClient({
                     alert("Item updated successfully");
                     form.reset();
                     setFile(null);
-                    router.push("/");
+                    router.push("/item/" + itemId);
                 } else {
                     alert("Error updating item");
                 }
@@ -174,6 +183,12 @@ export default function EditItemClient({
 
     return (
         <div className="p-10 flex flex-col gap-6">
+            <Link
+                href={`/item/${itemId}`}
+                className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all"
+            >
+                <FaChevronLeft /> Back to Item Page
+            </Link>
             <h1 className="text-4xl font-bold text-buzz-blue">
                 Edit {item?.title || "Item"}
             </h1>
@@ -222,6 +237,16 @@ export default function EditItemClient({
                             setItemDescription(e.target.value)
                         }
                         rows={3}
+                        isTextarea
+                    />
+                    <FormInput
+                        label="Location Details"
+                        name="location_details"
+                        placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
+                        value={locationDetails}
+                        onInputChange={(e) =>
+                            setLocationDetails(e.target.value)
+                        }
                         isTextarea
                     />
                     <FormInput
