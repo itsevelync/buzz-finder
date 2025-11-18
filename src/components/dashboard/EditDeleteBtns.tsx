@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 interface EditDeleteBtnsProps {
     editURL: string;
     deleteAPIRoute: string;
-    redirect: string;
+    redirect?: string;
 }
 
 export default function EditDeleteBtns({
