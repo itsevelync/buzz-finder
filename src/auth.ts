@@ -85,6 +85,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         }
                     } else {
                         token.username = dbUser.username;
+                        token.image = dbUser.image;
                     }
                 }
             }

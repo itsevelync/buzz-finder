@@ -81,7 +81,7 @@ export default function FoundItemCard({
                             href={"/item/" + item._id}
                         >
                             <button className="border border-buzz-blue bg-background rounded-full px-2 py-1 flex w-full items-center gap-2 justify-center hover:brightness-95">
-                                <CategoryIcon /> See Item Details
+                                <CategoryIcon /> Go To Item Page
                             </button>
                         </Link>
                             <button className="border border-buzz-blue bg-background text-xl rounded-full p-2 gap-2 hover:brightness-95">
