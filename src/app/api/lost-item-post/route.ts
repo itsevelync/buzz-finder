@@ -9,7 +9,10 @@ export async function GET(req: NextRequest) {
     console.log("GET request received at /api/lost-item-post");
     const user = req.nextUrl.searchParams.get("user");
 
-    const query: { user?: string } = {};
+    const query: { user?: string; deletedAt: null } = {
+        deletedAt: null,
+    };
+    
     if (user) {
         query.user = user;
     }

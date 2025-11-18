@@ -33,6 +33,10 @@ const LostItemPostSchema = new Schema(
         contactInfo: {
             type: String,
         },
+        deletedAt: {
+            type: Date,
+            default: null
+        }
     },
     { timestamps: true }
 );

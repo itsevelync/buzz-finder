@@ -6,6 +6,8 @@ import Image from "next/image";
 import { FaChevronLeft, FaCheck } from "react-icons/fa";
 import { GoDotFill } from "react-icons/go";
 import { FaXmark } from "react-icons/fa6";
+import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
+import { auth } from "@/auth";
 
 async function getLostItem(id: string) {
   try {
@@ -49,7 +51,7 @@ function UserInfo({ lostItemPost }: { lostItemPost: LostItemPost }) {
   );
 }
 
-function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
+async function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
   const category = categories[lost_item.category];
 
   const formattedLostDate = new Date(lost_item.createdAt).toLocaleDateString();
@@ -60,6 +62,10 @@ function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
       minute: "2-digit",
     }
   );
+
+  const session = await auth();
+
+  const isOwner = session?.user?._id === lost_item.user?.toString();
 
   return (
     <div>
@@ -82,6 +88,11 @@ function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
       >
         {category.label ?? "N/A"}
       </p>
+      {isOwner && <EditDeleteBtns
+          editURL={`/item/${lost_item._id}/edit`}
+          deleteAPIRoute={`/api/lost-item-post/${lost_item._id}`}
+          redirect="/dashboard?tab=lost"
+      />}
     </div>
   );
 }

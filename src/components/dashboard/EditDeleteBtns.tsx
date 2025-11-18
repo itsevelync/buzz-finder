@@ -7,11 +7,13 @@ import { useRouter } from "next/navigation";
 interface EditDeleteBtnsProps {
     editURL: string;
     deleteAPIRoute: string;
+    redirect: string;
 }
 
 export default function EditDeleteBtns({
     editURL,
     deleteAPIRoute,
+    redirect = "/dashboard",
 }: EditDeleteBtnsProps) {
     const router = useRouter();
 
@@ -33,7 +35,7 @@ export default function EditDeleteBtns({
             }
 
             alert("Item deleted successfully.");
-            router.push("/dashboard");
+            router.push(redirect);
         } catch (error) {
             console.log(error);
             alert("Error deleting item. Please try again");

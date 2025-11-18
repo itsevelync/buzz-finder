@@ -4,6 +4,7 @@ import { categories } from "@/constants/Categories";
 
 import { PlainItem } from "@/model/Item";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CustomAdvancedMarker({
     item,
@@ -12,6 +13,8 @@ export default function CustomAdvancedMarker({
     item: PlainItem;
     disableClick?: boolean;
 }) {
+    const router = useRouter();
+
     const [clicked, setClicked] = useState(false);
     const [hovered, setHovered] = useState(false);
     const position = {
@@ -20,6 +23,7 @@ export default function CustomAdvancedMarker({
     };
 
     const updateClicked = () => {
+        router.push("/map?itemId=" + item._id);
         if (!disableClick) {
             if (clicked) {
                 setClicked(false);
