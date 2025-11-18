@@ -4,20 +4,26 @@ import LocationSelectMap from "@/components/maps/LocationSelectMap";
 import ImageUploader from "@/components/report-item/ImageUploader";
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { Item } from "@/model/Item";
+import type { Item } from "@/model/Item";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
     person_found: string;
 };
 
-export default function ReportItemClient({
+export default function EditItemClient({
     userId,
+    itemId,
+    item,
 }: {
     userId: string | undefined;
+    itemId: string | undefined;
+    item: Item | null;
 }) {
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
+    const [originalFile, setOriginalFile] = useState<File | null>(null);
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
@@ -29,27 +35,38 @@ export default function ReportItemClient({
     }>(gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
 
+    const [title, setTitle] = useState("");
+    const [itemDescription, setItemDescription] = useState("");
+    const [retrievalDescription, setRetrievalDescription] = useState("");
+    const [category, setCategory] = useState("misc");
+
+    const router = useRouter();
+
     useEffect(() => {
-        if (!currPositionFetched && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setSelectedLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                    setCurrentPosition({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                    setCurrPositionFetched(true);
-                },
-                (error) => {
-                    console.error("Error getting current location:", error);
-                    setCurrPositionFetched(true);
-                }
-            );
+        if (item) {
+            setCurrPositionFetched(true);
+            setSelectedLocation(item.position);
+
+            setTitle(item.title || "");
+            setItemDescription(item.item_description || "");
+            setRetrievalDescription(item.retrieval_description || "");
+            setCategory(item.category || "misc");
+            if (item.image?.url) {
+                urlToFile(item.image.url).then((f) => {
+                    setFile(f);
+                    setOriginalFile(f);
+                });
+            }
         }
-    }, [currPositionFetched]);
+    }, [item]);
+
+    async function urlToFile(url: string): Promise<File> {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const filename = "image." + url.split(".").pop();
+        const file = new File([blob], filename, { type: blob.type });
+        return file;
+    }
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -57,7 +74,11 @@ export default function ReportItemClient({
     }));
 
     async function uploadImage() {
-        if (!file) return;
+        if (!file) return null;
+
+        if (file === originalFile) {
+            return item?.image;
+        }
 
         const formdata = new FormData();
 
@@ -86,16 +107,19 @@ export default function ReportItemClient({
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (!itemId) {
+            alert("Error: Item ID is missing.");
+            return;
+        }
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
-        console.log("Uploaded image:", uploadedImage);
-
         const form = e.target as HTMLFormElement;
-        const body: Partial<ItemWithPersonFoundAsString> = {
+        const body: Partial<ItemWithPersonFoundAsString> & { id: string } = {
+            id: itemId,
             title: (form.elements.namedItem("title") as HTMLInputElement).value,
             item_description: (
                 form.elements.namedItem("item_description") as HTMLInputElement
@@ -107,11 +131,13 @@ export default function ReportItemClient({
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
                 .value as keyof typeof categories,
+            image: uploadedImage,
             position: {
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
             },
         };
+
         if (uploadedImage) {
             body.image = uploadedImage;
         }
@@ -127,8 +153,8 @@ export default function ReportItemClient({
         }
 
         console.log(body);
-        fetch("/api/item", {
-            method: "POST",
+        fetch(`/api/item/${itemId}`, {
+            method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
             },
@@ -136,23 +162,24 @@ export default function ReportItemClient({
         })
             .then((res) => {
                 if (res.ok) {
-                    alert("Item logged successfully");
+                    alert("Item updated successfully");
                     form.reset();
                     setFile(null);
+                    router.push("/");
                 } else {
-                    alert("Error logging item");
+                    alert("Error updating item");
                 }
             })
             .catch((err) => {
                 console.error(err);
-                alert("Error logging item");
+                alert("Error updating item");
             });
     }
 
     return (
         <div className="p-10 flex flex-col gap-6">
             <h1 className="text-4xl font-bold text-buzz-blue">
-                Report Found Item
+                Edit {item?.title || "Item"}
             </h1>
             <div className="flex flex-col lg:flex-row gap-x-10 gap-y-4">
                 <ImageUploader file={file} setFile={setFile} />
@@ -186,12 +213,18 @@ export default function ReportItemClient({
                         label="Item Name"
                         name="title"
                         placeholder="Name of item"
+                        value={title}
+                        onInputChange={(e) => setTitle(e.target.value)}
                         required
                     />
                     <FormInput
                         label="Item Description"
                         name="item_description"
                         placeholder="Write an item description here"
+                        value={itemDescription}
+                        onInputChange={(e) =>
+                            setItemDescription(e.target.value)
+                        }
                         rows={3}
                         isTextarea
                     />
@@ -199,12 +232,17 @@ export default function ReportItemClient({
                         label="Item Retrieval"
                         name="retrieval_description"
                         placeholder="How do you want this item to be retrieved?"
+                        value={retrievalDescription}
+                        onInputChange={(e) =>
+                            setRetrievalDescription(e.target.value)
+                        }
                         isTextarea
                     />
                     <FormInput
                         label="Category"
                         name="category"
-                        defaultValue="misc"
+                        value={category}
+                        onInputChange={(e) => setCategory(e.target.value)}
                         isSelect
                         selectOptions={categoryOptions}
                     />
@@ -263,7 +301,9 @@ export default function ReportItemClient({
                             </>
                         )}
                     </div>
-                    <button type="submit">Submit Found Item</button>
+                    <button type="submit">
+                        Update {item?.title || "Item"}
+                    </button>
                 </form>
             </div>
         </div>

@@ -2,12 +2,15 @@
 
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 
-export default function LostItemPostForm() {
+interface LostItemPostFormProps {
+    session: Session | null;
+}
+
+export default function LostItemPostForm({ session }: LostItemPostFormProps) {
     const router = useRouter();
-    const { data: session } = useSession();
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
         label: value.label,

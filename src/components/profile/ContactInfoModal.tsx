@@ -3,17 +3,23 @@
 import { IoClose } from "react-icons/io5";
 import { IoMdMail } from "react-icons/io";
 import { FaPhone } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
+import { FaDiscord } from "react-icons/fa";
 
 interface ContactInfoModalProps {
     onClose: () => void;
     email: string;
     phone?: string | null;
+    instagram?: string | null;
+    discord?: string | null;
 }
 
 export default function ContactInfoModal({
     onClose,
     email,
     phone,
+    instagram,
+    discord,
 }: ContactInfoModalProps) {
     return (
         <div className="fixed z-100 flex items-center justify-center inset-0 bg-gray-600/50 h-full w-full">
@@ -34,6 +40,18 @@ export default function ContactInfoModal({
                         <p className="flex gap-2 items-center">
                             <FaPhone />
                             Phone: {phone}
+                        </p>
+                    )}
+                    {instagram && (
+                        <p className="flex gap-2 items-center">
+                            <FaInstagram />
+                            Instagram: {instagram}
+                        </p>
+                    )}
+                    {discord && (
+                        <p className="flex gap-2 items-center">
+                            <FaDiscord />
+                            Discord: {discord}
                         </p>
                     )}
                 </div>

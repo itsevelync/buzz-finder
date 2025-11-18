@@ -73,10 +73,12 @@ async function getPersonFound(id: string) {
 export default async function ItemPage({ params }: ItemPageProps) {
     params = await params;
     const item = (await getItem(params.id)) as Item;
+
     let user = null;
     if (item.person_found) {
         user = await getPersonFound(item.person_found.toString());
     }
+    const isOwner = user === item.person_found?.toString();
     const category = categories[item.category];
 
     if (!item) {
@@ -114,9 +116,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
                     </p>
                 </div>
                 <div className="flex gap-2 mt-5">
-                    <button className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-buzz-blue border-blue-300 bg-blue-100 rounded-full items-center">
-                        <FaPencilAlt /> Edit
-                    </button>
+                    <Link href={`/item/${item._id}/edit`} className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-buzz-blue border-blue-300 bg-blue-100 rounded-full items-center">
+                        <FaPencilAlt /> Edit 
+                    </Link>
                     <button className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-[#c63c3c] border-red-300 bg-red-100 rounded-full items-center">
                         <FaTrash /> Delete
                     </button>
@@ -172,16 +174,31 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                 Contact Information
                             </h3>
                             {user ? (
+                                <div className="space-y-1">
                                 <p>
                                     {user.name} (
-                                    <Link
-                                        href={`/user/${user.username}`}
-                                        className="underline"
-                                    >
+                                    <Link href={`/user/${user.username}`} className="underline">
                                         @{user.username}
                                     </Link>
                                     )
                                 </p>
+                    
+                                {user.email && (
+                                    <p>Email: {user.email}</p>
+                                )}
+                    
+                                {user.phoneNum && (
+                                    <p>Phone: {user.phoneNum}</p>
+                                )}
+                    
+                                {user.discord && (
+                                    <p>Discord: {user.discord}</p>
+                                )}
+                    
+                                {user.instagram && (
+                                    <p>Instagram: @{user.instagram}</p>
+                                )}
+                                </div>
                             ) : (
                                 <p>{item.contact_info ?? "N/A"}</p>
                             )}

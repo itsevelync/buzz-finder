@@ -25,7 +25,7 @@ const UserSchema = new Schema(
         username: {
             required: true,
             type: String,
-            trim: true
+            trim: true,
         },
         phoneNum: {
             required: false,
@@ -35,6 +35,16 @@ const UserSchema = new Schema(
         description: {
             required: false,
             type: String,
+        },
+        discord: {
+            required: false,
+            type: String,
+            trim: true,
+        },
+        instagram: {
+            required: false,
+            type: String,
+            trim: true,
         }
     },
     { timestamps: true }

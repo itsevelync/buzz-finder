@@ -1,7 +1,8 @@
-"use client";
-
 import LostItemPostForm from "@/components/post/LostItemPostForm";
+import { auth } from "@/auth";
 
-export default function PostLostItem() {
-    return <LostItemPostForm />;
+export default async function PostLostItem() {
+    const session = await auth();
+
+    return <LostItemPostForm session={session} />;
 }
