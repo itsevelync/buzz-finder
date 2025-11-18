@@ -178,22 +178,22 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                         )
                                     </p>
 
-                                    {user.email && <p>Email: {user.email}</p>}
+                                    {user.email || <p>Email: {user.email}</p>}
 
-                                    {user.phoneNum && (
+                                    {user.phoneNum || (
                                         <p>Phone: {user.phoneNum}</p>
                                     )}
 
-                                    {user.discord && (
+                                    {user.discord || (
                                         <p>Discord: {user.discord}</p>
                                     )}
 
-                                    {user.instagram && (
+                                    {user.instagram || (
                                         <p>Instagram: @{user.instagram}</p>
                                     )}
                                 </div>
                             ) : (
-                                <p>{item.contact_info ?? "N/A"}</p>
+                                <p>{item.contact_info || "N/A"}</p>
                             )}
                         </div>
                     </div>

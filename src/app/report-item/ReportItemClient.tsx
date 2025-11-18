@@ -211,6 +211,7 @@ export default function ReportItemClient({
                         label="Category"
                         name="category"
                         placeholder="Select an Item Category"
+                        defaultValue=""
                         isSelect
                         selectOptions={categoryOptions}
                     />

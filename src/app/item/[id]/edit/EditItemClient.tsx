@@ -170,7 +170,7 @@ export default function EditItemClient({
                     alert("Item updated successfully");
                     form.reset();
                     setFile(null);
-                    router.push("/");
+                    router.push("/item/" + itemId);
                 } else {
                     alert("Error updating item");
                 }
