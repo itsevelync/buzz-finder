@@ -119,11 +119,10 @@ export async function deleteUser(userId: string, userData: UserDeleteData): Prom
         }
 
         doLogout();
-        const deletedUser = await User.findByIdAndDelete(userId);
-
+        await User.findByIdAndDelete(userId);
 
         return { success: "User deleted successfully." };
-    } catch (e: any) {
+    } catch {
         return { error: "Unable to delete user, please try again." };
     }
 }

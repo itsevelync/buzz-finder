@@ -25,8 +25,8 @@ async function handleDeleteAccount({ session }: Props) {
     }
     alert("Account deleted successfully.");
     doLogout();
-  } catch (err: any) {
-    alert(`Error: ${err.message}`);
+  } catch (err: unknown) {
+    if (err instanceof Error) alert(`Error: ${err.message}`);
   }
 }
 

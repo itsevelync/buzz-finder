@@ -63,8 +63,12 @@ export async function PATCH(req: NextRequest) {
         }
 
         return new Response(JSON.stringify(updatedPost), { status: 200 });
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error("PATCH /api/lost-item-post error:", e);
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        } else {
+            return new Response(JSON.stringify({ error: "An unexpected error occurred updating the lost item post." }), { status: 500 });
+        }
     }
 }

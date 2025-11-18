@@ -59,6 +59,10 @@ const ItemSchema = new Schema(
         },
         comments: {
             type: String
+        },
+        deletedAt: {
+            type: Date,
+            default: null
         }
     },
     { timestamps: true }

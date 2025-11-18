@@ -1,16 +1,13 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { dbConnect } from "@/lib/mongo";
-import {
-    FaChevronLeft,
-    FaHandPaper,
-    FaPencilAlt,
-    FaTrash,
-} from "react-icons/fa";
+import { FaChevronLeft, FaHandPaper } from "react-icons/fa";
 import Link from "next/link";
 import CenteredMap from "@/components/maps/CenteredMap";
 import { categories } from "@/constants/Categories";
 import { Item } from "@/model/Item";
+import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
+import { auth } from "@/auth";
 
 interface ItemPageProps {
     params: {
@@ -71,11 +68,13 @@ export default async function ItemPage({ params }: ItemPageProps) {
     params = await params;
     const item = (await getItem(params.id)) as Item;
 
+    const session = await auth();
+
     let user = null;
     if (item.person_found) {
         user = await getPersonFound(item.person_found.toString());
     }
-    const isOwner = user === item.person_found?.toString();
+    const isOwner = session?.user?._id === item.person_found?.toString();
     const category = categories[item.category];
 
     if (!item) {
@@ -112,14 +111,11 @@ export default async function ItemPage({ params }: ItemPageProps) {
                         {category.label ?? "N/A"}
                     </p>
                 </div>
-                <div className="flex gap-2 mt-5">
-                    <Link href={`/item/${item._id}/edit`} className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-buzz-blue border-blue-300 bg-blue-100 rounded-full items-center">
-                        <FaPencilAlt /> Edit 
-                    </Link>
-                    <button className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-[#c63c3c] border-red-300 bg-red-100 rounded-full items-center">
-                        <FaTrash /> Delete
-                    </button>
-                </div>
+                {isOwner && <EditDeleteBtns
+                    id = {item._id}
+                    editURL={`/item/${item._id}/edit`}
+                    deleteAPIRoute={`/api/item/${item._id}`}
+                />}
             </div>
             <div className="flex gap-6 flex-col md:flex-row">
                 <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-2">
@@ -172,29 +168,30 @@ export default async function ItemPage({ params }: ItemPageProps) {
                             </h3>
                             {user ? (
                                 <div className="space-y-1">
-                                <p>
-                                    {user.name} (
-                                    <Link href={`/user/${user.username}`} className="underline">
-                                        @{user.username}
-                                    </Link>
-                                    )
-                                </p>
-                    
-                                {user.email && (
-                                    <p>Email: {user.email}</p>
-                                )}
-                    
-                                {user.phoneNum && (
-                                    <p>Phone: {user.phoneNum}</p>
-                                )}
-                    
-                                {user.discord && (
-                                    <p>Discord: {user.discord}</p>
-                                )}
-                    
-                                {user.instagram && (
-                                    <p>Instagram: @{user.instagram}</p>
-                                )}
+                                    <p>
+                                        {user.name} (
+                                        <Link
+                                            href={`/user/${user.username}`}
+                                            className="underline"
+                                        >
+                                            @{user.username}
+                                        </Link>
+                                        )
+                                    </p>
+
+                                    {user.email && <p>Email: {user.email}</p>}
+
+                                    {user.phoneNum && (
+                                        <p>Phone: {user.phoneNum}</p>
+                                    )}
+
+                                    {user.discord && (
+                                        <p>Discord: {user.discord}</p>
+                                    )}
+
+                                    {user.instagram && (
+                                        <p>Instagram: @{user.instagram}</p>
+                                    )}
                                 </div>
                             ) : (
                                 <p>{item.contact_info ?? "N/A"}</p>

@@ -1,7 +1,4 @@
-import { getUserByEmail } from "@/actions/User";
-import { dbConnect } from "@/lib/mongo";
 import { LostItemPost } from "@/model/LostItemPost";
-import User from "@/model/User";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
