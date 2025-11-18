@@ -29,10 +29,6 @@ export default function EditItemClient({
         lat: number;
         lng: number;
     }>(gtCampus);
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    }>(gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
 
     const [title, setTitle] = useState("");
@@ -197,7 +193,7 @@ export default function EditItemClient({
                                     width="100%"
                                     selectedLocation={selectedLocation}
                                     setSelectedLocation={setSelectedLocation}
-                                    currentPosition={currentPosition}
+                                    currentPosition={gtCampus}
                                 />
                             ) : (
                                 <p className="p-3 text-3xl text-gray-500">

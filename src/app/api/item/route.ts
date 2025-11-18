@@ -21,7 +21,9 @@ export async function GET(req: NextRequest) {
         const item = await ItemSchema.findById(id);
         return new Response(JSON.stringify(item), { status: 200 });
     } else {
-        const query: { person_found?: string } = {};
+        const query: { person_found?: string; deletedAt: null } = {
+            deletedAt: null,
+        };
         if (personFound) {
             query.person_found = personFound;
         }

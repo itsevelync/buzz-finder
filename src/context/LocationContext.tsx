@@ -7,8 +7,8 @@ export interface LocationCoords {
 }
 
 interface LocationContextType {
-    location: LocationCoords;
-    setLocation: React.Dispatch<React.SetStateAction<LocationCoords>>;
+    location: LocationCoords | null;
+    setLocation: React.Dispatch<React.SetStateAction<LocationCoords | null>>;
 }
 
 const LocationContext = createContext<LocationContextType | undefined>(
@@ -20,10 +20,7 @@ interface LocationProviderProps {
 }
 
 export const LocationProvider = ({ children }: LocationProviderProps) => {
-    const [location, setLocation] = useState<LocationCoords>({
-        lat: 33.778,
-        lng: -84.398,
-    });
+    const [location, setLocation] = useState<LocationCoords | null>(null);
 
     const value = { location, setLocation };
 

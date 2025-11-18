@@ -56,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new InvalidLoginError()
                 }
                 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { password, _id, ...userWithoutPassword } = user.toObject();
                 return { id: user._id.toString(), ...userWithoutPassword };
             },
@@ -93,6 +94,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (dbUser) {
                     token.name = dbUser.name;
                     token.username = dbUser.username;
+                    token.image = dbUser.image;
                 }
             }
 
@@ -103,6 +105,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user._id = token.sub;
                 session.user.name = token.name;
                 session.user.username = token.username;
+                session.user.image = token.image as string | null | undefined;
             }
             return session;
         },

@@ -5,7 +5,6 @@ import { PlainItem } from "@/model/Item";
 import {
     APIProvider,
     Map,
-    AdvancedMarker,
     InfoWindow,
 } from "@vis.gl/react-google-maps";
 import Image from "next/image";
@@ -13,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import Link from "next/link";
+import SmallAdvancedMarker from "./SmallAdvancedMarker";
 
 const gtCampus = { lat: 33.778, lng: -84.398 };
 
@@ -27,7 +27,6 @@ const gtCampus = { lat: 33.778, lng: -84.398 };
 export default function GoogleMap(props: {
     height: string | number;
     width: string | number;
-    defaultMarkerId: string | null;
     items: PlainItem[];
 }) {
     const { setLocation } = useLocation();
@@ -37,8 +36,9 @@ export default function GoogleMap(props: {
         (item) => item._id.toString() === selectedId
     );
 
+    if (selectedItem?.position) setLocation(selectedItem?.position);
+
     const [mapCenter] = useState(selectedItem?.position || gtCampus);
-    const [zoom] = useState(1);
 
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
@@ -60,7 +60,7 @@ export default function GoogleMap(props: {
                 <div style={{ height: props.height, width: props.width }}>
                     <Map
                         defaultCenter={mapCenter}
-                        defaultZoom={zoom}
+                        defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
                         mapId="TEMP_MAP_ID?"
@@ -68,12 +68,10 @@ export default function GoogleMap(props: {
                         <MapPanController />
 
                         {props.items.map((item) => (
-                            <AdvancedMarker
+                            <SmallAdvancedMarker
                                 key={item._id}
-                                position={item.position}
-                                title={item.title}
-                                clickable={true}
-                                onClick={() => {
+                                item={item}
+                                onPinClick={() => {
                                     setLocation(item.position);
                                     setSelectedId(item._id);
                                 }}
