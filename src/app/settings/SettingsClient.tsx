@@ -74,7 +74,7 @@ export default function SettingsClient({ session }: Props) {
         <div className="flex items-center mt-4">
           <h3 className="text-lg font-semibold mr-2">Light/Dark Mode:</h3>
           <button className={`rounded-md px-2 py-2 border ${lightMode ? "bg-[#003056] text-white border-blue-500" : "bg-white text-black border-gray-300"}`} onClick={() => setLightMode((v) => !v)}>
-            {lightMode ? "On" : "Off"}
+            {lightMode ? "Light" : "Dark"}
           </button>
         </div>
       </div>
