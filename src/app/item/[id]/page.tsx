@@ -111,10 +111,12 @@ export default async function ItemPage({ params }: ItemPageProps) {
                         {category.label ?? "N/A"}
                     </p>
                 </div>
-                {isOwner && <EditDeleteBtns
-                    editURL={`/item/${item._id}/edit`}
-                    deleteAPIRoute={`/api/item/${item._id}`}
-                />}
+                {isOwner && (
+                    <EditDeleteBtns
+                        editURL={`/item/${item._id}/edit`}
+                        deleteAPIRoute={`/api/item/${item._id}`}
+                    />
+                )}
             </div>
             <div className="flex gap-6 flex-col md:flex-row">
                 <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-2">
@@ -178,19 +180,21 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                         )
                                     </p>
 
-                                    {user.email && <p>Email: {user.email}</p>}
+                                    {user.email ? (
+                                        <p>Email: {user.email}</p>
+                                    ) : null}
 
-                                    {user.phoneNum && (
+                                    {user.phoneNum ? (
                                         <p>Phone: {user.phoneNum}</p>
-                                    )}
+                                    ) : null}
 
-                                    {user.discord && (
+                                    {user.discord ? (
                                         <p>Discord: {user.discord}</p>
-                                    )}
+                                    ) : null}
 
-                                    {user.instagram && (
+                                    {user.instagram ? (
                                         <p>Instagram: @{user.instagram}</p>
-                                    )}
+                                    ) : null}
                                 </div>
                             ) : (
                                 <p>{item.contact_info || "N/A"}</p>
