@@ -13,7 +13,9 @@ type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
 };
 
 export default function EditItemClient({
-    userId, itemId, item
+    userId,
+    itemId,
+    item,
 }: {
     userId: string | undefined;
     itemId: string | undefined;
@@ -21,6 +23,7 @@ export default function EditItemClient({
 }) {
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
+    const [originalFile, setOriginalFile] = useState<File | null>(null);
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
@@ -40,17 +43,30 @@ export default function EditItemClient({
     const router = useRouter();
 
     useEffect(() => {
-    if (item) {
-        setCurrPositionFetched(true);
-        setSelectedLocation(item.position);
-    
-        setTitle(item.title || "");
-        setItemDescription(item.item_description || "");
-        setRetrievalDescription(item.retrieval_description || "");
-        setCategory(item.category || "misc");
+        if (item) {
+            setCurrPositionFetched(true);
+            setSelectedLocation(item.position);
 
+            setTitle(item.title || "");
+            setItemDescription(item.item_description || "");
+            setRetrievalDescription(item.retrieval_description || "");
+            setCategory(item.category || "misc");
+            if (item.image?.url) {
+                urlToFile(item.image.url).then((f) => {
+                    setFile(f);
+                    setOriginalFile(f);
+                });
+            }
+        }
+    }, [item]);
+
+    async function urlToFile(url: string): Promise<File> {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const filename = "image." + url.split(".").pop();
+        const file = new File([blob], filename, { type: blob.type });
+        return file;
     }
-}, [item]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -58,7 +74,11 @@ export default function EditItemClient({
     }));
 
     async function uploadImage() {
-        if (!file) return;
+        if (!file) return null;
+
+        if (file === originalFile) {
+            return item?.image;
+        }
 
         const formdata = new FormData();
 
@@ -87,7 +107,7 @@ export default function EditItemClient({
         } catch (error) {
             console.log(error);
         }
-    };
+    }
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -145,7 +165,7 @@ export default function EditItemClient({
                     alert("Item updated successfully");
                     form.reset();
                     setFile(null);
-                    router.push("/")
+                    router.push("/");
                 } else {
                     alert("Error updating item");
                 }
@@ -202,7 +222,9 @@ export default function EditItemClient({
                         name="item_description"
                         placeholder="Write an item description here"
                         value={itemDescription}
-                        onInputChange={(e) => setItemDescription(e.target.value)}
+                        onInputChange={(e) =>
+                            setItemDescription(e.target.value)
+                        }
                         rows={3}
                         isTextarea
                     />
@@ -211,7 +233,9 @@ export default function EditItemClient({
                         name="retrieval_description"
                         placeholder="How do you want this item to be retrieved?"
                         value={retrievalDescription}
-                        onInputChange={(e) => setRetrievalDescription(e.target.value)}
+                        onInputChange={(e) =>
+                            setRetrievalDescription(e.target.value)
+                        }
                         isTextarea
                     />
                     <FormInput
@@ -277,7 +301,9 @@ export default function EditItemClient({
                             </>
                         )}
                     </div>
-                    <button type="submit">Update {item?.title || "Item"}</button>
+                    <button type="submit">
+                        Update {item?.title || "Item"}
+                    </button>
                 </form>
             </div>
         </div>
