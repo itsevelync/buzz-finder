@@ -35,6 +35,7 @@ export default function EditItemClient({
 
     const [title, setTitle] = useState("");
     const [itemDescription, setItemDescription] = useState("");
+    const [locationDetails, setLocationDetails] = useState("");
     const [retrievalDescription, setRetrievalDescription] = useState("");
     const [category, setCategory] = useState("misc");
 
@@ -47,6 +48,7 @@ export default function EditItemClient({
 
             setTitle(item.title || "");
             setItemDescription(item.item_description || "");
+            setLocationDetails(item.location_details || "")
             setRetrievalDescription(item.retrieval_description || "");
             setCategory(item.category || "misc");
             if (item.image?.url) {
@@ -125,6 +127,11 @@ export default function EditItemClient({
             retrieval_description: (
                 form.elements.namedItem(
                     "retrieval_description"
+                ) as HTMLInputElement
+            ).value,
+            location_details: (
+                form.elements.namedItem(
+                    "location_details"
                 ) as HTMLInputElement
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
@@ -230,6 +237,16 @@ export default function EditItemClient({
                             setItemDescription(e.target.value)
                         }
                         rows={3}
+                        isTextarea
+                    />
+                    <FormInput
+                        label="Location Details"
+                        name="location_details"
+                        placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
+                        value={locationDetails}
+                        onInputChange={(e) =>
+                            setLocationDetails(e.target.value)
+                        }
                         isTextarea
                     />
                     <FormInput

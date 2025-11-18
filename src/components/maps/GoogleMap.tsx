@@ -32,12 +32,19 @@ export default function GoogleMap(props: {
 
     useEffect(() => {
         if (selectedItem?.position) {
-            setLocation({lat: selectedItem.position.lat + 0.0005,
-                lng: selectedItem.position.lng});
+            setLocation({
+                lat: selectedItem.position.lat + 0.0005,
+                lng: selectedItem.position.lng,
+            });
         }
     }, [selectedItem, setLocation]);
 
-    const [mapCenter] = useState(selectedItem?.position || gtCampus);
+    const [mapCenter] = useState({
+        lat: selectedItem?.position.lat
+            ? selectedItem.position.lat + 0.0005
+            : gtCampus.lat,
+        lng: selectedItem?.position.lng || gtCampus.lng,
+    });
 
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 

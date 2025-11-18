@@ -50,7 +50,7 @@ export default function FormInput({
                     required={required}
                     disabled={disabled}
                 >
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                         {placeholder ?? "Select an option"}
                     </option>
                     {selectOptions.map((option) => (
