@@ -10,7 +10,9 @@ interface FormInputProps {
     selectOptions?: { value: string; label: string }[];
     value?: string;
     defaultValue?: string;
-    onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onInputChange?: (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => void;
     required?: boolean;
     disabled?: boolean;
     minLength?: number;
@@ -62,6 +64,9 @@ export default function FormInput({
                     required={required}
                     rows={rows}
                     disabled={disabled}
+                    {...(onInputChange
+                        ? { value, onChange: onInputChange }
+                        : { defaultValue })}
                 />
             ) : (
                 <input

@@ -30,7 +30,9 @@ export default function ResetPasswordForm() {
         setSuccessMessage("");
     };
 
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFormChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,

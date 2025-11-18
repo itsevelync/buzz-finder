@@ -5,7 +5,6 @@ import { PlainItem } from "@/model/Item";
 import {
     APIProvider,
     Map,
-    AdvancedMarker,
     InfoWindow,
 } from "@vis.gl/react-google-maps";
 import Image from "next/image";
@@ -13,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import Link from "next/link";
+import SmallAdvancedMarker from "./SmallAdvancedMarker";
 
 const gtCampus = { lat: 33.778, lng: -84.398 };
 
@@ -68,12 +68,10 @@ export default function GoogleMap(props: {
                         <MapPanController />
 
                         {props.items.map((item) => (
-                            <AdvancedMarker
+                            <SmallAdvancedMarker
                                 key={item._id}
-                                position={item.position}
-                                title={item.title}
-                                clickable={true}
-                                onClick={() => {
+                                item={item}
+                                onPinClick={() => {
                                     setLocation(item.position);
                                     setSelectedId(item._id);
                                 }}
