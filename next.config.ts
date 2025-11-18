@@ -15,4 +15,14 @@ const nextConfig: NextConfig = {
   },
 };
 
+const { NEXTAUTH_URL } = process.env;
+
+if (!NEXTAUTH_URL) {
+  console.warn("NEXTAUTH_URL is not set. This can lead to issues in production.");
+}
+
+nextConfig.env = {
+  NEXTAUTH_URL: NEXTAUTH_URL,
+};
+
 export default nextConfig;

@@ -21,6 +21,7 @@ interface UserUpdateData {
     username?: string;
     phoneNum?: string;
     description?: string;
+    image?: string;
 }
 
 interface UserDeleteData {

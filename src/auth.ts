@@ -94,6 +94,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 if (dbUser) {
                     token.name = dbUser.name;
                     token.username = dbUser.username;
+                    token.image = dbUser.image;
                 }
             }
 
@@ -104,6 +105,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user._id = token.sub;
                 session.user.name = token.name;
                 session.user.username = token.username;
+                session.user.image = token.image as string | null | undefined;
             }
             return session;
         },

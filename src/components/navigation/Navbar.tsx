@@ -45,7 +45,7 @@ export default async function Navbar() {
                             alt={session?.user?.name ?? "User avatar"}
                             width={50}
                             height={50}
-                            className="rounded-full cursor-pointer w-8 p-0.5 hover:p-0 border-2 border-foreground transition-all duration-200"
+                            className="rounded-full cursor-pointer h-8 w-8 p-0.5 hover:p-0 border-2 border-foreground transition-all duration-200"
                         />
                     </Link>
                     {/* Tooltip */}

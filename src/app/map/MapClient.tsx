@@ -32,7 +32,6 @@ export default function MapClient({
                     <GoogleMap
                         width="100%"
                         height="100%"
-                        defaultMarkerId={itemId}
                         items={filteredItems}
                     />
                 </SelectedPinProvider>
