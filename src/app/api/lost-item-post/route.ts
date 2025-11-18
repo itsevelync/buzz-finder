@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
         query.user = user;
     }
 
-    const lostItemPosts = await LostItemPostSchema.find(query).populate(
+    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate(
         "user",
         "username image"
     );
@@ -30,9 +30,11 @@ export async function POST(req: NextRequest) {
         const newLostItemPost = await LostItemPostSchema.create(body);
 
         return new Response(JSON.stringify(newLostItemPost), { status: 201 });
-    } catch (e: any) {
-        console.error("POST /api/lost-item-post error:", e);
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/lost-item-post." }), { status: 500 })
     }
 }
 

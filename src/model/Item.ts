@@ -68,6 +68,11 @@ type Item = InferSchemaType<typeof ItemSchema> & {
     _id: ObjectId;
 };
 
+export type PlainItem = Omit<Item, "_id" | "person_found"> & {
+    _id: string;
+    person_found?: string;
+};
+
 export type { Item };
 
 export default mongoose.models?.Item ??

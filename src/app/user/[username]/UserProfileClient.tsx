@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
-import type { Item } from "@/model/Item";
+import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 
 import ContactInfoModal from "@/components/profile/ContactInfoModal";
@@ -16,14 +16,12 @@ import { MdContactMail } from "react-icons/md";
 
 interface UserProfileClientProps {
     userProfile: User | null;
-    sessionUserId: string | undefined;
-    foundItems: Item[];
+    foundItems: PlainItem[];
     lostItemPosts: LostItemPost[];
 }
 
 export default function UserProfileClient({
     userProfile,
-    sessionUserId,
     foundItems,
     lostItemPosts,
 }: UserProfileClientProps) {

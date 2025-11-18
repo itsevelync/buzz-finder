@@ -22,10 +22,11 @@ export const POST = async (request: Request) => {
     }
     try {
         await createUser(newUser);
-    } catch (err: any) {
-        return new NextResponse(err.mesage, {
-            status: 500,
-        });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        }
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/signup." }), { status: 500 })
     }
 
     return new NextResponse("User has been created", {

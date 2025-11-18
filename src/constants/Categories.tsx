@@ -46,4 +46,6 @@ export const categories = {
     },
 };
 
-export const CATEGORY_KEYS = Object.keys(categories) as Array<keyof typeof categories>;
+export const CATEGORY_KEYS = Object.keys(categories) as Array<
+    keyof typeof categories
+>;

@@ -8,7 +8,7 @@ import Divider from "../ui/Divider";
 import Link from "next/link";
 import FormInput from "../ui/FormInput";
 
-const LoginForm = () => {
+export default function LoginForm() {
     const router = useRouter();
     const [error, setError] = useState("");
 
@@ -73,6 +73,4 @@ const LoginForm = () => {
             </div>
         </>
     );
-};
-
-export default LoginForm;
+}

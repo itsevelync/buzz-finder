@@ -94,8 +94,8 @@ export default function CustomAdvancedMarker({
 
                 <div
                     style={{ borderColor: pinColor }}
-                    className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-[8px]
-                    rounded-br-[3px] translate-y-[4px] -translate-x-1/2
+                    className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-8
+                    rounded-br-[3px] translate-y-1 -translate-x-1/2
                     rotate-45 scale-[1.3] transition-all duration-200 ease-in-out`}
                 />
             </>

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 import { useLocation } from "@/context/LocationContext";
 
-function MapPanController() {
+export default function MapPanController() {
     const map = useMap();
     const { location } = useLocation();
     const firstRender = useRef(true);
@@ -25,5 +25,3 @@ function MapPanController() {
 
     return null;
 }
-
-export default MapPanController;

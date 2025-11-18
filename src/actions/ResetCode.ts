@@ -6,11 +6,17 @@ import { randomInt } from "node:crypto";
 import { dbConnect } from "@/lib/mongo";
 import { getUserByEmail } from "@/actions/User";
 import { timingSafeEqual } from "node:crypto";
+import { SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo";
 
 
 // Sends a password reset code to the user's email.
 export async function sendResetCode(email: string) {
     try {
+        if (!process.env.BREVO_API_KEY) {
+            return {
+                error: "Missing API key in .env file."
+            };
+        }
         const user = await getUserByEmail(email);
 
         if (!user) {
@@ -23,14 +29,10 @@ export async function sendResetCode(email: string) {
 
         const resetCode = await generateResetCode(user._id.toString());
 
-        const SibApiV3Sdk = require("@getbrevo/brevo");
+        const apiInstance = new TransactionalEmailsApi()
+        apiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY)
 
-        let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
-        let apiKey = apiInstance.authentications["apiKey"];
-        apiKey.apiKey = process.env.BREVO_API_KEY;
-
-        let sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        const sendSmtpEmail = new SendSmtpEmail()
 
         sendSmtpEmail.subject = "BuzzFinder Password Reset Code";
         sendSmtpEmail.templateId = 1;
@@ -41,7 +43,10 @@ export async function sendResetCode(email: string) {
 
         return { success: "If an account exists for that email address, you will receive a password reset link shortly." }
 
-    } catch (e: any) {
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error("Error sending reset code:", e);
+        }
         return { error: "An unexpected error occurred. Please try again in a few moments." };
     }
 }
@@ -72,51 +77,56 @@ export async function generateResetCode(userId: string): Promise<ResetCodeDocume
         await resetCode.save();
 
         return resetCode;
-    } catch (e: any) {
-        console.error("Error generating reset code:", e);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error("Error generating reset code:", e);
+        }
+
         throw new Error("Error generating reset code.");
     }
 }
 
 // Checks if reset code is correct
 export async function compareResetCode(email: string, resetCode: string): Promise<{ success?: boolean; error?: string }> {
-  try {
-    await dbConnect();
+    try {
+        await dbConnect();
 
-    const user = await getUserByEmail(email);
-    if (!user) {
-        return { error: "Invalid email or verification code." };
+        const user = await getUserByEmail(email);
+        if (!user) {
+            return { error: "Invalid email or verification code." };
+        }
+
+        const codeDocument = await ResetCode.findOne({ userId: user._id }, {}, { sort: { createdAt: -1 } });
+
+        if (!codeDocument) {
+            return { error: "No verification code found. Please request a new one." };
+        }
+
+        if (codeDocument.expiresAt < new Date()) {
+            return { error: "This verification code has expired. Please request a new one." };
+        }
+
+        const a = Buffer.from(codeDocument.code, "utf-8");
+        const b = Buffer.from(resetCode, "utf-8");
+
+        if (a.length !== b.length) {
+            // To maintain constant timing, perform a dummy operation
+            timingSafeEqual(a, Buffer.alloc(a.length));
+            return { error: "Invalid verification code." };
+        }
+
+        const codesMatch = timingSafeEqual(a, b);
+
+        if (codesMatch) {
+            return { success: true };
+        } else {
+            return { error: "Invalid verification code." };
+        }
+
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error("Error comparing reset codes:", e);
+        }
+        return { error: "An unexpected error occurred. Please try again." };
     }
-
-    const codeDocument = await ResetCode.findOne({ userId: user._id }, {}, { sort: { createdAt: -1 } });
-
-    if (!codeDocument) {
-      return { error: "No verification code found. Please request a new one." };
-    }
-
-    if (codeDocument.expiresAt < new Date()) {
-        return { error: "This verification code has expired. Please request a new one." };
-    }
-
-    const a = Buffer.from(codeDocument.code, "utf-8");
-    const b = Buffer.from(resetCode, "utf-8");
-    
-    if (a.length !== b.length) {
-        // To maintain constant timing, perform a dummy operation
-        timingSafeEqual(a, Buffer.alloc(a.length));
-        return { error: "Invalid verification code." };
-    }
-
-    const codesMatch = timingSafeEqual(a, b);
-    
-    if (codesMatch) {
-      return { success: true };
-    } else {
-      return { error: "Invalid verification code." };
-    }
-    
-  } catch (e: any) {
-    console.error("Error comparing reset codes:", e);
-    return { error: "An unexpected error occurred. Please try again." };
-  }
 }

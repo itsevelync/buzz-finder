@@ -4,7 +4,6 @@ import { LostItemPost } from "@/model/LostItemPost";
 import User from "@/model/User";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React from "react";
 
 function UserInfo({ lostItemPost }: { lostItemPost: LostItemPost }) {
     return (
