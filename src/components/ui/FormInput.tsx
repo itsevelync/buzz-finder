@@ -10,7 +10,7 @@ interface FormInputProps {
     selectOptions?: { value: string; label: string }[];
     value?: string;
     defaultValue?: string;
-    onInputChange?: ((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void);
+    onInputChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
     disabled?: boolean;
     minLength?: number;
@@ -41,7 +41,13 @@ export default function FormInput({
                 {label} {required && " *"}
             </label>
             {isSelect ? (
-                <select name={name} id={name} defaultValue={defaultValue} required={required} disabled={disabled} {...(onInputChange ? { value, onChange: onInputChange } : { defaultValue })}>
+                <select
+                    name={name}
+                    id={name}
+                    defaultValue={defaultValue}
+                    required={required}
+                    disabled={disabled}
+                >
                     {selectOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                             {option.label}
@@ -49,7 +55,14 @@ export default function FormInput({
                     ))}
                 </select>
             ) : isTextarea ? (
-                <textarea name={name} id={name} placeholder={placeholder} required={required} rows={rows} disabled={disabled} {...(onInputChange ? { value, onChange: onInputChange } : { defaultValue })} />
+                <textarea
+                    name={name}
+                    id={name}
+                    placeholder={placeholder}
+                    required={required}
+                    rows={rows}
+                    disabled={disabled}
+                />
             ) : (
                 <input
                     type={type}

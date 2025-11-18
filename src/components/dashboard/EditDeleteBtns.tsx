@@ -5,13 +5,11 @@ import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 interface EditDeleteBtnsProps {
-    id: string;
     editURL: string;
     deleteAPIRoute: string;
 }
 
 export default function EditDeleteBtns({
-    id,
     editURL,
     deleteAPIRoute,
 }: EditDeleteBtnsProps) {

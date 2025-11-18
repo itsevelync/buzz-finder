@@ -5,7 +5,7 @@ import { FaChevronLeft, FaHandPaper } from "react-icons/fa";
 import Link from "next/link";
 import CenteredMap from "@/components/maps/CenteredMap";
 import { categories } from "@/constants/Categories";
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import { auth } from "@/auth";
 
@@ -66,7 +66,7 @@ async function getPersonFound(id: string) {
 
 export default async function ItemPage({ params }: ItemPageProps) {
     params = await params;
-    const item = (await getItem(params.id)) as Item;
+    const item = (await getItem(params.id)) as PlainItem;
 
     const session = await auth();
 
@@ -112,7 +112,6 @@ export default async function ItemPage({ params }: ItemPageProps) {
                     </p>
                 </div>
                 {isOwner && <EditDeleteBtns
-                    id = {item._id}
                     editURL={`/item/${item._id}/edit`}
                     deleteAPIRoute={`/api/item/${item._id}`}
                 />}

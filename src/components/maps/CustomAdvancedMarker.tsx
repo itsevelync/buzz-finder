@@ -2,14 +2,14 @@ import { useState } from "react";
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import { categories } from "@/constants/Categories";
 
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import Image from "next/image";
 
 export default function CustomAdvancedMarker({
     item,
     disableClick = false,
 }: {
-    item: Item;
+    item: PlainItem;
     disableClick?: boolean;
 }) {
     const [clicked, setClicked] = useState(false);

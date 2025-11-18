@@ -1,6 +1,6 @@
 'use client'
 
-import { deleteUser, updateUser } from "@/actions/User";
+import { deleteUser } from "@/actions/User";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -8,7 +8,7 @@ import FormInput from "../ui/FormInput";
 
 
 const DeleteProfileForm = ({ userID }: { userID: string }) => {
-    const { data: session, update } = useSession();
+    const { update } = useSession();
     
     const router = useRouter();
     const [error, setError] = useState("");

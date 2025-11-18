@@ -56,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new InvalidLoginError()
                 }
                 
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { password, _id, ...userWithoutPassword } = user.toObject();
                 return { id: user._id.toString(), ...userWithoutPassword };
             },
