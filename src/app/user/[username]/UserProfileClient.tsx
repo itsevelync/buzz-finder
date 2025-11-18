@@ -93,6 +93,8 @@ export default function UserProfileClient({
                     onClose={() => setIsModalOpen(false)}
                     email={userProfile.email}
                     phone={userProfile.phoneNum}
+                    discord={userProfile.discord}
+                    instagram={userProfile.instagram}
                 />
             )}
         </div>

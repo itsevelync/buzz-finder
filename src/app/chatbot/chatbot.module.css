@@ -1,0 +1,72 @@
+.bee {
+  position: absolute;
+  font-size: 32px;        /* size of the bee emoji */
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* left -> right */
+.beeLtr {
+  left: -10vw;
+  animation-name: buzz-fly-ltr;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* right -> left */
+.beeRtl {
+  right: -10vw;
+  animation-name: buzz-fly-rtl;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* Wiggly path: LEFT -> RIGHT, bee flipped so it faces right */
+@keyframes buzz-fly-ltr {
+  0% {
+    transform: translateX(0vw) translateY(0vh) scaleX(-1) rotate(0deg);
+  }
+  15% {
+    transform: translateX(20vw) translateY(-2vh) scaleX(-1) rotate(-10deg);
+  }
+  30% {
+    transform: translateX(40vw) translateY(2vh) scaleX(-1) rotate(8deg);
+  }
+  45% {
+    transform: translateX(60vw) translateY(-1.5vh) scaleX(-1) rotate(-6deg);
+  }
+  60% {
+    transform: translateX(80vw) translateY(2.5vh) scaleX(-1) rotate(10deg);
+  }
+  75% {
+    transform: translateX(100vw) translateY(-2vh) scaleX(-1) rotate(-8deg);
+  }
+  100% {
+    transform: translateX(120vw) translateY(1vh) scaleX(-1) rotate(0deg);
+  }
+}
+
+/* Wiggly path: RIGHT -> LEFT, normal orientation (faces left) */
+@keyframes buzz-fly-rtl {
+  0% {
+    transform: translateX(0vw) translateY(0vh) rotate(0deg);
+  }
+  15% {
+    transform: translateX(-20vw) translateY(2vh) rotate(10deg);
+  }
+  30% {
+    transform: translateX(-40vw) translateY(-2vh) rotate(-8deg);
+  }
+  45% {
+    transform: translateX(-60vw) translateY(1.5vh) rotate(6deg);
+  }
+  60% {
+    transform: translateX(-80vw) translateY(-2.5vh) rotate(-10deg);
+  }
+  75% {
+    transform: translateX(-100vw) translateY(2vh) rotate(8deg);
+  }
+  100% {
+    transform: translateX(-120vw) translateY(-1vh) rotate(0deg);
+  }
+}
