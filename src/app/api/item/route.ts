@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
         if (personFound) {
             query.person_found = personFound;
         }
-        const items = await ItemSchema.find(query).sort({ createdAt: -1 });
+        const items = await ItemSchema.find(query).sort({ lostdate: -1 });
         return new Response(JSON.stringify(items), { status: 200 });
     }
 }

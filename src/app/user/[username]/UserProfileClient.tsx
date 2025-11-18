@@ -67,7 +67,7 @@ export default function UserProfileClient({
                         </div>
                     </div>
                 </div>
-                {userProfile?.description && <p>{userProfile.description}</p>}
+                {userProfile?.description && <p className="mb-5">{userProfile.description}</p>}
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"

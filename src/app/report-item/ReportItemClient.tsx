@@ -104,7 +104,10 @@ export default function ReportItemClient({
                 ) as HTMLInputElement
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
-                .value as keyof typeof categories,
+                .value
+                ? ((form.elements.namedItem("category") as HTMLInputElement)
+                      .value as keyof typeof categories)
+                : "misc",
             position: {
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
@@ -182,26 +185,32 @@ export default function ReportItemClient({
                     <FormInput
                         label="Item Name"
                         name="title"
-                        placeholder="Name of item"
+                        placeholder="Red Wallet, Silver Keychain, Beige Scarf, etc."
                         required
                     />
                     <FormInput
                         label="Item Description"
                         name="item_description"
-                        placeholder="Write an item description here"
+                        placeholder='Color, size, brand, and any unique features (e.g., "Red leather wallet with a small scratch").'
                         rows={3}
+                        isTextarea
+                    />
+                    <FormInput
+                        label="Location Details"
+                        name="location_details"
+                        placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
                         isTextarea
                     />
                     <FormInput
                         label="Item Retrieval"
                         name="retrieval_description"
-                        placeholder="How do you want this item to be retrieved?"
+                        placeholder='e.g., "Left at the main circulation desk" or "Call me to arrange a meetup."'
                         isTextarea
                     />
                     <FormInput
                         label="Category"
                         name="category"
-                        defaultValue="misc"
+                        placeholder="Select an Item Category"
                         isSelect
                         selectOptions={categoryOptions}
                     />

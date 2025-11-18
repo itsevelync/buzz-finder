@@ -7,6 +7,8 @@ import { categories } from "@/constants/Categories";
 import type { Item } from "@/model/Item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa";
 
 type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
     person_found: string;
@@ -174,6 +176,12 @@ export default function EditItemClient({
 
     return (
         <div className="p-10 flex flex-col gap-6">
+            <Link
+                href={`/item/${itemId}`}
+                className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all"
+            >
+                <FaChevronLeft /> Back to Item Page
+            </Link>
             <h1 className="text-4xl font-bold text-buzz-blue">
                 Edit {item?.title || "Item"}
             </h1>

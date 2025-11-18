@@ -147,19 +147,19 @@ export default async function ItemPage({ params }: ItemPageProps) {
                             <h3 className="font-bold text-buzz-blue">
                                 Description
                             </h3>
-                            <p>{item.item_description ?? "N/A"}</p>
+                            <p>{item.item_description || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">
                                 Retrieval Information
                             </h3>
-                            <p>{item.retrieval_description ?? "N/A"}</p>
+                            <p>{item.retrieval_description || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">
                                 Location Details
                             </h3>
-                            <p>{item.location_details ?? "N/A"}</p>
+                            <p>{item.location_details || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">

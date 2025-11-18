@@ -31,8 +31,6 @@ export default function LostItemCard({
         minute: "2-digit",
     });
 
-    if (lostItemPost.user === null) return;
-
     return (
         <div className="rounded-lg w-full flex flex-col shadow p-6 gap-4 max-w-[1020px]">
             <div className="flex flex-row items-center gap-2 justify-between flex-wrap">

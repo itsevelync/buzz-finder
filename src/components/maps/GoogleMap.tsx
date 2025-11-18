@@ -2,19 +2,13 @@
 
 import MapPanController from "./MapPanController";
 import { PlainItem } from "@/model/Item";
-import {
-    APIProvider,
-    Map,
-    InfoWindow,
-} from "@vis.gl/react-google-maps";
-import Image from "next/image";
+import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
-import Link from "next/link";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
 
-const gtCampus = { lat: 33.778, lng: -84.398 };
+const gtCampus = { lat: 33.7765, lng: -84.398 };
 
 /**
  *
@@ -36,7 +30,12 @@ export default function GoogleMap(props: {
         (item) => item._id.toString() === selectedId
     );
 
-    if (selectedItem?.position) setLocation(selectedItem?.position);
+    useEffect(() => {
+        if (selectedItem?.position) {
+            setLocation({lat: selectedItem.position.lat + 0.0005,
+                lng: selectedItem.position.lng});
+        }
+    }, [selectedItem, setLocation]);
 
     const [mapCenter] = useState(selectedItem?.position || gtCampus);
 
@@ -71,51 +70,15 @@ export default function GoogleMap(props: {
                             <SmallAdvancedMarker
                                 key={item._id}
                                 item={item}
+                                selectedId={selectedId}
+                                setSelectedId={setSelectedId}
                                 onPinClick={() => {
-                                    setLocation(item.position);
-                                    setSelectedId(item._id);
+                                    if (selectedId !== item._id) {
+                                        setSelectedId(item._id);
+                                    }
                                 }}
                             />
                         ))}
-
-                        {selectedItem && (
-                            <InfoWindow
-                                position={selectedItem.position}
-                                onCloseClick={() => setSelectedId(null)}
-                                headerContent={
-                                    <Link href={"/item/" + selectedItem._id}>
-                                        <h2 className="ml-1 -mt-1 text-lg font-bold capitalize">
-                                            {selectedItem.title}
-                                        </h2>
-                                    </Link>
-                                }
-                            >
-                                <div className="p-1 w-64">
-                                    <Image
-                                        className="w-full h-38 object-cover rounded-lg mb-2"
-                                        src={
-                                            (selectedItem.image
-                                                ?.url as string) ||
-                                            "/img-placeholder.jpg"
-                                        }
-                                        alt={selectedItem.title}
-                                        width={200}
-                                        height={150}
-                                    />
-                                    <div>
-                                        <p className="text-sm text-gray-600">
-                                            {selectedItem.item_description}
-                                        </p>
-                                        <p className="text-xs text-gray-500 mt-2">
-                                            Reported on:{" "}
-                                            {new Date(
-                                                selectedItem.lostdate
-                                            ).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-                            </InfoWindow>
-                        )}
                     </Map>
                 </div>
             </APIProvider>
