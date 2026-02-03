@@ -1,8 +1,8 @@
-import User from '@/model/User';
-//import ItemSchema from './model/ItemSchema.ts';
+import User, { User as UserType } from '@/model/User';
+import { FilterQuery } from 'mongoose';
 
 interface FetchingUsersOptions {
-    query?: Record<string, any>;
+    query?: FilterQuery<UserType>;
     select?: string;
     sort?: Record<string, 1 | -1>;
     limit?: number;
@@ -10,8 +10,8 @@ interface FetchingUsersOptions {
     name?: string;
 }
 
-class Fetch {
-    
+export default class Fetch {
+
     static async fetchUser(options: FetchingUsersOptions = {}) {
         const {
             query = {},
@@ -22,7 +22,7 @@ class Fetch {
         } = options;
 
         try {
-           
+
             const users = await User.find(query)
                 .select(select)
                 .sort(sort)
@@ -34,17 +34,24 @@ class Fetch {
                 count: users.length,
                 total: await User.countDocuments(query)
             }
-        } catch(error: any) {
-            return {
-                success: false,
-                error: error.message
-            };
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return {
+                    success: false,
+                    error: e.message
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "An unexpected error occurred."
+                };
+            }
         }
     }
 
     static async fetchUserById(userId: string) {
         try {
-            let select = 'name email username phoneNum userId description createdAt updatedAt';
+            const select = 'name email username phoneNum userId description createdAt updatedAt';
             const user = await User.findById(userId).select(select);
 
             if (!user) {
@@ -58,11 +65,18 @@ class Fetch {
                 success: true,
                 data: user
             };
-        } catch (error: any) {
-            return {
-                success: false,
-                error: error.message
-            };
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return {
+                    success: false,
+                    error: e.message
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "An unexpected error occurred."
+                };
+            }
         }
     }
 
@@ -71,7 +85,7 @@ class Fetch {
      */
     static async fetchUsersByName(name: string, options: FetchingUsersOptions = {}) {
         return this.fetchUser({
-            query: { 
+            query: {
                 name: { $regex: name, $options: 'i' }
             },
             ...options
@@ -83,8 +97,8 @@ class Fetch {
      */
     static async fetchUsersWithPhoneNumbers(options: FetchingUsersOptions = {}) {
         return this.fetchUser({
-            query: { 
-                phoneNum: { $exists: true } 
+            query: {
+                phoneNum: { $exists: true }
             },
             ...options
         });
@@ -92,7 +106,7 @@ class Fetch {
 
     static async fetchUsersByDateRange(startDate: Date, endDate: Date, options: FetchingUsersOptions = {}) {
         return this.fetchUser({
-            query: { 
+            query: {
                 createdAt: { $gte: startDate, $lte: endDate }
             },
             ...options
@@ -101,8 +115,8 @@ class Fetch {
 
     static async fetchUsersWithDescriptions(options: FetchingUsersOptions = {}) {
         return this.fetchUser({
-            query: { 
-                description: { $exists: true } 
+            query: {
+                description: { $exists: true }
             },
             ...options
         });
@@ -129,41 +143,53 @@ class Fetch {
 
     static async checkEmailExists(email: string) {
         try {
-            const user = await User.findOne({ 
-                email: email.toLowerCase().trim() 
+            const user = await User.findOne({
+                email: email.toLowerCase().trim()
             }).select('email');
-            
+
             return {
                 success: true,
                 exists: !!user,
                 data: user
             };
-        } catch (error: any) {
-            return {
-                success: false,
-                error: error.message
-            };
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return {
+                    success: false,
+                    error: e.message
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "An unexpected error occurred."
+                };
+            }
         }
     }
-    
+
     static async checkUsernameExists(username: string) {
         try {
-            const user = await User.findOne({ 
-                username: username.trim() 
+            const user = await User.findOne({
+                username: username.trim()
             }).select('username');
-            
+
             return {
                 success: true,
                 exists: !!user,
                 data: user
             };
-        } catch (error: any) {
-            return {
-                success: false,
-                error: error.message
-            };
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                return {
+                    success: false,
+                    error: e.message
+                };
+            } else {
+                return {
+                    success: false,
+                    error: "An unexpected error occurred."
+                };
+            }
         }
     }
 }
-
-export default Fetch;

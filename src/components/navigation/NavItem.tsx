@@ -10,7 +10,14 @@ type NavItemProps = {
     direction?: "right" | "bottom" | "top" | "left";
 };
 
-export default function NavIcon({ name, href, icon: Icon, iconFill: IconFill = Icon, size = "text-3xl", direction = "right" }: NavItemProps) {
+export default function NavIcon({
+    name,
+    href,
+    icon: Icon,
+    iconFill: IconFill = Icon,
+    size = "text-3xl",
+    direction = "right",
+}: NavItemProps) {
     return (
         <Link key={href} href={href} className={`relative group ${size}`}>
             {/* Outline icon (default) */}

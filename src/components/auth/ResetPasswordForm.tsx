@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { compareResetCode, sendResetCode } from "@/actions/ResetCode";
 import { useState } from "react";
@@ -13,15 +13,15 @@ type ErrorState = {
     linkHref?: string;
 } | null;
 
-const ResetPasswordForm = () => {
+export default function ResetPasswordForm() {
     const router = useRouter();
     const [error, setError] = useState<ErrorState>(null);
     const [successMessage, setSuccessMessage] = useState("");
     const [formData, setFormData] = useState({
-        email: '',
-        resetCode: '',
-        newPassword: '',
-        confirmNewPassword: '',
+        email: "",
+        resetCode: "",
+        newPassword: "",
+        confirmNewPassword: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [verified, setVerified] = useState(false);
@@ -30,7 +30,9 @@ const ResetPasswordForm = () => {
         setSuccessMessage("");
     };
 
-    const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFormChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
@@ -40,7 +42,6 @@ const ResetPasswordForm = () => {
 
     async function handleEmailSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const formData2 = new FormData(event.currentTarget);
 
         // Clear previous messages
         setError(null);
@@ -63,24 +64,29 @@ const ResetPasswordForm = () => {
                     setError({
                         message: response.error,
                         linkText: response.linkText,
-                        linkHref: response.linkHref
+                        linkHref: response.linkHref,
                     });
                 }
             } else if (response?.success) {
-
                 // Set a success message for the user. We don't redirect immediately to
                 // give the user a moment to read the confirmation.
-                setSuccessMessage("If an account exists for that email address, you will receive a password reset link shortly.");
+                setSuccessMessage(
+                    "If an account exists for that email address, you will receive a password reset link shortly."
+                );
             }
-
-        } catch (e: any) {
+        } catch {
             // Display a generic error message to the user for security.
             // This prevents an attacker from knowing if an email exists.
-            setError({ message: "Failed to send reset instructions. Please try again later." });
+            setError({
+                message:
+                    "Failed to send reset instructions. Please try again later.",
+            });
         }
     }
 
-    async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {
+    async function handlePasswordChange(
+        event: React.FormEvent<HTMLFormElement>
+    ) {
         event.preventDefault();
         setIsSubmitting(true);
 
@@ -92,12 +98,16 @@ const ResetPasswordForm = () => {
         }
 
         // Call the server action to compare the codes
-        const response = await updateUserFromEmail(formData.email, { password: formData.newPassword });
+        const response = await updateUserFromEmail(formData.email, {
+            password: formData.newPassword,
+        });
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
-            alert("Password updated successfully. Redirecting you to login page.");
-            router.push('/login');
+            alert(
+                "Password updated successfully. Redirecting you to login page."
+            );
+            router.push("/login");
         } else if (response.error) {
             setError({ message: response.error });
         }
@@ -105,18 +115,22 @@ const ResetPasswordForm = () => {
         setIsSubmitting(false);
     }
 
-
     async function handleCodeSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setIsSubmitting(true);
         setError(null);
 
         // Call the server action to compare the codes
-        const response = await compareResetCode(formData.email, formData.resetCode);
+        const response = await compareResetCode(
+            formData.email,
+            formData.resetCode
+        );
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
-            alert("Code verified successfully. You can now set a new password.");
+            alert(
+                "Code verified successfully. You can now set a new password."
+            );
             setVerified(true);
         } else if (response.error) {
             setError({ message: response.error });
@@ -128,18 +142,30 @@ const ResetPasswordForm = () => {
     if (verified) {
         return (
             <>
-                {error && <div className="text-red-500 mb-4">{error.message}</div>}
-                <div>Code verified successfully. You can now set a new password.</div>
-                <form
-                    className="form"
-                    onSubmit={handlePasswordChange}>
-                    <FormInput label="New Password" name="newPassword" type="password"
-                               value={formData.newPassword} onInputChange={handleFormChange} />
-                    <FormInput label="Confirm New Password" name="confirmNewPassword" type="password"
-                               value={formData.confirmNewPassword} onInputChange={handleFormChange} />
+                {error && (
+                    <div className="text-red-500 mb-4">{error.message}</div>
+                )}
+                <div>
+                    Code verified successfully. You can now set a new password.
+                </div>
+                <form className="form" onSubmit={handlePasswordChange}>
+                    <FormInput
+                        label="New Password"
+                        name="newPassword"
+                        type="password"
+                        value={formData.newPassword}
+                        onInputChange={handleFormChange}
+                    />
+                    <FormInput
+                        label="Confirm New Password"
+                        name="confirmNewPassword"
+                        type="password"
+                        value={formData.confirmNewPassword}
+                        onInputChange={handleFormChange}
+                    />
 
                     <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Processing...' : 'Reset Password'}
+                        {isSubmitting ? "Processing..." : "Reset Password"}
                     </button>
                 </form>
             </>
@@ -149,21 +175,40 @@ const ResetPasswordForm = () => {
     if (successMessage) {
         return (
             <>
-                {error && <div className="text-red-500 mb-4">{error.message}</div>}
-                <div>Please enter the verification code we sent to {formData.email}.</div>
-                <form
-                    className="form"
-                    onSubmit={handleCodeSubmit}>
+                {error && (
+                    <div className="text-red-500 mb-4">{error.message}</div>
+                )}
+                <div>
+                    Please enter the verification code we sent to{" "}
+                    {formData.email}.
+                </div>
+                <form className="form" onSubmit={handleCodeSubmit}>
                     <div>
-                        <FormInput label="Verification Code" name="resetCode" type="text"
-                            placeholder="XXXXXX" required minLength={6} maxLength={6} disabled={isSubmitting}
-                            value={formData.resetCode} onInputChange={handleFormChange}
+                        <FormInput
+                            label="Verification Code"
+                            name="resetCode"
+                            type="text"
+                            placeholder="XXXXXX"
+                            required
+                            minLength={6}
+                            maxLength={6}
+                            disabled={isSubmitting}
+                            value={formData.resetCode}
+                            onInputChange={handleFormChange}
                         />
-                        <p className="text-sm text-gray-600">Not {formData.email}? Click <span className="link" onClick={handleClearMessage}>here</span> to enter a different email.</p>
+                        <p className="text-sm text-gray-600">
+                            Not {formData.email}? Click{" "}
+                            <span className="link" onClick={handleClearMessage}>
+                                here
+                            </span>{" "}
+                            to enter a different email.
+                        </p>
                     </div>
 
                     <button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Verifying...' : 'Confirm Verification Code'}
+                        {isSubmitting
+                            ? "Verifying..."
+                            : "Confirm Verification Code"}
                     </button>
                 </form>
             </>
@@ -172,7 +217,9 @@ const ResetPasswordForm = () => {
 
     return (
         <>
-            {successMessage && <div className="success text-green-500">{successMessage}</div>}
+            {successMessage && (
+                <div className="success text-green-500">{successMessage}</div>
+            )}
             {error && (
                 <div className="text-red-500">
                     {error.message}
@@ -180,27 +227,31 @@ const ResetPasswordForm = () => {
                         <>
                             <Link href={error.linkHref} className="link">
                                 {error.linkText}
-                            </Link>.</>
+                            </Link>
+                            .
+                        </>
                     )}
                 </div>
             )}
-            <p>Enter the email associated with your account and we'll send you password reset instructions.</p>
-            <form
-                className="form"
-                onSubmit={handleEmailSubmit}>
+            <p>
+                Enter the email associated with your account and we&rsquo;ll
+                send you password reset instructions.
+            </p>
+            <form className="form" onSubmit={handleEmailSubmit}>
                 <div>
-                    <FormInput label="Email Address" name="email" type="email"
-                               placeholder="gburdell3@gatech.edu" required
-                               value={formData.email} onInputChange={handleFormChange}
+                    <FormInput
+                        label="Email Address"
+                        name="email"
+                        type="email"
+                        placeholder="gburdell3@gatech.edu"
+                        required
+                        value={formData.email}
+                        onInputChange={handleFormChange}
                     />
                 </div>
 
-                <button type="submit">
-                    Send Reset Instructions
-                </button>
+                <button type="submit">Send Reset Instructions</button>
             </form>
         </>
     );
-};
-
-export default ResetPasswordForm;
+}

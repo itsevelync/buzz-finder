@@ -1,11 +1,9 @@
-import { doSocialLogin } from '@/actions/User'
-import Image from 'next/image'
+import { doSocialLogin } from "@/actions/User";
+import Image from "next/image";
 
 export default function SocialLogins() {
     return (
-        <form
-            action={doSocialLogin}
-        >
+        <form action={doSocialLogin}>
             <button
                 type="submit"
                 name="action"
@@ -21,5 +19,5 @@ export default function SocialLogins() {
                 Sign In with Google
             </button>
         </form>
-    )
-} 
+    );
+}

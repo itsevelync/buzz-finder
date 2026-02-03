@@ -14,8 +14,10 @@ export default async function SignInPage() {
             title="Login to BuzzFinder"
             bottomText={
                 <>
-                    Don't have an account?{" "}
-                    <Link className="link" href="/sign-up">Register</Link>
+                    Don&rsquo;t have an account?{" "}
+                    <Link className="link" href="/sign-up">
+                        Register
+                    </Link>
                 </>
             }
         >

@@ -2,16 +2,19 @@ import { useState } from "react";
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import { categories } from "@/constants/Categories";
 
-import { Item } from "@/model/Item";
+import { PlainItem } from "@/model/Item";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function CustomAdvancedMarker({
     item,
     disableClick = false,
 }: {
-    item: Item;
+    item: PlainItem;
     disableClick?: boolean;
 }) {
+    const router = useRouter();
+
     const [clicked, setClicked] = useState(false);
     const [hovered, setHovered] = useState(false);
     const position = {
@@ -20,6 +23,7 @@ export default function CustomAdvancedMarker({
     };
 
     const updateClicked = () => {
+        router.push("/map?itemId=" + item._id);
         if (!disableClick) {
             if (clicked) {
                 setClicked(false);
@@ -94,8 +98,8 @@ export default function CustomAdvancedMarker({
 
                 <div
                     style={{ borderColor: pinColor }}
-                    className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-[8px]
-                    rounded-br-[3px] translate-y-[4px] -translate-x-1/2
+                    className={`absolute bottom-0 left-1/2 z-[-1] w-0 h-0 border-8
+                    rounded-br-[3px] translate-y-1 -translate-x-1/2
                     rotate-45 scale-[1.3] transition-all duration-200 ease-in-out`}
                 />
             </>

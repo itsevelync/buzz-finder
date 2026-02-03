@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
-import type { Item } from "@/model/Item";
+import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 
 import ContactInfoModal from "@/components/profile/ContactInfoModal";
@@ -16,14 +16,12 @@ import { MdContactMail } from "react-icons/md";
 
 interface UserProfileClientProps {
     userProfile: User | null;
-    sessionUserId: string | undefined;
-    foundItems: Item[];
+    foundItems: PlainItem[];
     lostItemPosts: LostItemPost[];
 }
 
 export default function UserProfileClient({
     userProfile,
-    sessionUserId,
     foundItems,
     lostItemPosts,
 }: UserProfileClientProps) {
@@ -69,7 +67,7 @@ export default function UserProfileClient({
                         </div>
                     </div>
                 </div>
-                {userProfile?.description && <p>{userProfile.description}</p>}
+                {userProfile?.description && <p className="mb-5">{userProfile.description}</p>}
                 <button
                     onClick={() => setIsModalOpen(true)}
                     className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
@@ -95,6 +93,8 @@ export default function UserProfileClient({
                     onClose={() => setIsModalOpen(false)}
                     email={userProfile.email}
                     phone={userProfile.phoneNum}
+                    discord={userProfile.discord}
+                    instagram={userProfile.instagram}
                 />
             )}
         </div>

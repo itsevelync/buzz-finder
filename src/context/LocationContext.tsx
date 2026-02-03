@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { createContext, useState, useContext, ReactNode } from "react";
 
 export interface LocationCoords {
     lat: number;
@@ -7,21 +7,20 @@ export interface LocationCoords {
 }
 
 interface LocationContextType {
-    location: LocationCoords;
-    setLocation: React.Dispatch<React.SetStateAction<LocationCoords>>;
+    location: LocationCoords | null;
+    setLocation: React.Dispatch<React.SetStateAction<LocationCoords | null>>;
 }
 
-const LocationContext = createContext<LocationContextType | undefined>(undefined);
+const LocationContext = createContext<LocationContextType | undefined>(
+    undefined
+);
 
 interface LocationProviderProps {
     children: ReactNode;
 }
 
 export const LocationProvider = ({ children }: LocationProviderProps) => {
-    const [location, setLocation] = useState<LocationCoords>({
-        lat: 33.7780,
-        lng: -84.3980,
-    });
+    const [location, setLocation] = useState<LocationCoords | null>(null);
 
     const value = { location, setLocation };
 
@@ -36,8 +35,8 @@ export const useLocation = () => {
     const context = useContext(LocationContext);
 
     if (context === undefined) {
-        throw new Error('useLocation must be used within LocationProvider');
+        throw new Error("useLocation must be used within LocationProvider");
     }
 
     return context;
-}
+};

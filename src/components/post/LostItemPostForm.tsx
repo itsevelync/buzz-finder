@@ -2,12 +2,15 @@
 
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 
-export default function LostItemPostForm() {
+interface LostItemPostFormProps {
+    session: Session | null;
+}
+
+export default function LostItemPostForm({ session }: LostItemPostFormProps) {
     const router = useRouter();
-    const { data: session } = useSession();
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
         label: value.label,
@@ -22,7 +25,13 @@ export default function LostItemPostForm() {
 
         const form = e.target as HTMLFormElement;
         const body: Record<string, unknown> = {};
-        const fields = ["title", "description", "lastLocation", "category", "contactInfo"];
+        const fields = [
+            "title",
+            "description",
+            "lastLocation",
+            "category",
+            "contactInfo",
+        ];
 
         for (const field of fields) {
             const value = getInputValue(form, field);
@@ -31,8 +40,8 @@ export default function LostItemPostForm() {
             }
         }
 
-        if (session?.user?._id) {
-            body.user = session.user._id;
+        if (session?.user) {
+            body.user = session.user;
         }
 
         fetch("/api/lost-item-post", {
