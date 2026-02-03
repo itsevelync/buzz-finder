@@ -69,7 +69,7 @@ export default function FoundItemCard({
                 </div>
 
                 {includeMapLink ? (
-                    <a href={"map?itemId=" + item._id}>
+                    <a href={"/map?itemId=" + item._id}>
                         <button className="bg-buzz-gold text-white rounded-full px-2 py-1 hover:bg-buzz-gold/80 flex items-center gap-2 w-full justify-center">
                             <FaMapPin /> Locate on Map
                         </button>
