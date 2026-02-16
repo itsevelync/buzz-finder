@@ -70,8 +70,8 @@ function CenterButton({
         if (!map) return;
         map.panTo(currentPosition);
 
-        if (map.getZoom() !== 17) {
-            map.setZoom(17);
+        if (map.getZoom() !== 18) {
+            map.setZoom(18);
         }
     }
 
