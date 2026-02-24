@@ -16,6 +16,7 @@ export default function ReportItemClient({
     const router = useRouter();
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
+    const [category, setCategory] = useState<keyof typeof categories | "">("");
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
@@ -44,7 +45,7 @@ export default function ReportItemClient({
                 (error) => {
                     console.error("Error getting current location:", error);
                     setCurrPositionFetched(true);
-                }
+                },
             );
         }
     }, [currPositionFetched]);
@@ -62,7 +63,7 @@ export default function ReportItemClient({
         formdata.append("file", file);
         formdata.append(
             "upload_preset",
-            process.env.NEXT_PUBLIC_UPLOAD_PRESET as string
+            process.env.NEXT_PUBLIC_UPLOAD_PRESET as string,
         );
 
         try {
@@ -71,7 +72,7 @@ export default function ReportItemClient({
                 {
                     method: "POST",
                     body: formdata,
-                }
+                },
             );
 
             const data = await res.json();
@@ -100,7 +101,7 @@ export default function ReportItemClient({
             ).value,
             retrieval_description: (
                 form.elements.namedItem(
-                    "retrieval_description"
+                    "retrieval_description",
                 ) as HTMLInputElement
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
@@ -171,6 +172,7 @@ export default function ReportItemClient({
                                     selectedLocation={selectedLocation}
                                     setSelectedLocation={setSelectedLocation}
                                     currentPosition={currentPosition}
+                                    category={category}
                                 />
                             ) : (
                                 <p className="p-3 text-3xl text-gray-500">
@@ -214,6 +216,12 @@ export default function ReportItemClient({
                         defaultValue=""
                         isSelect
                         selectOptions={categoryOptions}
+                        value={category}
+                        onInputChange={(e) =>
+                            setCategory(
+                                e.target.value as keyof typeof categories,
+                            )
+                        }
                     />
                     <div className="bg-white shadow rounded p-6">
                         <h3 className="text-lg font-semibold">
@@ -233,7 +241,7 @@ export default function ReportItemClient({
                                     checked={!useAccountInfo}
                                     onChange={(e) => {
                                         setUseAccountInfo(
-                                            !e.target.checked as boolean
+                                            !e.target.checked as boolean,
                                         );
                                     }}
                                 />

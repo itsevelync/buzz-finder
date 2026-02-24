@@ -11,7 +11,9 @@ interface FormInputProps {
     value?: string;
     defaultValue?: string;
     onInputChange?: (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
     ) => void;
     required?: boolean;
     disabled?: boolean;
@@ -49,6 +51,9 @@ export default function FormInput({
                     defaultValue={defaultValue}
                     required={required}
                     disabled={disabled}
+                    {...(onInputChange
+                        ? { value, onChange: onInputChange }
+                        : { defaultValue })}
                 >
                     <option value="" disabled>
                         {placeholder ?? "Select an option"}
