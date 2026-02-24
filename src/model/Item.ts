@@ -64,7 +64,12 @@ const ItemSchema = new Schema(
         deletedAt: {
             type: Date,
             default: null
-        }
+        },
+        isArchived: {
+            required: true,
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true }
 );
