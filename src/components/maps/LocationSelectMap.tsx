@@ -6,9 +6,10 @@ import {
     MapControl,
     ControlPosition,
 } from "@vis.gl/react-google-maps";
-import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 import { MdMyLocation } from "react-icons/md";
+import { categories } from "@/constants/Categories";
+import StaticCategoryMarker from "./StaticCategoryMarker";
 
 interface LocationSelectMapProps {
     height: number | string;
@@ -16,6 +17,7 @@ interface LocationSelectMapProps {
     selectedLocation: { lat: number; lng: number };
     setSelectedLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>;
     currentPosition: { lat: number; lng: number };
+    category?: keyof typeof categories | "";
 }
 
 export default function LocationSelectMap(props: LocationSelectMapProps) {
@@ -43,12 +45,7 @@ export default function LocationSelectMap(props: LocationSelectMapProps) {
                 >
                     {/* Pin */}
                     <div className="absolute bottom-1/2 left-1/2 -translate-x-1/2">
-                        <Image
-                            src="/map-pin.svg"
-                            width={35}
-                            height={50}
-                            alt="Map Pin"
-                        />
+                        <StaticCategoryMarker categoryName={props.category} />
                     </div>
 
                     {/* Button to center on current position */}
