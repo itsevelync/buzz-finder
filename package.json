@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.10.0",
+    "@boxyhq/saml-jackson": "^1.52.2",
     "@getbrevo/brevo": "^3.0.1",
     "@googlemaps/react-wrapper": "^1.2.0",
     "@react-google-maps/api": "^2.20.7",
