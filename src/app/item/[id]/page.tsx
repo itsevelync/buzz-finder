@@ -15,6 +15,14 @@ interface ItemPageProps {
     };
 }
 
+const archive = async (itemId: string) => {
+  const res = await fetch(`/api/item/${itemId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ isArchived: true }),
+  });
+};
+
 async function getItem(id: string) {
     try {
         await dbConnect();
@@ -130,9 +138,11 @@ export default async function ItemPage({ params }: ItemPageProps) {
                     <button className="bg-buzz-gold flex items-center gap-2 text-white text-xl px-6 shadow-md hover:brightness-110 hover:shadow filter hover:saturate-180 hover:translate-y-0.5 shadow-buzz-gold/50 py-1.5 rounded-full">
                         <FaHandPaper /> Claim Item
                     </button>
-                    <p className="underline opacity-80">
+                    <Link href={`/item/${item._id}/archive`}>
+                    <button className="underline opacity-80">
                         Item no longer there?
-                    </p>
+                    </button>
+                    </Link>
                 </div>
                 <div className="flex flex-col gap-10 grow">
                     <div className="h-90 w-full rounded-xl overflow-hidden border border-gray-300 shadow">

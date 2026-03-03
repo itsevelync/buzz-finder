@@ -11,13 +11,15 @@ export default function ItemList({
     }
     return (
         <div className="p-5 m-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-            {items.map((item: PlainItem) => (
-                <FoundItemCard
-                    key={item._id}
+           {items
+                .filter((item: PlainItem) => !item.isArchived)
+                .map((item: PlainItem) => (
+                    <FoundItemCard
+                    key={item._id.toString()}
                     item={item}
                     includeMapLink={true}
-                />
-            ))}
+                    />
+                ))}
         </div>
     );
 }

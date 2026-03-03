@@ -23,6 +23,10 @@ export default function FoundItemCard({
     const category = categories[item.category];
     const CategoryIcon = category.icon;
 
+    if (item.isArchived) {
+        return (<></>);
+    }
+
     return (
         <div
             id={item._id.toString()}
