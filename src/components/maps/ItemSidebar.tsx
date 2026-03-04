@@ -107,7 +107,7 @@ export default function ItemSidebar({
                             : "grid-cols-1"
                     } gap-3 p-5 overflow-y-auto`}
                 >
-                    {filteredItems.map((item) => (
+                    {filteredItems.filter((item: PlainItem) => !item.isArchived).map((item) => (
                         <div
                             key={item._id.toString()}
                             className="cursor-pointer"
