@@ -29,8 +29,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({ allowDangerousEmailAccountLinking: true }),
     MicrosoftEntraID({
       clientId: process.env.AUTH_MICROSOFT_ENTRA_ID,
-      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET,
+      clientSecret: process.env.AUTH_MICROSOFT_ENTRA_ID_SECRET_VALUE,
       issuer: `https://login.microsoftonline.com/${process.env.AUTH_MICROSOFT_ENTRA_ID_TENANT_ID}/v2.0`,
+      allowDangerousEmailAccountLinking: true,
     }),
     Credentials({
       credentials: {
