@@ -1,23 +1,29 @@
 import { doSocialLogin } from "@/actions/User";
 import Image from "next/image";
+import Divider from "../ui/Divider";
 
 export default function SocialLogins() {
-    return (
-        <form action={doSocialLogin}>
-            <button
-                type="submit"
-                name="action"
-                value="google"
-                className="flex gap-3 border border-gray-400 rounded-sm p-2 w-full justify-center hover:bg-gray-100"
-            >
-                <Image
-                    src="/google.svg"
-                    alt="Google Logo"
-                    width={16}
-                    height={16}
-                />
-                Sign In with Google
-            </button>
-        </form>
-    );
+  return (
+    <form action={doSocialLogin}>
+      <button
+        type="submit"
+        name="action"
+        value="google"
+        className="flex gap-3 border border-gray-400 rounded-sm p-2 w-full justify-center hover:bg-gray-100 mb-2"
+      >
+        <Image src="/google.svg" alt="Google Logo" width={16} height={16} />
+        Sign in with Google
+      </button>
+
+      <button
+        type="submit"
+        name="action"
+        value="microsoft-entra-id"
+        className="flex gap-3 border border-gray-400 rounded-sm p-2 w-full justify-center hover:bg-gray-100"
+      >
+        <Image src="/buzz.png" alt="buzz logo" width={16} height={16} />
+        Sign in with Georgia Tech
+      </button>
+    </form>
+  );
 }
