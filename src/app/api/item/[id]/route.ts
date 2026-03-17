@@ -12,9 +12,14 @@ export async function GET(
         await dbConnect();
         const { id } = await params;
         const item = await Item.findById(id);
+        const expiration = 14 * 24 * 60 * 60 * 1000;
 
         if (!item) {
             return NextResponse.json({ message: "Item not found" }, { status: 404 });
+        }
+        if (!item.isArchived && Date.now() - item.createdAt.getTime() > expiration) {
+            item.isArchived = true;
+            await item.save();
         }
 
         return NextResponse.json({ item }, { status: 200 });
