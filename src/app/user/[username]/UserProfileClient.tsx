@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
@@ -8,11 +9,13 @@ import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 
 import ContactInfoModal from "@/components/profile/ContactInfoModal";
+import EditProfileModal from "@/components/profile/EditProfileModal";
 import LostFoundSelector from "@/components/dashboard/LostFoundSelector";
 import ItemList from "@/components/dashboard/ItemList";
 import PostList from "@/components/dashboard/PostList";
 
 import { MdContactMail } from "react-icons/md";
+import { MdEdit } from "react-icons/md";
 
 interface UserProfileClientProps {
     userProfile: User | null;
@@ -27,16 +30,21 @@ export default function UserProfileClient({
 }: UserProfileClientProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [lostItemsSelected, setLostItemsSelected] = useState(false);
-    if (!userProfile) {
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState(userProfile);
+    if (!currentUser) {
         return <p>User not found.</p>;
     }
+    useEffect(() => {
+                console.log("User updated:", currentUser);
+            }, [currentUser]);
     return (
         <div className="p-8 max-w-6xl flex flex-col items-center m-auto">
             <div className="w-full max-w-2xl">
                 <div className="flex items-center gap-20 mb-6 w-full">
                     <div className="flex items-center gap-6">
                         <Image
-                            src={userProfile?.image || "/default-icon.svg"}
+                            src={currentUser?.image || "/default-icon.svg"}
                             alt="Profile"
                             width={96}
                             height={96}
@@ -44,10 +52,10 @@ export default function UserProfileClient({
                         />
                         <div>
                             <h2 className="text-2xl font-semibold">
-                                {userProfile?.name}
+                                {currentUser?.name}
                             </h2>
                             <p className="text-gray-600">
-                                @{userProfile?.username}
+                                @{currentUser?.username}
                             </p>
                         </div>
                     </div>
@@ -67,13 +75,21 @@ export default function UserProfileClient({
                         </div>
                     </div>
                 </div>
-                {userProfile?.description && <p className="mb-5">{userProfile.description}</p>}
-                <button
-                    onClick={() => setIsModalOpen(true)}
-                    className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
-                >
-                    <MdContactMail /> Contact Info
-                </button>
+                {currentUser?.description && <p className="mb-5">{currentUser.description}</p>}
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
+                    >
+                        <MdContactMail /> Contact Info
+                    </button>
+                    <button
+                        onClick={() => setIsEditProfileOpen(true)}
+                        className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
+                    >
+                        <MdEdit /> Edit Profile
+                    </button>
+                </div>
             </div>
             <LostFoundSelector
                 lostItemsSelected={lostItemsSelected}
@@ -88,13 +104,21 @@ export default function UserProfileClient({
                 )}
             </div>
 
-            {userProfile && isModalOpen && (
+            {currentUser && isModalOpen && (
                 <ContactInfoModal
                     onClose={() => setIsModalOpen(false)}
-                    email={userProfile.email}
-                    phone={userProfile.phoneNum}
-                    discord={userProfile.discord}
-                    instagram={userProfile.instagram}
+                    email={currentUser.email}
+                    phone={currentUser.phoneNum}
+                    discord={currentUser.discord}
+                    instagram={currentUser.instagram}
+                />
+            )}
+
+            {currentUser && isEditProfileOpen && (
+                <EditProfileModal
+                    onClose={() => setIsEditProfileOpen(false)}
+                    user={currentUser}
+                    setUser={setCurrentUser}
                 />
             )}
         </div>
