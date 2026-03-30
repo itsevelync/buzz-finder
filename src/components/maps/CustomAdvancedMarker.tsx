@@ -48,19 +48,22 @@ export default function CustomAdvancedMarker({
                           clicked
                               ? "h-auto aspect-auto"
                               : hovered
-                              ? "h-20 aspect-square"
-                              : "h-15 aspect-square"
+                                ? "h-20 aspect-square"
+                                : "h-15 aspect-square"
                       }
                     `}
                 >
                     <div
-                        style={{ borderColor: pinColor }}
+                        style={{
+                            borderColor: pinColor,
+                            outlineColor: `color-mix(in srgb, ${pinColor} 20%, transparent)`,
+                        }}
                         className={`image-container bg-white w-full h-full transition-all
-                          border-5 flex items-center justify-center overflow-hidden relative
+                          border-5 outline-3 shadow shadow-buzz-blue/60 flex items-center justify-center overflow-hidden relative
                           ${
                               clicked
                                   ? "rounded-lg max-w-50"
-                                  : "max-w-[84px] rounded-full"
+                                  : "max-w-21 rounded-full"
                           }
                         `}
                     >
@@ -110,10 +113,10 @@ export default function CustomAdvancedMarker({
         <AdvancedMarker
             position={position}
             title={`${item.title} Location`}
-            className={`item-marker cursor-pointer relative -translate-y-[5px] transition-all duration-200 ease-in-out
+            className={`item-marker cursor-pointer relative -translate-y-1.25 transition-all duration-200 ease-in-out
               ${clicked ? " clicked" : ""}${
-                hovered && !clicked ? " hovered" : ""
-            }
+                  hovered && !clicked ? " hovered" : ""
+              }
             `}
             onClick={updateClicked}
             onMouseEnter={() => setHovered(true)}
