@@ -14,7 +14,7 @@ interface NewUser {
     password?: string;
 }
 
-interface UserUpdateData {
+export interface UserUpdateData {
     name?: string;
     password?: string;
     email?: string;
