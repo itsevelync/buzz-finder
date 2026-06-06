@@ -1,42 +1,77 @@
-import { NextResponse } from 'next/server';
-import { dbConnect } from '@/lib/mongo';
-import Message from '@/model/message.model';
-import { pusherServer } from '@/model/pusherServer';
-import Conversation from '@/model/conversation.model';
+import { auth } from "@/auth";
+import { dbConnect } from "@/lib/mongo";
+import { toChatMessageSummary } from "@/lib/chat";
+import Conversation from "@/model/Conversation";
+import Message from "@/model/Message";
+import { pusherServer } from "@/model/pusherServer";
+import mongoose from "mongoose";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-  try {
-    await dbConnect();
-    const body = await request.json();
-    const { text, senderId, conversationId } = body;
+    try {
+        const session = await auth();
+        const userId = session?.user?._id;
 
-    if (!text || !senderId || !conversationId) {
-      return new NextResponse('Missing fields', { status: 400 });
+        if (!userId) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
+        await dbConnect();
+        const body = await request.json();
+        const { text, conversationId } = body;
+
+        if (
+            typeof text !== "string" ||
+            typeof conversationId !== "string" ||
+            !text.trim() ||
+            !mongoose.Types.ObjectId.isValid(conversationId)
+        ) {
+            return new NextResponse("Missing fields", { status: 400 });
+        }
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            return new NextResponse("Conversation not found", { status: 404 });
+        }
+
+        if (!conversation.participantIds.includes(userId)) {
+            return new NextResponse("Forbidden", { status: 403 });
+        }
+
+        const newMessage = await Message.create({
+            text: text.trim(),
+            senderId: userId,
+            conversationId,
+        });
+
+        await Conversation.findByIdAndUpdate(conversationId, {
+            lastMessageAt: new Date(),
+        });
+
+        const messagePayload = toChatMessageSummary(newMessage.toObject());
+
+        await Promise.all([
+            pusherServer.trigger(
+                `conversation-${conversationId}`,
+                "new-message",
+                messagePayload,
+            ),
+            pusherServer.trigger(`inbox-${userId}`, "conversation-updated", {
+                conversationId,
+            }),
+            ...conversation.participantIds
+                .filter((participantId: string) => participantId !== userId)
+                .map((participantId: string) =>
+                    pusherServer.trigger(`inbox-${participantId}`, "conversation-updated", {
+                        conversationId,
+                    }),
+                ),
+        ]);
+
+        return NextResponse.json(messagePayload, { status: 201 });
+    } catch (error) {
+        console.error(error);
+        return new NextResponse("Internal Server Error", { status: 500 });
     }
-
-    // 1. Create and save the new message to MongoDB
-    const newMessage = await Message.create({
-      text,
-      senderId,
-      conversationId,
-    });
-
-    // 2. Update the conversation's lastMessageAt timestamp
-    await Conversation.findByIdAndUpdate(conversationId, {
-      lastMessageAt: new Date(),
-    });
-
-    // 3. Trigger Pusher to broadcast the new message
-    // The channel is the conversationId, the event is 'new-message'
-    await pusherServer.trigger(
-      conversationId,
-      'new-message',
-      newMessage
-    );
-
-    return NextResponse.json(newMessage, { status: 201 });
-  } catch (error) {
-    console.error(error);
-    return new NextResponse('Internal Server Error', { status: 500 });
-  }
 }

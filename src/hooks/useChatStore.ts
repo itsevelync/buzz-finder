@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { IMessage } from '@/model/message.model';
+import { IMessage } from '@/model/Message';
 
 type ChatState = {
   messages: IMessage[];
