@@ -153,7 +153,7 @@ export default function ItemSidebar({
                 style={{ width: collapsed ? 0 : width }}
             >
                 {/* Search Filter */}
-                <div className="p-4 shadow top-0 sticky bg-white space-y-3 relative">
+                <div className="p-4 shadow top-0 sticky bg-white space-y-3">
                     <SearchBar<PlainItem>
                         placeholder="Search items"
                         items={items}
@@ -206,7 +206,7 @@ export default function ItemSidebar({
                                         categoryFilter.length === 0 ? "font-medium text-gray-800" : "text-gray-600"
                                     }`}
                                 >
-                                    <span className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${
+                                    <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
                                         categoryFilter.length === 0 ? "bg-gray-700 border-gray-700" : "border-gray-300"
                                     }`}>
                                         {categoryFilter.length === 0 && (
@@ -228,7 +228,7 @@ export default function ItemSidebar({
                                             className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-gray-50 transition-colors"
                                         >
                                             <span
-                                                className="w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors"
+                                                className="w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors"
                                                 style={checked ? { backgroundColor: cat.color, borderColor: cat.color } : { borderColor: "#d1d5db" }}
                                             >
                                                 {checked && (
