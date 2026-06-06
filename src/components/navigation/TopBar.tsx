@@ -1,12 +1,17 @@
+"use client";
+
 import Image from "next/image";
-import { auth } from "@/auth";
 import { IoSettings } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
 import Link from "next/link";
 
-export default async function TopBar() {
-    const session = await auth();
+import { useUser } from "../../context/UserContext";
+
+export default function TopBar() {
+    const { user } = useUser();
+    const avatarSrc = user?.image ?? "/default-icon.svg";
+    const avatarKey = `${user?._id ?? "guest"}-${avatarSrc}`;
 
     return (
         <div className="flex w-full h-14 justify-between items-center border-b border-b-gray-300 py-3 px-5 bg-white">
@@ -25,8 +30,9 @@ export default async function TopBar() {
                 <div className="relative group">
                     <Link href="/profile">
                         <Image
-                            src={session?.user?.image ?? "/default-icon.svg"}
-                            alt={session?.user?.name ?? "User avatar"}
+                            key={avatarKey}
+                            src={avatarSrc}
+                            alt={user?.name ?? "User avatar"}
                             width={50}
                             height={50}
                             className="object-cover rounded-full cursor-pointer w-8 h-8 p-0.5 hover:p-0 border-2 border-foreground transition-all duration-200"
@@ -34,7 +40,7 @@ export default async function TopBar() {
                     </Link>
                     {/* Tooltip */}
                     <span className="tooltip tooltip-bottom">
-                        {session?.user?.name ?? "Guest"}
+                        {user?.name ?? "Guest"}
                     </span>
                 </div>
                 <NavItem

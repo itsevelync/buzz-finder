@@ -16,6 +16,8 @@ import PostList from "@/components/dashboard/PostList";
 import { MdContactMail } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 
+import { useUser } from "../../../context/UserContext";
+
 interface UserProfileClientProps {
     userProfile: User | null;
     foundItems: PlainItem[];
@@ -27,10 +29,13 @@ export default function UserProfileClient({
     foundItems,
     lostItemPosts,
 }: UserProfileClientProps) {
+    const { user: activeUser } = useUser();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [lostItemsSelected, setLostItemsSelected] = useState(false);
     const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState(userProfile);
+    const canEditProfile = activeUser?._id === currentUser?._id;
+
     if (!currentUser) {
         return <p>User not found.</p>;
     }
@@ -72,7 +77,9 @@ export default function UserProfileClient({
                         </div>
                     </div>
                 </div>
-                {currentUser?.description && <p className="mb-5">{currentUser.description}</p>}
+                {currentUser?.description && (
+                    <p className="mb-5">{currentUser.description}</p>
+                )}
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setIsModalOpen(true)}
@@ -80,12 +87,14 @@ export default function UserProfileClient({
                     >
                         <MdContactMail /> Contact Info
                     </button>
-                    <button
-                        onClick={() => setIsEditProfileOpen(true)}
-                        className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
-                    >
-                        <MdEdit /> Edit Profile
-                    </button>
+                    {canEditProfile && (
+                        <button
+                            onClick={() => setIsEditProfileOpen(true)}
+                            className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
+                        >
+                            <MdEdit /> Edit Profile
+                        </button>
+                    )}
                 </div>
             </div>
             <LostFoundSelector
@@ -111,7 +120,7 @@ export default function UserProfileClient({
                 />
             )}
 
-            {currentUser && isEditProfileOpen && (
+            {currentUser && canEditProfile && isEditProfileOpen && (
                 <EditProfileModal
                     onClose={() => setIsEditProfileOpen(false)}
                     user={currentUser}
