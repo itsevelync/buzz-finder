@@ -2,14 +2,19 @@
 
 import MapPanController from "./MapPanController";
 import { PlainItem } from "@/model/Item";
-import { APIProvider, Map, useMap, MapControl, ControlPosition, AdvancedMarker } from "@vis.gl/react-google-maps";
+import {
+    APIProvider,
+    Map,
+    useMap,
+    MapControl,
+    ControlPosition,
+    AdvancedMarker,
+} from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
-import Image from "next/image";
-
 
 const gtCampus = { lat: 33.7765, lng: -84.398 };
 
@@ -30,7 +35,7 @@ export default function GoogleMap(props: {
     const { selectedId, setSelectedId } = useSelectedPin();
 
     const selectedItem: PlainItem | undefined = props.items.find(
-        (item) => item._id.toString() === selectedId
+        (item) => item._id.toString() === selectedId,
     );
 
     useEffect(() => {
@@ -46,7 +51,7 @@ export default function GoogleMap(props: {
     const [currentPosition, setCurrentPosition] = useState<{
         lat: number;
         lng: number;
-    }>(gtCampus);
+    } | null>(null);
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -59,8 +64,13 @@ export default function GoogleMap(props: {
                 },
                 (error) => {
                     console.error("Error getting current location", error);
-                }
+
+                    // fallback
+                    setCurrentPosition(gtCampus);
+                },
             );
+        } else {
+            setCurrentPosition(gtCampus);
         }
     }, []);
 
@@ -78,27 +88,30 @@ export default function GoogleMap(props: {
         }
     }, [selectedId]);
 
+    if (!currentPosition) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                Loading map...
+            </div>
+        );
+    }
+
     return (
         <>
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                 <div style={{ height: props.height, width: props.width }}>
                     <Map
                         defaultCenter={currentPosition}
-                        defaultZoom={18}
+                        defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
                         mapId="TEMP_MAP_ID?"
                     >
                         <MapPanController />
 
-                        {currentPosition && (
+                        {currentPosition != gtCampus && (
                             <AdvancedMarker position={currentPosition}>
-                                <Image
-                                    src="/map-pin.svg"
-                                    width={35}
-                                    height={50}
-                                    alt="Current Location Pin"
-                                />
+                                <div className="w-3.5 h-3.5 rounded-full outline-5 outline-blue-400/30 bg-blue-500 border-2 border-white"></div>
                             </AdvancedMarker>
                         )}
 
@@ -115,7 +128,9 @@ export default function GoogleMap(props: {
                                 }}
                             />
                         ))}
-                        <CurrentLocationButton currentPosition={currentPosition} />
+                        <CurrentLocationButton
+                            currentPosition={currentPosition}
+                        />
                     </Map>
                 </div>
             </APIProvider>
@@ -123,7 +138,9 @@ export default function GoogleMap(props: {
     );
 }
 
-function CurrentLocationButton({currentPosition}: {
+function CurrentLocationButton({
+    currentPosition,
+}: {
     currentPosition: { lat: number; lng: number };
 }) {
     const map = useMap();
