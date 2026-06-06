@@ -99,7 +99,7 @@ async function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
 
 function ItemDetails({ lostItemPost }: { lostItemPost: LostItemPost }) {
   return (
-    <div className="rounded-lg flex flex-col shadow p-5 gap-4 max-w-[400px]">
+    <div className="rounded-lg flex flex-col shadow p-5 gap-4 max-w-100">
       <p className="font-bold text-l">Item Details</p>
       <div>
         <p className="flex items-center">
@@ -137,7 +137,7 @@ export default async function LostItemPage({
         <FaChevronLeft /> View all Items
       </Link>
       <UserInfo lostItemPost={lost_item} />
-      <div className="flex flex-row justify-between max-w-[1020px]">
+      <div className="flex flex-row justify-between max-w-255">
         <MainInfo lost_item={lost_item} />
         <ItemDetails lostItemPost={lost_item} />
       </div>

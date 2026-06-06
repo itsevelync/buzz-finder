@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useEffect } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
@@ -35,9 +34,7 @@ export default function UserProfileClient({
     if (!currentUser) {
         return <p>User not found.</p>;
     }
-    useEffect(() => {
-                console.log("User updated:", currentUser);
-            }, [currentUser]);
+
     return (
         <div className="p-8 max-w-6xl flex flex-col items-center m-auto">
             <div className="w-full max-w-2xl">

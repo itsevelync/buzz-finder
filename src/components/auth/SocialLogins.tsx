@@ -1,6 +1,5 @@
 import { doSocialLogin } from "@/actions/User";
 import Image from "next/image";
-import Divider from "../ui/Divider";
 
 export default function SocialLogins() {
   return (

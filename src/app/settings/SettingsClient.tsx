@@ -3,31 +3,10 @@ import { Session } from "next-auth";
 import Logout from "@/components/auth/Logout";
 import UpdateProfileForm from "@/components/profile/UpdateProfileForm";
 import { useState } from "react";
-import { doLogout } from "@/actions/User"
 import DeleteProfileForm from "@/components/profile/DeleteProfileForm";
 
 interface Props {
   session: Session | null;
-}
-
-async function handleDeleteAccount({ session }: Props) {
-  if (!session?.user?._id) return;
-  const confirmDelete = confirm("Are you sure you want to delete your account? This cannot be undone.");
-  if (!confirmDelete) return;
-  try {
-    const res = await fetch(`/api/user?id=${session.user._id}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      alert(`Error: ${data.error}`);
-      return;
-    }
-    alert("Account deleted successfully.");
-    doLogout();
-  } catch (err: unknown) {
-    if (err instanceof Error) alert(`Error: ${err.message}`);
-  }
 }
 
 export default function SettingsClient({ session }: Props) {

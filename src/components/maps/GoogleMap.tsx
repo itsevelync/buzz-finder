@@ -2,7 +2,7 @@
 
 import MapPanController from "./MapPanController";
 import { PlainItem } from "@/model/Item";
-import { APIProvider, Map, useMap, MapControl, ControlPosition, AdvancedMarker, Pin } from "@vis.gl/react-google-maps";
+import { APIProvider, Map, useMap, MapControl, ControlPosition, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
@@ -41,13 +41,6 @@ export default function GoogleMap(props: {
             });
         }
     }, [selectedItem, setLocation]);
-
-    const [mapCenter] = useState({
-        lat: selectedItem?.position.lat
-            ? selectedItem.position.lat + 0.0005
-            : gtCampus.lat,
-        lng: selectedItem?.position.lng || gtCampus.lng,
-    });
 
     // Fetch user's current position
     const [currentPosition, setCurrentPosition] = useState<{
