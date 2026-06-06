@@ -121,7 +121,7 @@ export default function SmallAdvancedMarker({
             clickable={true}
             onClick={onPinClick}
             zIndex={selectedId === item._id ? 1000 : 0}
-            className="-translate-y-[7px]"
+            className="-translate-y-1.75"
         >
             {renderCustomPin()}
         </AdvancedMarker>

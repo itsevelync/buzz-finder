@@ -17,6 +17,8 @@ export async function GET(
             return NextResponse.json({ message: "Item not found" }, { status: 404 });
         }
 
+        item.isArchived = true;
+        await item.save();
         return NextResponse.json({ item }, { status: 200 });
     } catch (error) {
         console.error("Error fetching item:", error);

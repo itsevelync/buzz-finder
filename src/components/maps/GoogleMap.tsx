@@ -2,11 +2,19 @@
 
 import MapPanController from "./MapPanController";
 import { PlainItem } from "@/model/Item";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
+import {
+    APIProvider,
+    Map,
+    useMap,
+    MapControl,
+    ControlPosition,
+    AdvancedMarker,
+} from "@vis.gl/react-google-maps";
 import { useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
+import { MdMyLocation } from "react-icons/md";
 
 const gtCampus = { lat: 33.7765, lng: -84.398 };
 
@@ -27,7 +35,7 @@ export default function GoogleMap(props: {
     const { selectedId, setSelectedId } = useSelectedPin();
 
     const selectedItem: PlainItem | undefined = props.items.find(
-        (item) => item._id.toString() === selectedId
+        (item) => item._id.toString() === selectedId,
     );
 
     useEffect(() => {
@@ -39,12 +47,32 @@ export default function GoogleMap(props: {
         }
     }, [selectedItem, setLocation]);
 
-    const [mapCenter] = useState({
-        lat: selectedItem?.position.lat
-            ? selectedItem.position.lat + 0.0005
-            : gtCampus.lat,
-        lng: selectedItem?.position.lng || gtCampus.lng,
-    });
+    // Fetch user's current position
+    const [currentPosition, setCurrentPosition] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    setCurrentPosition({
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    });
+                },
+                (error) => {
+                    console.error("Error getting current location", error);
+
+                    // fallback
+                    setCurrentPosition(gtCampus);
+                },
+            );
+        } else {
+            setCurrentPosition(gtCampus);
+        }
+    }, []);
 
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
@@ -60,18 +88,32 @@ export default function GoogleMap(props: {
         }
     }, [selectedId]);
 
+    if (!currentPosition) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                Loading map...
+            </div>
+        );
+    }
+
     return (
         <>
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                 <div style={{ height: props.height, width: props.width }}>
                     <Map
-                        defaultCenter={mapCenter}
+                        defaultCenter={currentPosition}
                         defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
                         mapId="TEMP_MAP_ID?"
                     >
                         <MapPanController />
+
+                        {currentPosition != gtCampus && (
+                            <AdvancedMarker position={currentPosition}>
+                                <div className="w-3.5 h-3.5 rounded-full outline-5 outline-blue-400/30 bg-blue-500 border-2 border-white"></div>
+                            </AdvancedMarker>
+                        )}
 
                         {props.items.map((item) => (
                             <SmallAdvancedMarker
@@ -86,9 +128,43 @@ export default function GoogleMap(props: {
                                 }}
                             />
                         ))}
+                        <CurrentLocationButton
+                            currentPosition={currentPosition}
+                        />
                     </Map>
                 </div>
             </APIProvider>
         </>
+    );
+}
+
+function CurrentLocationButton({
+    currentPosition,
+}: {
+    currentPosition: { lat: number; lng: number };
+}) {
+    const map = useMap();
+
+    function handleCenterClick() {
+        if (!map) return;
+        map.panTo(currentPosition);
+
+        if (map.getZoom() !== 18) {
+            map.setZoom(18);
+        }
+    }
+
+    return (
+        <MapControl position={ControlPosition.RIGHT_BOTTOM}>
+            <button
+                type="button"
+                onClick={handleCenterClick}
+                className="cursor-pointer mr-2.5 mb-2.5 flex items-center justify-center text-2xl rounded-full w-10 h-10 bg-white shadow-[0px_1px_4px_-1px_rgba(0,0,0,0.3)] text-black/60 hover:bg-gray-50 transition-colors"
+                aria-label="Center map on current location"
+                title="Center map on current location"
+            >
+                <MdMyLocation />
+            </button>
+        </MapControl>
     );
 }

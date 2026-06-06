@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MapClient from "./MapClient";
 import { dbConnect } from "@/lib/mongo";
+import { getActiveItems } from "@/actions/ItemFilter";
 
 export const metadata: Metadata = {
     title: "Map - BuzzFinder",
@@ -20,16 +21,7 @@ export default async function Map({
     const itemId = (searchParams.itemId as string) ?? null;
     
     await dbConnect();
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/item`, {
-        method: "GET",
-    });
-
-    if (!res.ok) {
-        console.error(`Failed to fetch item: ${res.status} ${res.statusText}`);
-        return null;
-    }
-
-    const items = await res.json();
+    const items = await getActiveItems();
 
     return <MapClient itemId={itemId} items={items} />;
 }

@@ -11,6 +11,7 @@ import SearchBar from "../ui/SearchBar";
 import PostList from "./PostList";
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa";
+import { filterActiveItems } from "@/actions/ItemFilter";
 
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
@@ -37,7 +38,7 @@ export default function LostFoundDashboardContainer() {
     // Reset filtered items when data or tab changes
     useEffect(() => {
         if (items) {
-            setFilteredItems(items);
+            setFilteredItems(filterActiveItems(items));
         }
         if (lostItemPosts) {
             setFilteredPosts(lostItemPosts);
@@ -80,7 +81,7 @@ export default function LostFoundDashboardContainer() {
                         <div className="p-4 bg-white shadow-md rounded-lg">
                             <SearchBar<PlainItem>
                                 placeholder="Search by title, description, or location"
-                                items={items || []}
+                                items={filterActiveItems(items || [])}
                                 setFilteredItems={setFilteredItems}
                                 searchableFields={[
                                     "title",
