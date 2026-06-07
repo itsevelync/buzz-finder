@@ -10,7 +10,7 @@ import {
     ControlPosition,
     AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
@@ -30,6 +30,16 @@ export default function GoogleMap(props: {
     height: string | number;
     width: string | number;
     items: PlainItem[];
+    currentPosition: {
+        lat: number;
+        lng: number;
+    } | null;
+    setCurrentPosition: Dispatch<
+        SetStateAction<{
+            lat: number;
+            lng: number;
+        } | null>
+    >;
 }) {
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
@@ -47,17 +57,11 @@ export default function GoogleMap(props: {
         }
     }, [selectedItem, setLocation]);
 
-    // Fetch user's current position
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
-
     useEffect(() => {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
+            navigator.geolocation.watchPosition(
                 (position) => {
-                    setCurrentPosition({
+                    props.setCurrentPosition({
                         lat: position.coords.latitude,
                         lng: position.coords.longitude,
                     });
@@ -66,13 +70,13 @@ export default function GoogleMap(props: {
                     console.error("Error getting current location", error);
 
                     // fallback
-                    setCurrentPosition(gtCampus);
+                    props.setCurrentPosition(gtCampus);
                 },
             );
         } else {
-            setCurrentPosition(gtCampus);
+            props.setCurrentPosition(gtCampus);
         }
-    }, []);
+    }, [props]);
 
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
@@ -88,7 +92,7 @@ export default function GoogleMap(props: {
         }
     }, [selectedId]);
 
-    if (!currentPosition) {
+    if (!props.currentPosition) {
         return (
             <div className="w-full h-full flex items-center justify-center">
                 Loading map...
@@ -101,7 +105,7 @@ export default function GoogleMap(props: {
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                 <div style={{ height: props.height, width: props.width }}>
                     <Map
-                        defaultCenter={currentPosition}
+                        defaultCenter={props.currentPosition}
                         defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
@@ -109,8 +113,8 @@ export default function GoogleMap(props: {
                     >
                         <MapPanController />
 
-                        {currentPosition != gtCampus && (
-                            <AdvancedMarker position={currentPosition}>
+                        {props.currentPosition != gtCampus && (
+                            <AdvancedMarker position={props.currentPosition}>
                                 <div className="w-3.5 h-3.5 rounded-full outline-5 outline-blue-400/30 bg-blue-500 border-2 border-white"></div>
                             </AdvancedMarker>
                         )}
@@ -129,7 +133,7 @@ export default function GoogleMap(props: {
                             />
                         ))}
                         <CurrentLocationButton
-                            currentPosition={currentPosition}
+                            currentPosition={props.currentPosition}
                         />
                     </Map>
                 </div>

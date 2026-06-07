@@ -17,7 +17,7 @@ export async function getActiveItems(): Promise<PlainItem[]> {
 
     return items.filter(
         (item) =>
-            !item.isArchived &&
+            item.status === "unclaimed" &&
             new Date(item.lostdate as string | Date) >= threeWeeksAgo
     );
 }
@@ -28,7 +28,7 @@ export function filterActiveItems(items: PlainItem[]): PlainItem[] {
     threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
     return items.filter(
         (item) =>
-            !item.isArchived &&
+            item.status === "unclaimed" &&
             new Date(item.lostdate as string | Date) >= threeWeeksAgo
     );
 }

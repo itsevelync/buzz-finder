@@ -65,10 +65,12 @@ const ItemSchema = new Schema(
             type: Date,
             default: null
         },
-        isArchived: {
+        status: {
+            type: String,
             required: true,
-            type: Boolean,
-            default: false,
+            enum: ['unclaimed', 'claimed', 'gone'],
+            default: 'unclaimed',
+            trim: true
         },
     },
     { timestamps: true }
