@@ -9,7 +9,10 @@ export async function GET(
   try {
     await dbConnect();
     const { id } = await params;
-    const item = await LostItem.findById(id);
+    const item = await LostItem.findById(id).populate(
+        "user",
+        "username image"
+    );
 
     if (!item) {
       return NextResponse.json(
