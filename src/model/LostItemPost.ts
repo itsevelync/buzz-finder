@@ -5,33 +5,52 @@ import { CATEGORY_KEYS } from "@/constants/Categories";
 
 const LostItemPostSchema = new Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true,
             trim: true,
         },
+        image: {
+            id: { type: String },
+            url: { type: String },
+        },
         description: {
             type: String,
             required: true,
-        },
-        lastSeen: {
-            type: String,
-        },
-        user: {
-            type: ObjectId,
-            ref: "User",
-        },
-        isFound: {
-            type: Boolean,
-            default: false,
         },
         category: {
             type: String,
             enum: CATEGORY_KEYS,
             default: "misc",
         },
-        contactInfo: {
+        locationDescription: {
             type: String,
+        },
+        locationPin: {
+            _id: false,
+            type: {
+                lat: { type: Number, required: true },
+                lng: { type: Number, required: true },
+            },
+        },
+        lostDate: {
+            type: Date,
+            default: null
+        },
+        user: {
+            type: ObjectId,
+            ref: "User",
+        },
+        contactInfo: {
+            _id: false,
+            type: {
+                name: { type: String },
+                details: { type: String },
+            },
+        },
+        isFound: {
+            type: Boolean,
+            default: false,
         },
         deletedAt: {
             type: Date,

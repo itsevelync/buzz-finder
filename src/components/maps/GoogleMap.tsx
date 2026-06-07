@@ -89,10 +89,10 @@ export default function GoogleMap(props: {
     );
 
     useEffect(() => {
-        if (selectedItem?.position) {
+        if (selectedItem?.locationPin) {
             setLocation({
-                lat: selectedItem.position.lat + 0.0005,
-                lng: selectedItem.position.lng,
+                lat: selectedItem.locationPin.lat + 0.0005,
+                lng: selectedItem.locationPin.lng,
             });
         }
     }, [selectedItem, setLocation]);

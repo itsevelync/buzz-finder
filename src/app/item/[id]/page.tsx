@@ -74,14 +74,14 @@ export default async function ItemPage({ params }: ItemPageProps) {
     const session = await auth();
 
     let user = null;
-    if (item.person_found) {
-        user = await getPersonFound(item.person_found.toString());
+    if (item.personFound) {
+        user = await getPersonFound(item.personFound.toString());
     }
-    const isOwner = session?.user?._id && session?.user?._id === item.person_found?.toString();
+    const isOwner = session?.user?._id && session?.user?._id === item.personFound?.toString();
     const category = categories[item.category];
 
-    const formattedLostDate = new Date(item.lostdate).toLocaleDateString();
-    const formattedLostTime = new Date(item.lostdate).toLocaleTimeString([], {
+    const formattedLostDate = new Date(item.lostDate).toLocaleDateString();
+    const formattedLostTime = new Date(item.lostDate).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
     });
@@ -97,7 +97,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
             <div className="flex flex-col sm:flex-row w-full items-center justify-between sm:items-start gap-4">
                 <div className="text-center sm:text-left">
                     <h1 className="text-3xl font-bold">
-                        {item.title ?? "N/A"}
+                        {item.name ?? "N/A"}
                     </h1>
                     <p className="text-gray-500 mb-2">{`Found on ${formattedLostDate} at ${formattedLostTime}`}</p>
                     <p
@@ -121,7 +121,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                 <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-4">
                     <Image
                         src={item.image?.url ?? "/img-placeholder.jpg"}
-                        alt={`${item.title} Image`}
+                        alt={`${item.name} Image`}
                         className="object-cover rounded-xl border border-gray-200 shadow-xs mb-2"
                         width={280}
                         height={280}
@@ -149,19 +149,19 @@ export default async function ItemPage({ params }: ItemPageProps) {
                             <h3 className="font-bold text-buzz-blue">
                                 Description
                             </h3>
-                            <p className="text-gray-700 mt-0.5">{item.item_description || "N/A"}</p>
+                            <p className="text-gray-700 mt-0.5">{item.description || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">
                                 Retrieval Information
                             </h3>
-                            <p className="text-gray-700 mt-0.5">{item.retrieval_description || "N/A"}</p>
+                            <p className="text-gray-700 mt-0.5">{item.retrievalDescription || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">
                                 Location Details
                             </h3>
-                            <p className="text-gray-700 mt-0.5">{item.location_details || "N/A"}</p>
+                            <p className="text-gray-700 mt-0.5">{item.locationDescription || "N/A"}</p>
                         </div>
                         <div>
                             <h3 className="font-bold text-buzz-blue">
@@ -186,7 +186,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                                     {user.instagram && <p>Instagram: @{user.instagram}</p>}
                                 </div>
                             ) : (
-                                <p className="text-gray-700 mt-0.5">{item.contact_info || "N/A"}</p>
+                                <p className="text-gray-700 mt-0.5">{item.contactInfo?.details || "N/A"}</p>
                             )}
                         </div>
                     </div>

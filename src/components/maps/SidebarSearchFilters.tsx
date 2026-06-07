@@ -63,14 +63,14 @@ export default function SidebarSearchFilters({
             if (sort === "newest") {
                 sorted.sort(
                     (a, b) =>
-                        new Date(b.lostdate as string | Date).getTime() -
-                        new Date(a.lostdate as string | Date).getTime(),
+                        new Date(b.lostDate as string | Date).getTime() -
+                        new Date(a.lostDate as string | Date).getTime(),
                 );
             } else if (sort === "oldest") {
                 sorted.sort(
                     (a, b) =>
-                        new Date(a.lostdate as string | Date).getTime() -
-                        new Date(b.lostdate as string | Date).getTime(),
+                        new Date(a.lostDate as string | Date).getTime() -
+                        new Date(b.lostDate as string | Date).getTime(),
                 );
             }
             return sorted;
@@ -103,7 +103,7 @@ export default function SidebarSearchFilters({
 
                 result = result.filter((item) => {
                     const itemDate = new Date(
-                        item.lostdate as string | Date,
+                        item.lostDate as string | Date,
                     ).getTime();
                     const diffDays = (now - itemDate) / (1000 * 60 * 60 * 24);
                     return diffDays <= days;
@@ -117,8 +117,8 @@ export default function SidebarSearchFilters({
             // Distance Filter
             if (distance !== "all" && userPos) {
                 result = result.filter((item) => {
-                    const itemLat = item.position?.lat;
-                    const itemLng = item.position?.lng;
+                    const itemLat = item.locationPin?.lat;
+                    const itemLng = item.locationPin?.lng;
 
                     if (itemLat === undefined || itemLng === undefined)
                         return false;
@@ -213,11 +213,11 @@ export default function SidebarSearchFilters({
                         items={items}
                         setFilteredItems={setSearchFilteredItems}
                         searchableFields={[
-                            "title",
-                            "item_description",
-                            "retrieval_description",
+                            "name",
+                            "description",
+                            "retrievalDescription",
                             "category",
-                            "location_details",
+                            "locationDescription",
                         ]}
                     />
                 </div>

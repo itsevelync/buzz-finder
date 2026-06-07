@@ -5,26 +5,29 @@ import { categories } from "@/constants/Categories";
 import { PlainItem } from "@/model/Item";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { LostItemPost } from "@/model/LostItemPost";
 
 export default function CustomAdvancedMarker({
     item,
-    disableClick = false,
+    disableHover = false,
+    disableClick = disableHover,
 }: {
-    item: PlainItem;
+    item: PlainItem | LostItemPost;
+    disableHover?: boolean;
     disableClick?: boolean;
 }) {
     const router = useRouter();
 
     const [clicked, setClicked] = useState(false);
     const [hovered, setHovered] = useState(false);
-    const position = {
-        lat: item.position?.lat ?? 33.778,
-        lng: item.position?.lng ?? -84.398,
+    const locationPin = {
+        lat: item.locationPin?.lat ?? 33.778,
+        lng: item.locationPin?.lng ?? -84.398,
     };
 
     const updateClicked = () => {
-        router.push("/map?itemId=" + item._id);
         if (!disableClick) {
+            router.push("/map?itemId=" + item._id);
             if (clicked) {
                 setClicked(false);
                 setHovered(false);
@@ -93,7 +96,7 @@ export default function CustomAdvancedMarker({
                         ) : (
                             <div className="p-3 w-50 text-base">
                                 <h2 className="font-bold">Location Details</h2>
-                                <p>{item.location_details ?? "N/A"}</p>
+                                <p>{item.locationDescription ?? "N/A"}</p>
                             </div>
                         )}
                     </div>
@@ -111,16 +114,22 @@ export default function CustomAdvancedMarker({
 
     return (
         <AdvancedMarker
-            position={position}
-            title={`${item.title} Location`}
-            className={`item-marker cursor-pointer relative -translate-y-1.25 transition-all duration-200 ease-in-out
+            position={locationPin}
+            title={`${item.name} Location`}
+            className={`item-marker ${!disableClick ? "cursor-pointer" : "cursor-auto"} relative -translate-y-1.25 transition-all duration-200 ease-in-out
               ${clicked ? " clicked" : ""}${
                   hovered && !clicked ? " hovered" : ""
               }
             `}
             onClick={updateClicked}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
+            onMouseEnter={() => {
+                if (!disableHover) setHovered(true);
+            }}
+            onMouseLeave={() => {
+                if (!disableHover) {
+                    setHovered(false);
+                }
+            }}
         >
             {renderCustomPin()}
         </AdvancedMarker>

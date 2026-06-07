@@ -4,13 +4,14 @@ import { PlainItem } from "@/model/Item";
 import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 import CustomAdvancedMarker from "./CustomAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
+import { LostItemPost } from "@/model/LostItemPost";
 
 /**
  *
  * Displays a Google Map centered on the given pin.
  *
  * @param props.height, props.width - CSS/Tailwind style size values
- * @param props.pin - the Item with a `.position` { lat, lng }
+ * @param props.pin - the Item with a `.locationPin` { lat, lng }
  */
 export default function CenteredMap({
     height,
@@ -21,7 +22,7 @@ export default function CenteredMap({
 }: {
     height: string;
     width: string;
-    pin: PlainItem;
+    pin: PlainItem | LostItemPost;
     disableHover?: boolean;
     disableClick?: boolean;
 }) {
@@ -51,33 +52,35 @@ function MapWrapper({
     height,
     width,
     pin,
-    disableHover = false,
-    disableClick = disableHover,
+    disableHover,
+    disableClick,
 }: {
     height: string;
     width: string;
-    pin: PlainItem;
-    disableHover?: boolean;
-    disableClick?: boolean;
+    pin: PlainItem | LostItemPost;
+    disableHover: boolean;
+    disableClick: boolean;
 }) {
     const mapRef = useMap();
 
     const handleCenterClick = () => {
-        if (mapRef && pin?.position) {
-            mapRef.panTo(pin.position);
+        if (mapRef && pin?.locationPin) {
+            mapRef.panTo(pin.locationPin);
             mapRef.setZoom(17);
         }
     };
 
+    const gtCampus = { lat: 33.778, lng: -84.398 };
+
     return (
         <div style={{ height, width }}>
             <Map
-                defaultCenter={pin.position}
+                defaultCenter={pin.locationPin ?? gtCampus}
                 defaultZoom={17}
                 mapId="TEMP_MAP_ID?"
                 disableDefaultUI={true}
             >
-                <CustomAdvancedMarker item={pin} disableClick={disableClick} />
+                <CustomAdvancedMarker item={pin} disableHover={disableHover} disableClick={disableClick} />
             </Map>
 
             {/* Floating re-center button */}

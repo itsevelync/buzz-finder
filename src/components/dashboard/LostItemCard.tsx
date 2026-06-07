@@ -11,7 +11,7 @@ function UserInfo({ lostItemPost }: { lostItemPost: LostItemPost }) {
                 height={30}
                 className="relative overflow-hidden rounded-full"
             />
-            <p className="text-xs">{lostItemPost.user?.username ?? "Guest"}</p>
+            <p className="text-xs">{lostItemPost.user?.username ?? "Guest User"}</p>
         </div>
     );
 }
@@ -44,10 +44,10 @@ export default function LostItemCard({
                     </p>
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold">{lostItemPost.title}</h2>
+                    <h2 className="text-xl font-bold">{lostItemPost.name}</h2>
                     <p className="text-sm">{lostItemPost.description}</p>
                 </div>
-                <p>Contact: {lostItemPost.contactInfo ?? "N/A"}</p>
+                <p>Contact: {lostItemPost.user?.email ?? lostItemPost.contactInfo?.details ?? "N/A"}</p>
             </div>
         </a>
     );

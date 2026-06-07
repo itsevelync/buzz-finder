@@ -25,8 +25,8 @@ export default function SmallAdvancedMarker({
     ) => void;
 }) {
     const position = {
-        lat: item.position?.lat ?? 33.778,
-        lng: item.position?.lng ?? -84.398,
+        lat: item.locationPin?.lat ?? 33.778,
+        lng: item.locationPin?.lng ?? -84.398,
     };
 
     const category = categories[item.category];
@@ -65,7 +65,7 @@ export default function SmallAdvancedMarker({
                         <>
                             <div className="flex justify-between">
                                 <h1 className="text-lg font-bold">
-                                    {item.title}
+                                    {item.name}
                                 </h1>
                                 <IoClose
                                     className="text-2xl cursor-pointer"
@@ -79,17 +79,17 @@ export default function SmallAdvancedMarker({
                                 height={200}
                                 width={250}
                                 src={item.image?.url || "/img-placeholder.jpg"}
-                                alt={`${item.title} Image`}
+                                alt={`${item.name} Image`}
                                 className="rounded w-full max-h-50 object-cover"
                             />
                             <div>
                                 <p className="text-base">
-                                    {item.item_description}
+                                    {item.description}
                                 </p>
                                 <p className="text-xs opacity-80">
                                     Reported on:{" "}
                                     {new Date(
-                                        item.lostdate
+                                        item.lostDate
                                     ).toLocaleDateString()}
                                 </p>
                             </div>
@@ -109,7 +109,7 @@ export default function SmallAdvancedMarker({
                                 width={50}
                                 height={50}
                                 src={item.image?.url ?? "/img-placeholder.jpg"}
-                                alt={`${item.title} photo`}
+                                alt={`${item.name} photo`}
                                 className={`w-full h-full object-cover rounded-full
                                             group-hover:brightness-100 group-hover:invert-0
                                            ${iconView ? "invert brightness-0" : ""}`}
@@ -136,7 +136,7 @@ export default function SmallAdvancedMarker({
         <AdvancedMarker
             ref={markerRef}
             position={position}
-            title={item.title}
+            title={item.name}
             clickable={true}
             onClick={onPinClick}
             zIndex={selectedId === item._id ? 1000 : 0}
