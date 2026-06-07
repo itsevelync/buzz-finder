@@ -10,7 +10,7 @@ import {
     ControlPosition,
     AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
@@ -47,6 +47,8 @@ export default function GoogleMap(props: {
     const selectedItem: PlainItem | undefined = props.items.find(
         (item) => item._id.toString() === selectedId,
     );
+
+    const [iconView, setIconView] = useState(true);
 
     useEffect(() => {
         if (selectedItem?.position) {
@@ -110,8 +112,37 @@ export default function GoogleMap(props: {
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
                         mapId="TEMP_MAP_ID?"
+                        mapTypeControl={false}
                     >
                         <MapPanController />
+
+                        <MapControl position={ControlPosition.TOP_LEFT}>
+                            <div className="ml-3 mt-3 flex rounded bg-white shadow-md overflow-hidden">
+                                <button
+                                    type="button"
+                                    onClick={() => setIconView(true)}
+                                    className={`px-4 py-2 text-base font-medium transition-colors ${
+                                        iconView
+                                            ? "bg-buzz-blue text-white"
+                                            : "bg-white text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    Icons
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setIconView(false)}
+                                    className={`px-4 py-2 text-base font-medium transition-colors ${
+                                        !iconView
+                                            ? "bg-buzz-blue text-white"
+                                            : "bg-white text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    Images
+                                </button>
+                            </div>
+                        </MapControl>
 
                         {props.currentPosition != gtCampus && (
                             <AdvancedMarker position={props.currentPosition}>
@@ -130,6 +161,7 @@ export default function GoogleMap(props: {
                                         setSelectedId(item._id);
                                     }
                                 }}
+                                iconView={iconView}
                             />
                         ))}
                         <CurrentLocationButton

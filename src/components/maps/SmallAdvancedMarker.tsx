@@ -10,11 +10,13 @@ export default function SmallAdvancedMarker({
     onPinClick,
     selectedId,
     setSelectedId,
+    iconView = true,
 }: {
     item: PlainItem;
     onPinClick: (e: google.maps.MapMouseEvent) => void;
     selectedId: string | null;
     setSelectedId: (id: string | null) => void;
+    iconView?: boolean;
 }) {
     const position = {
         lat: item.position?.lat ?? 33.778,
@@ -93,10 +95,10 @@ export default function SmallAdvancedMarker({
                                 src={item.image?.url ?? "/img-placeholder.jpg"}
                                 alt={`${item.title} photo`}
                                 className={`w-full h-full object-cover rounded-full
-                                            group-hover:brightness-100 brightness-0 group-hover:invert-0 invert
-                                           `}
+                                            group-hover:brightness-100 group-hover:invert-0
+                                           ${iconView ? "invert brightness-0" : ""}`}
                             />
-                            <Icon className="absolute group-hover:opacity-0" />
+                            <Icon className={`absolute ${iconView ? "group-hover:opacity-0" : "hidden"}`} />
                         </>
                     )}
                 </div>

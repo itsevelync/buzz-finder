@@ -118,8 +118,7 @@ export default function EditItemClient({
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
         const form = e.target as HTMLFormElement;
-        const body: Partial<ItemWithPersonFoundAsString> & { id: string } = {
-            id: itemId,
+        const body: Partial<ItemWithPersonFoundAsString> = {
             title: (form.elements.namedItem("title") as HTMLInputElement).value,
             item_description: (
                 form.elements.namedItem("item_description") as HTMLInputElement

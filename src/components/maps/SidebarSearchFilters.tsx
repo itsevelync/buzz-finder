@@ -40,7 +40,7 @@ export default function SidebarSearchFilters({
     const [dateSort, setDateSort] = useState<DateSort>("newest");
     const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>("all");
-    const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+    const [statusFilter, setStatusFilter] = useState<StatusFilter>("unclaimed");
     const [distanceFilter, setDistanceFilter] = useState<number | "all">("all");
 
     // Toggle state for filters visibility

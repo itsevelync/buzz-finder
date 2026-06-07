@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import ItemSchema from "@/model/Item";
 
+interface RouteContext {
+    params: Promise<{
+        id: string;
+    }>;
+}
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -26,22 +32,27 @@ export async function GET(
     }
 }
 
-export async function PATCH(req: NextRequest) {
-    const body = await req.json();
-    const { id, ...updateData } = body;
+export async function PATCH(req: NextRequest, context: RouteContext) {
+    const { id } = await context.params;
+
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-        return new Response(JSON.stringify({ error: "Invalid or missing ID." }), { status: 400 });
+        return new Response(JSON.stringify({ error: "Invalid or missing ID in URL path." }), { status: 400 });
     }
+
     try {
+        const updateData = await req.json();
+
         await dbConnect();
         const updatedItem = await ItemSchema.findByIdAndUpdate(
             id,
             { $set: updateData },
             { new: true, runValidators: true }
         );
+
         if (!updatedItem) {
             return new Response(JSON.stringify({ error: "Item not found." }), { status: 404 });
         }
+
         return new Response(JSON.stringify(updatedItem), { status: 200 });
     } catch (e: unknown) {
         if (e instanceof Error) {
