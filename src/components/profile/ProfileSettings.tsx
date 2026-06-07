@@ -131,14 +131,14 @@ export default function ProfileSettings() {
                         <FormInput
                             label="Full Name"
                             name="full-name"
-                            placeholder="John Doe"
+                            placeholder="George P. Burdell"
                             value={name}
                             onInputChange={(e) => setName(e.target.value)}
                         />
                         <FormInput
                             label="Username"
                             name="username"
-                            placeholder="@johndoe"
+                            placeholder="@gburdell3"
                             value={username}
                             onInputChange={(e) => setUsername(e.target.value)}
                         />
@@ -146,7 +146,7 @@ export default function ProfileSettings() {
                             label="Email"
                             type="email"
                             name="email"
-                            placeholder="john@gatech.edu"
+                            placeholder="gburdell3@gatech.edu"
                             value={email}
                             onInputChange={(e) => setEmail(e.target.value)}
                         />
