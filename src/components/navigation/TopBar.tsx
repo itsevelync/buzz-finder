@@ -28,7 +28,11 @@ export default function TopBar() {
 
             <div className="flex items-center gap-2">
                 <div className="relative group">
-                    <Link href="/profile">
+                    <Link
+                        href={
+                            user?.username ? `/user/${user.username}` : "/login"
+                        }
+                    >
                         <Image
                             key={avatarKey}
                             src={avatarSrc}

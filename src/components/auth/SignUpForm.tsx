@@ -12,7 +12,7 @@ export default function SignUpForm() {
   const router = useRouter();
   const [error, setError] = useState("");
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const response = await signupUser(formData);
@@ -41,6 +41,7 @@ export default function SignUpForm() {
           name="email"
           type="email"
           placeholder="gburdell3@gatech.edu"
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
           required
         />
         <FormInput

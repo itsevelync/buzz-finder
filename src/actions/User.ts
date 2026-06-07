@@ -34,7 +34,7 @@ export async function createUser(user: NewUser) {
         await User.create(user);
     } catch (e: unknown) {
         if (e instanceof Error) {
-            throw new Error("Error creating user:", e);
+            throw new Error(`Error creating user: ${e.message}`);
         }
         throw new Error("Unexpected error creating user.");
     }
@@ -70,7 +70,7 @@ export async function getUserByUsername(username: string) {
     }
 }
 
-export async function updateUser(userId: string, userData: UserUpdateData) {
+export async function updateUser(userId: string, userData: UserUpdateData & { currentPassword?: string }) {
     // Check if the userId is a valid ObjectId before updating
     if (!Types.ObjectId.isValid(userId)) {
         return { error: "Invalid user ID." };
@@ -79,9 +79,25 @@ export async function updateUser(userId: string, userData: UserUpdateData) {
     try {
         await dbConnect();
 
-        // Hash password
-        const dataToUpdate = { ...userData };
+        const user = await User.findById(userId);
+        if (!user) {
+            return { error: "User not found." };
+        }
+
+        const { currentPassword, ...updateFields } = userData;
+        const dataToUpdate = { ...updateFields };
+
         if (dataToUpdate.password) {
+            if (!currentPassword) {
+                return { error: "Current password is required to update password." };
+            }
+
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+            if (!isMatch) {
+                return { error: "Current password is incorrect." };
+            }
+
             dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
         }
 
@@ -95,7 +111,8 @@ export async function updateUser(userId: string, userData: UserUpdateData) {
         }
 
         return { success: "User updated successfully." };
-    } catch {
+    } catch (err: unknown) {
+        console.error(err);
         return { error: "Unable to update user, please try again." };
     }
 }

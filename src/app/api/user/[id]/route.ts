@@ -32,7 +32,7 @@ export async function PATCH(
 ) {
     const body = await req.json();
     const { id } = await params;
-    const result = await updateUser(id, body);
+    const result = await updateUser(id.toString(), body);
 
     if (result.error) {
         return NextResponse.json(result, { status: 400 });

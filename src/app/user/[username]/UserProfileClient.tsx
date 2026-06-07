@@ -8,7 +8,6 @@ import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 
 import ContactInfoModal from "@/components/profile/ContactInfoModal";
-import EditProfileModal from "@/components/profile/EditProfileModal";
 import LostFoundSelector from "@/components/dashboard/LostFoundSelector";
 import ItemList from "@/components/dashboard/ItemList";
 import PostList from "@/components/dashboard/PostList";
@@ -17,6 +16,7 @@ import { MdContactMail } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 
 import { useUser } from "../../../context/UserContext";
+import Link from "next/link";
 
 interface UserProfileClientProps {
     userProfile: User | null;
@@ -32,11 +32,9 @@ export default function UserProfileClient({
     const { user: activeUser } = useUser();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [lostItemsSelected, setLostItemsSelected] = useState(false);
-    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-    const [currentUser, setCurrentUser] = useState(userProfile);
-    const canEditProfile = activeUser?._id === currentUser?._id;
+    const canEditProfile = activeUser?._id === userProfile?._id;
 
-    if (!currentUser) {
+    if (!userProfile) {
         return <p>User not found.</p>;
     }
 
@@ -46,7 +44,7 @@ export default function UserProfileClient({
                 <div className="flex items-center gap-20 mb-6 w-full">
                     <div className="flex items-center gap-6">
                         <Image
-                            src={currentUser?.image || "/default-icon.svg"}
+                            src={userProfile?.image || "/default-icon.svg"}
                             alt="Profile"
                             width={96}
                             height={96}
@@ -54,10 +52,10 @@ export default function UserProfileClient({
                         />
                         <div>
                             <h2 className="text-2xl font-semibold">
-                                {currentUser?.name}
+                                {userProfile?.name}
                             </h2>
                             <p className="text-gray-600">
-                                @{currentUser?.username}
+                                @{userProfile?.username}
                             </p>
                         </div>
                     </div>
@@ -77,8 +75,8 @@ export default function UserProfileClient({
                         </div>
                     </div>
                 </div>
-                {currentUser?.description && (
-                    <p className="mb-5">{currentUser.description}</p>
+                {userProfile?.description && (
+                    <p className="mb-5">{userProfile.description}</p>
                 )}
                 <div className="flex items-center gap-3">
                     <button
@@ -88,12 +86,12 @@ export default function UserProfileClient({
                         <MdContactMail /> Contact Info
                     </button>
                     {canEditProfile && (
-                        <button
-                            onClick={() => setIsEditProfileOpen(true)}
+                        <Link
+                            href="/settings?tab=profile"
                             className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
                         >
                             <MdEdit /> Edit Profile
-                        </button>
+                        </Link>
                     )}
                 </div>
             </div>
@@ -110,21 +108,13 @@ export default function UserProfileClient({
                 )}
             </div>
 
-            {currentUser && isModalOpen && (
+            {userProfile && isModalOpen && (
                 <ContactInfoModal
                     onClose={() => setIsModalOpen(false)}
-                    email={currentUser.email}
-                    phone={currentUser.phoneNum}
-                    discord={currentUser.discord}
-                    instagram={currentUser.instagram}
-                />
-            )}
-
-            {currentUser && canEditProfile && isEditProfileOpen && (
-                <EditProfileModal
-                    onClose={() => setIsEditProfileOpen(false)}
-                    user={currentUser}
-                    setUser={setCurrentUser}
+                    email={userProfile.email}
+                    phone={userProfile.phoneNum}
+                    discord={userProfile.discord}
+                    instagram={userProfile.instagram}
                 />
             )}
         </div>

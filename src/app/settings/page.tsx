@@ -1,8 +1,11 @@
-import { auth } from "@/auth";
 import SettingsClient from "./SettingsClient";
 
-export default async function Settings() {
-    const session = await auth();
+export default async function Settings({
+    searchParams,
+}: {
+    searchParams: Promise<{ tab?: string }>;
+}) {
+    const { tab } = await searchParams;
 
-    return <SettingsClient session={session} />;
+    return <SettingsClient initialTab={tab ?? "general"} />;
 }
