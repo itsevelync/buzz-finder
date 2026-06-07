@@ -1,9 +1,22 @@
 import { doLogout } from "@/actions/User";
+import { useUser } from "@/context/UserContext";
 
-export default function Logout() {
+interface LogoutProps {
+    className: string;
+}
+
+export default function Logout({ className }: LogoutProps) {
+    const { setUser } = useUser();
+
+    async function handleSubmit() {
+        setUser(null);
+        await doLogout();
+    }
     return (
-        <form action={doLogout}>
-            <button type="submit">Logout</button>
+        <form onSubmit={handleSubmit}>
+            <button type="submit" className={className}>
+                Logout
+            </button>
         </form>
     );
-};
+}

@@ -14,7 +14,10 @@ import {
 
 import type { User } from "@/model/User";
 
-type UserContextUser = Pick<User, "_id" | "name" | "username" | "image"> &
+type UserContextUser = Pick<
+    User,
+    "_id" | "name" | "username" | "email" | "image"
+> &
     Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram">>;
 
 interface UserContextValue {
@@ -25,30 +28,49 @@ interface UserContextValue {
 const UserContext = createContext<UserContextValue | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const [user, setUser] = useState<UserContextUser | null>(null);
 
     useEffect(() => {
-        const sessionUser = session?.user;
-
-        if (!sessionUser?._id) {
+        if (status !== "authenticated" || !session?.user?._id) {
             setUser(null);
             return;
         }
 
-        setUser((currentUser) => ({
-            _id: sessionUser._id,
-            name: sessionUser.name ?? currentUser?.name ?? "",
-            username: sessionUser.username ?? currentUser?.username ?? "",
-            image: sessionUser.image ?? currentUser?.image ?? null,
-            phoneNum: currentUser?.phoneNum,
-            description: currentUser?.description,
-            discord: currentUser?.discord,
-            instagram: currentUser?.instagram,
-        }));
-    }, [session]);
+        const controller = new AbortController();
 
-    const value = useMemo(() => ({ user, setUser }), [user]);
+        const fetchUser = async (userId: string) => {
+            try {
+                const res = await fetch(`/api/user/${userId}`, {
+                    signal: controller.signal,
+                });
+                if (res.ok) {
+                    const data = await res.json();
+
+                    setUser(data);
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                if (controller.signal.aborted) {
+                    return;
+                }
+                console.error("Failed to fetch user:", error);
+                setUser(null);
+            }
+        };
+
+        fetchUser(session.user._id);
+
+        return () => {
+            controller.abort();
+        };
+    }, [session?.user?._id, status]);
+
+    const value = useMemo(
+        () => ({ user, setUser }),
+        [user],
+    );
 
     return (
         <UserContext.Provider value={value}>{children}</UserContext.Provider>

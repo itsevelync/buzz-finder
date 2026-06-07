@@ -12,7 +12,7 @@ export default function LoginForm() {
     const router = useRouter();
     const [error, setError] = useState("");
 
-    async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
@@ -24,8 +24,7 @@ export default function LoginForm() {
             return;
         }
 
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
     }
 
     return (
