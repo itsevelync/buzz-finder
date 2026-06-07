@@ -10,6 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import ChatWindow from "./ChatWindow";
 import ChatConversationsList from "./ChatConversationsList";
 import ChatNewConversationSearch from "./ChatNewConversationSearch";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type ChatPageClientProps = {
     currentUser: ChatUserSummary;
@@ -26,12 +27,40 @@ export default function ChatPageClient({
     initialConversationId,
     initialMessages,
 }: ChatPageClientProps) {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
+
     const [activeConversationId, setActiveConversationId] = useState<
         string | null
     >(initialConversationId);
     const [conversationList, setConversationList] = useState(conversations);
+
     const [pendingConversation, setPendingConversation] =
-        useState<ConversationSummary | null>(null);
+        useState<ConversationSummary | null>(() => {
+            if (!initialConversationId?.startsWith("pending-")) {
+                return null;
+            }
+
+            const participantId = initialConversationId.replace(
+                /^pending-/,
+                "",
+            );
+            const partner = users.find((u) => u._id === participantId) ?? null;
+
+            if (partner) {
+                return {
+                    _id: initialConversationId,
+                    participantIds: [currentUser._id, participantId],
+                    lastMessageAt: "",
+                    partner,
+                    lastMessage: null,
+                };
+            } else {
+                setActiveConversationId(null);
+                return null;
+            }
+        });
 
     const conversationItems = useMemo(
         () =>
@@ -43,18 +72,13 @@ export default function ChatPageClient({
 
     const refreshConversations = async () => {
         const response = await fetch("/api/conversations");
-
-        if (!response.ok) {
-            return;
-        }
-
+        if (!response.ok) return;
         const data = (await response.json()) as ConversationSummary[];
         setConversationList(data);
     };
 
     useEffect(() => {
         const inboxChannel = pusherClient.subscribe(`inbox-${currentUser._id}`);
-
         const handleInboxUpdate = () => {
             void refreshConversations();
         };
@@ -66,6 +90,28 @@ export default function ChatPageClient({
             pusherClient.unsubscribe(`inbox-${currentUser._id}`);
         };
     }, [currentUser._id]);
+
+    // FIX: Optimized url synchronized side-effect tracking loop
+    useEffect(() => {
+        const currentIdInUrl = searchParams.get("id");
+
+        // If state reflects URL exactly, halt operation to break execution recursion loops
+        if (activeConversationId === currentIdInUrl) return;
+
+        const params = new URLSearchParams(searchParams.toString());
+        if (
+            activeConversationId &&
+            !activeConversationId.startsWith("pending-")
+        ) {
+            params.set("id", activeConversationId);
+        } else {
+            params.delete("id");
+        }
+
+        router.replace(`${pathname}?${params.toString()}`, {
+            scroll: false,
+        });
+    }, [activeConversationId, pathname, router, searchParams]);
 
     return (
         <div className="h-full px-3 py-4 md:px-6 md:py-6 bg-slate-50">

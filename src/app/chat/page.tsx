@@ -22,7 +22,11 @@ interface LeanMessage {
     updatedAt: string | Date;
 }
 
-export default async function ChatPage() {
+export default async function ChatPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ id?: string }>;
+}) {
     const session = await auth();
 
     if (!session?.user?._id) {
@@ -30,6 +34,7 @@ export default async function ChatPage() {
     }
 
     await dbConnect();
+    const resolvedSearchParams = await searchParams;
 
     const currentUser = toChatUserSummary({
         _id: session.user._id,
@@ -47,6 +52,7 @@ export default async function ChatPage() {
         .select("name username image")
         .sort({ name: 1 })
         .lean<UserSearchResult[]>();
+
     const conversationDocs = await Conversation.find({
         participantIds: currentUser._id,
     })
@@ -85,7 +91,6 @@ export default async function ChatPage() {
     const conversations: ConversationSummary[] = conversationDocs.map(
         (conversation) => {
             const conversationId = conversation._id.toString();
-
             const partnerId = conversation.participantIds.find(
                 (participantId: string) => participantId !== currentUser._id,
             );
@@ -105,12 +110,15 @@ export default async function ChatPage() {
         },
     );
 
-    const initialConversationId = conversations[0]?._id ?? null;
-    const initialMessages = initialConversationId
-        ? await Message.find({ conversationId: initialConversationId })
-              .sort({ createdAt: 1 })
-              .lean<LeanMessage[]>()
-        : [];
+    const initialConversationId =
+        resolvedSearchParams.id ?? conversations[0]?._id ?? null;
+
+    const initialMessages =
+        initialConversationId && !initialConversationId.startsWith("pending-")
+            ? await Message.find({ conversationId: initialConversationId })
+                  .sort({ createdAt: 1 })
+                  .lean<LeanMessage[]>()
+            : [];
 
     return (
         <ChatPageClient
