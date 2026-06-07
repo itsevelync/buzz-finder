@@ -102,7 +102,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
                                     </h2>
 
                                     <div className="flex items-center justify-between rounded-xl border border-neutral-200 p-4 opacity-70">
-                                        <div>
+                                        <div className="w-3/4">
                                             <p className="font-medium">
                                                 Dark Mode
                                             </p>
@@ -146,7 +146,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
 
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between rounded-xl border border-neutral-200 p-4 opacity-70">
-                                                <div>
+                                                <div className="w-3/4">
                                                     <span className="font-medium">
                                                         Marketing Updates
                                                     </span>
@@ -167,7 +167,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
                                                     disabled
                                                     type="checkbox"
                                                     defaultChecked
-                                                    className="h-4 w-4 accent-buzz-gold cursor-pointer"
+                                                    className="h-5 w-5 accent-buzz-gold cursor-pointer"
                                                 />
                                             </div>
                                         </div>

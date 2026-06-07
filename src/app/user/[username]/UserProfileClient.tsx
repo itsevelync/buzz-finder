@@ -41,7 +41,7 @@ export default function UserProfileClient({
     return (
         <div className="p-8 max-w-6xl flex flex-col items-center m-auto">
             <div className="w-full max-w-2xl">
-                <div className="flex items-center gap-20 mb-6 w-full">
+                <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-20 mb-6 w-full">
                     <div className="flex items-center gap-6">
                         <Image
                             src={userProfile?.image || "/default-icon.svg"}
@@ -78,7 +78,7 @@ export default function UserProfileClient({
                 {userProfile?.description && (
                     <p className="mb-5">{userProfile.description}</p>
                 )}
-                <div className="flex items-center gap-3">
+                <div className="w-full justify-center sm:justify-normal flex items-center gap-3">
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"

@@ -106,7 +106,7 @@ export default function ProfileSettings() {
                 {error && <p className="text-red-500">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="form">
-                    <div className="mb-6 flex items-center gap-6">
+                    <div className="mb-6 flex flex-col md:flex-row items-center gap-6">
                         <Image
                             src={
                                 profileImage
@@ -125,6 +125,7 @@ export default function ProfileSettings() {
                                 const f = e.target.files?.[0];
                                 if (f) setProfileImage(f);
                             }}
+                            className="max-w-full"
                         />
                     </div>
                     <div className="grid grid-cols-2 gap-3">

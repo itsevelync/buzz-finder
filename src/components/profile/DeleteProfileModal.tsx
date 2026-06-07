@@ -43,7 +43,7 @@ export default function DeleteProfileModal({
     }
 
     return (
-        <div className="fixed z-100 flex items-center justify-center inset-0 bg-gray-600/50 h-full w-full">
+        <div className="fixed z-10000 flex items-center justify-center inset-0 bg-gray-600/50 h-full w-full p-4">
             <div className="p-5 border border-buzz-blue/40 w-full max-w-2xl shadow-lg rounded-lg bg-white">
                 <div className="flex justify-between gap-2">
                     <h1 className="text-lg font-medium">Delete Profile</h1>
@@ -53,7 +53,7 @@ export default function DeleteProfileModal({
                     />
                 </div>
                 <p className="opacity-50 text-sm mb-4">
-                    Permanently delete your BuzzFinder account. This action cannot be undone.
+                    Permanently delete your BuzzFinder account? This action cannot be undone.
                 </p>
 
                 <div className="text-red-500">{error}</div>
@@ -62,7 +62,7 @@ export default function DeleteProfileModal({
                         label="Type 'Confirm Deletion' (case-sensitive) to confirm."
                         name="confirmation"
                         type="text"
-                        placeholder="Type here"
+                        placeholder="Type here..."
                     />
                     <button type="submit">Delete Account</button>
                 </form>
