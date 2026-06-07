@@ -1,9 +1,10 @@
-import { AdvancedMarker } from "@vis.gl/react-google-maps";
+import { AdvancedMarker, useAdvancedMarkerRef } from "@vis.gl/react-google-maps";
 import { categories } from "@/constants/Categories";
 import { PlainItem } from "@/model/Item";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function SmallAdvancedMarker({
     item,
@@ -11,12 +12,17 @@ export default function SmallAdvancedMarker({
     selectedId,
     setSelectedId,
     iconView = true,
+    onMarkerLoad,
 }: {
     item: PlainItem;
     onPinClick: (e: google.maps.MapMouseEvent) => void;
     selectedId: string | null;
     setSelectedId: (id: string | null) => void;
     iconView?: boolean;
+    onMarkerLoad?: (
+        marker: google.maps.marker.AdvancedMarkerElement | null,
+        itemId: string,
+    ) => void;
 }) {
     const position = {
         lat: item.position?.lat ?? 33.778,
@@ -26,6 +32,16 @@ export default function SmallAdvancedMarker({
     const category = categories[item.category];
     const Icon = category.icon;
     const pinColor = category.color;
+    const [markerRef, marker] = useAdvancedMarkerRef();
+
+    useEffect(() => {
+        const itemId = item._id.toString();
+        onMarkerLoad?.(marker, itemId);
+
+        return () => {
+            onMarkerLoad?.(null, itemId);
+        };
+    }, [item._id, marker, onMarkerLoad]);
 
     const renderCustomPin = () => {
         return (
@@ -118,6 +134,7 @@ export default function SmallAdvancedMarker({
 
     return (
         <AdvancedMarker
+            ref={markerRef}
             position={position}
             title={item.title}
             clickable={true}

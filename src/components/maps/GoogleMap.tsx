@@ -10,11 +10,12 @@ import {
     ControlPosition,
     AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
+import { MarkerClusterer, Renderer } from "@googlemaps/markerclusterer";
 
 const gtCampus = { lat: 33.7765, lng: -84.398 };
 
@@ -49,6 +50,43 @@ export default function GoogleMap(props: {
     );
 
     const [iconView, setIconView] = useState(true);
+    const [markersById, setMarkersById] = useState<
+        Record<string, google.maps.marker.AdvancedMarkerElement>
+    >({});
+
+    const clusterableMarkers = useMemo(
+        () => Object.values(markersById),
+        [markersById],
+    );
+
+    const handleMarkerLoad = useCallback(
+        (
+            marker: google.maps.marker.AdvancedMarkerElement | null,
+            itemId: string,
+        ) => {
+            setMarkersById((previousMarkers) => {
+                if (marker) {
+                    if (previousMarkers[itemId] === marker) {
+                        return previousMarkers;
+                    }
+
+                    return {
+                        ...previousMarkers,
+                        [itemId]: marker,
+                    };
+                }
+
+                if (!previousMarkers[itemId]) {
+                    return previousMarkers;
+                }
+
+                const nextMarkers = { ...previousMarkers };
+                delete nextMarkers[itemId];
+                return nextMarkers;
+            });
+        },
+        [],
+    );
 
     useEffect(() => {
         if (selectedItem?.position) {
@@ -156,6 +194,7 @@ export default function GoogleMap(props: {
                                 item={item}
                                 selectedId={selectedId}
                                 setSelectedId={setSelectedId}
+                                onMarkerLoad={handleMarkerLoad}
                                 onPinClick={() => {
                                     if (selectedId !== item._id) {
                                         setSelectedId(item._id);
@@ -164,6 +203,8 @@ export default function GoogleMap(props: {
                                 iconView={iconView}
                             />
                         ))}
+
+                        <MapMarkerClusterer markers={clusterableMarkers} />
                         <CurrentLocationButton
                             currentPosition={props.currentPosition}
                         />
@@ -172,6 +213,77 @@ export default function GoogleMap(props: {
             </APIProvider>
         </>
     );
+}
+
+function MapMarkerClusterer({
+    markers,
+}: {
+    markers: google.maps.marker.AdvancedMarkerElement[];
+}) {
+    const map = useMap();
+    const clustererRef = useRef<MarkerClusterer | null>(null);
+
+    const clusterRenderer: Renderer = useMemo(
+        () => ({
+            render: ({ count, position }) => {
+                const buzzBlue =
+                    getComputedStyle(document.documentElement)
+                        .getPropertyValue("--buzz-blue")
+                        .trim() || "#003057";
+
+                const svg = window.btoa(`
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="26" fill="${buzzBlue}" opacity="0.25" />
+                        <circle cx="30" cy="30" r="20" fill="${buzzBlue}" opacity="0.85" />
+                        <circle cx="30" cy="30" r="14" fill="${buzzBlue}" />
+                    </svg>
+                `);
+
+                return new google.maps.Marker({
+                    position,
+                    icon: {
+                        url: `data:image/svg+xml;base64,${svg}`,
+                        scaledSize: new google.maps.Size(52, 52),
+                    },
+                    label: {
+                        text: String(count),
+                        color: "#ffffff",
+                        fontSize: "13px",
+                        fontWeight: "700",
+                    },
+                    zIndex: 1000 + count,
+                });
+            },
+        }),
+        [],
+    );
+
+    useEffect(() => {
+        if (!map) return;
+
+        if (!clustererRef.current) {
+            clustererRef.current = new MarkerClusterer({
+                map,
+                renderer: clusterRenderer,
+            });
+        }
+
+        clustererRef.current.clearMarkers();
+        clustererRef.current.addMarkers(markers);
+
+        return () => {
+            clustererRef.current?.clearMarkers();
+        };
+    }, [clusterRenderer, map, markers]);
+
+    useEffect(() => {
+        return () => {
+            clustererRef.current?.setMap(null);
+            clustererRef.current = null;
+        };
+    }, []);
+
+    return null;
 }
 
 function CurrentLocationButton({
