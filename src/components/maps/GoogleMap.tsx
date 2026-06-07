@@ -297,8 +297,8 @@ function CurrentLocationButton({
         if (!map) return;
         map.panTo(currentPosition);
 
-        if (map.getZoom() !== 18) {
-            map.setZoom(18);
+        if (map.getZoom() !== 16) {
+            map.setZoom(16);
         }
     }
 
