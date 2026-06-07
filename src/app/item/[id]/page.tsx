@@ -74,7 +74,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
     if (item.person_found) {
         user = await getPersonFound(item.person_found.toString());
     }
-    const isOwner = session?.user?._id === item.person_found?.toString();
+    const isOwner = session?.user?._id && session?.user?._id === item.person_found?.toString();
     const category = categories[item.category];
 
     if (!item) {

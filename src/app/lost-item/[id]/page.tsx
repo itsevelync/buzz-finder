@@ -65,7 +65,7 @@ async function MainInfo({ lost_item }: { lost_item: LostItemPost }) {
 
   const session = await auth();
 
-  const isOwner = session?.user?._id === lost_item.user?.toString();
+  const isOwner = session?.user?._id && session?.user?._id === lost_item.user?.toString();
 
   return (
     <div>
