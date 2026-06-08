@@ -14,8 +14,8 @@ export default function FoundItemCard({
     item,
     includeMapLink = true,
 }: FoundItemCardProps) {
-    const formattedLostDate = new Date(item.lostdate).toLocaleDateString();
-    const formattedLostTime = new Date(item.lostdate).toLocaleTimeString([], {
+    const formattedLostDate = new Date(item.lostDate).toLocaleDateString();
+    const formattedLostTime = new Date(item.lostDate).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
     });
@@ -32,7 +32,7 @@ export default function FoundItemCard({
             <Image
                 className="w-full h-50 max-h-full rounded-t-xl object-cover"
                 src={item.image?.url ?? "/img-placeholder.jpg"}
-                alt={`${item.title} Image`}
+                alt={`${item.name} Image`}
                 height={280}
                 width={200}
             />
@@ -40,7 +40,7 @@ export default function FoundItemCard({
                 <div>
                     <a href={"/item/" + item._id}>
                         <h2 className="font-bold text-lg hover:underline">
-                            {item.title}
+                            {item.name}
                         </h2>
                     </a>
                     <p className="text-sm text-gray-400 mb-1">
@@ -55,12 +55,12 @@ export default function FoundItemCard({
                     >
                         {category.label ?? "N/A"}
                     </p>
-                    {item.retrieval_description ? (
-                        <p>{item.retrieval_description}</p>
-                    ) : item.location_details ? (
-                        <p>{item.location_details}</p>
-                    ) : item.item_description ? (
-                        <p>{item.item_description}</p>
+                    {item.retrievalDescription ? (
+                        <p>{item.retrievalDescription}</p>
+                    ) : item.locationDescription ? (
+                        <p>{item.locationDescription}</p>
+                    ) : item.description ? (
+                        <p>{item.description}</p>
                     ) : (
                         <p className="text-sm italic opacity-70">
                             No item details provided.

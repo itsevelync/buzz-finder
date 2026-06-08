@@ -18,6 +18,11 @@ export default function MapClient({
     const [filteredItems, setFilteredItems] = useState<PlainItem[]>(items);
     const isMobile = useIsMobile(600);
 
+    const [currentPosition, setCurrentPosition] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+
     return (
         <div className="w-full h-full flex">
             <LocationProvider>
@@ -26,12 +31,15 @@ export default function MapClient({
                         <ItemSidebar
                             items={items}
                             setFilteredItems={setFilteredItems}
+                            currentPosition={currentPosition}
                         />
                     )}
                     <GoogleMap
                         width="100%"
                         height="100%"
                         items={filteredItems}
+                        currentPosition={currentPosition}
+                        setCurrentPosition={setCurrentPosition}
                     />
                 </SelectedPinProvider>
             </LocationProvider>

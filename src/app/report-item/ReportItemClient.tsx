@@ -95,13 +95,13 @@ export default function ReportItemClient({
 
         const form = e.target as HTMLFormElement;
         const body: Partial<PlainItem> = {
-            title: (form.elements.namedItem("title") as HTMLInputElement).value,
-            item_description: (
-                form.elements.namedItem("item_description") as HTMLInputElement
+            name: (form.elements.namedItem("name") as HTMLInputElement).value,
+            description: (
+                form.elements.namedItem("description") as HTMLInputElement
             ).value,
-            retrieval_description: (
+            retrievalDescription: (
                 form.elements.namedItem(
-                    "retrieval_description",
+                    "retrievalDescription",
                 ) as HTMLInputElement
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
@@ -109,7 +109,7 @@ export default function ReportItemClient({
                 ? ((form.elements.namedItem("category") as HTMLInputElement)
                       .value as keyof typeof categories)
                 : "misc",
-            position: {
+            locationPin: {
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
             },
@@ -119,13 +119,13 @@ export default function ReportItemClient({
         }
 
         if (useAccountInfo && userId) {
-            body["person_found"] = userId;
+            body["personFound"] = userId;
         } else {
-            body["contact_info"] =
-                (form.elements.namedItem("name") as HTMLInputElement).value +
-                " " +
-                (form.elements.namedItem("contact_info") as HTMLInputElement)
-                    .value;
+            body["contactInfo"] = {
+                name: (form.elements.namedItem("contactName") as HTMLInputElement).value,
+                details: (form.elements.namedItem("contactDetails") as HTMLInputElement)
+                    .value,
+            }
         }
 
         console.log(body);
@@ -186,26 +186,26 @@ export default function ReportItemClient({
                     </div>
                     <FormInput
                         label="Item Name"
-                        name="title"
+                        name="name"
                         placeholder="Red Wallet, Silver Keychain, Beige Scarf, etc."
                         required
                     />
                     <FormInput
                         label="Item Description"
-                        name="item_description"
+                        name="description"
                         placeholder='Color, size, brand, and any unique features (e.g., "Red leather wallet with a small scratch").'
                         rows={3}
                         isTextarea
                     />
                     <FormInput
                         label="Location Details"
-                        name="location_details"
+                        name="locationDescription"
                         placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
                         isTextarea
                     />
                     <FormInput
                         label="Item Retrieval"
-                        name="retrieval_description"
+                        name="retrievalDescription"
                         placeholder='e.g., "Left at the main circulation desk" or "Call me to arrange a meetup."'
                         isTextarea
                     />
@@ -213,7 +213,6 @@ export default function ReportItemClient({
                         label="Category"
                         name="category"
                         placeholder="Select an Item Category"
-                        defaultValue=""
                         isSelect
                         selectOptions={categoryOptions}
                         value={category}
@@ -259,13 +258,13 @@ export default function ReportItemClient({
                                 <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
                                     <FormInput
                                         label="Name"
-                                        name="name"
+                                        name="contactName"
                                         placeholder="Your name"
                                         className="grow"
                                     />
                                     <FormInput
                                         label="Contact Information"
-                                        name="contact_info"
+                                        name="contactDetails"
                                         placeholder="Phone number, email, Instagram, etc."
                                         className="grow"
                                     />

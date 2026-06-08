@@ -1,6 +1,13 @@
 import { dbConnect } from "@/lib/mongo";
 import LostItem from "@/model/LostItemPost";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+
+interface RouteContext {
+    params: Promise<{
+        id: string;
+    }>;
+}
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +16,10 @@ export async function GET(
   try {
     await dbConnect();
     const { id } = await params;
-    const item = await LostItem.findById(id);
+    const item = await LostItem.findById(id).populate(
+        "user",
+        "name username image email"
+    );
 
     if (!item) {
       return NextResponse.json(
@@ -26,6 +36,37 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(req: NextRequest, context: RouteContext) {
+    const { id } = await context.params;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return new Response(JSON.stringify({ error: "Invalid or missing ID in URL path." }), { status: 400 });
+    }
+
+    try {
+        const updateData = await req.json();
+
+        await dbConnect();
+        const updatedPost = await LostItem.findByIdAndUpdate(
+            id,
+            { $set: updateData },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedPost) {
+            return new Response(JSON.stringify({ error: "Lost item post not found." }), { status: 404 });
+        }
+
+        return new Response(JSON.stringify(updatedPost), { status: 200 });
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        } else {
+            return new Response(JSON.stringify({ error: "An unexpected error occurred updating this post." }), { status: 500 });
+        }
+    }
 }
 
 export async function DELETE(

@@ -10,8 +10,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 
-type ItemWithPersonFoundAsString = Omit<Item, "person_found"> & {
-    person_found: string;
+type ItemWithPersonFoundAsString = Omit<Item, "personFound"> & {
+    personFound: string;
 };
 
 export default function EditItemClient({
@@ -33,7 +33,7 @@ export default function EditItemClient({
     }>(gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
 
-    const [title, setTitle] = useState("");
+    const [name, setName] = useState("");
     const [itemDescription, setItemDescription] = useState("");
     const [locationDetails, setLocationDetails] = useState("");
     const [retrievalDescription, setRetrievalDescription] = useState("");
@@ -44,12 +44,12 @@ export default function EditItemClient({
     useEffect(() => {
         if (item) {
             setCurrPositionFetched(true);
-            setSelectedLocation(item.position);
+            setSelectedLocation(item.locationPin);
 
-            setTitle(item.title || "");
-            setItemDescription(item.item_description || "");
-            setLocationDetails(item.location_details || "")
-            setRetrievalDescription(item.retrieval_description || "");
+            setName(item.name || "");
+            setItemDescription(item.description || "");
+            setLocationDetails(item.locationDescription || "")
+            setRetrievalDescription(item.retrievalDescription || "");
             setCategory(item.category || "misc");
             if (item.image?.url) {
                 urlToFile(item.image.url).then((f) => {
@@ -118,26 +118,25 @@ export default function EditItemClient({
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
         const form = e.target as HTMLFormElement;
-        const body: Partial<ItemWithPersonFoundAsString> & { id: string } = {
-            id: itemId,
-            title: (form.elements.namedItem("title") as HTMLInputElement).value,
-            item_description: (
-                form.elements.namedItem("item_description") as HTMLInputElement
+        const body: Partial<ItemWithPersonFoundAsString> = {
+            name: (form.elements.namedItem("name") as HTMLInputElement).value,
+            description: (
+                form.elements.namedItem("description") as HTMLInputElement
             ).value,
-            retrieval_description: (
+            retrievalDescription: (
                 form.elements.namedItem(
-                    "retrieval_description"
+                    "retrievalDescription"
                 ) as HTMLInputElement
             ).value,
-            location_details: (
+            locationDescription: (
                 form.elements.namedItem(
-                    "location_details"
+                    "locationDescription"
                 ) as HTMLInputElement
             ).value,
             category: (form.elements.namedItem("category") as HTMLInputElement)
                 .value as keyof typeof categories,
             image: uploadedImage,
-            position: {
+            locationPin: {
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
             },
@@ -148,13 +147,13 @@ export default function EditItemClient({
         }
 
         if (useAccountInfo && userId) {
-            body["person_found"] = userId;
+            body["personFound"] = userId;
         } else {
-            body["contact_info"] =
-                (form.elements.namedItem("name") as HTMLInputElement).value +
-                " " +
-                (form.elements.namedItem("contact_info") as HTMLInputElement)
-                    .value;
+            body["contactInfo"] = {
+                name: (form.elements.namedItem("contactName") as HTMLInputElement).value,
+                details: (form.elements.namedItem("contactDetails") as HTMLInputElement)
+                    .value,
+            }
         }
 
         console.log(body);
@@ -190,7 +189,7 @@ export default function EditItemClient({
                 <FaChevronLeft /> Back to Item Page
             </Link>
             <h1 className="text-4xl font-bold text-buzz-blue">
-                Edit {item?.title || "Item"}
+                Edit {item?.name || "Item"}
             </h1>
             <div className="flex flex-col lg:flex-row gap-x-10 gap-y-4">
                 <ImageUploader file={file} setFile={setFile} />
@@ -222,15 +221,15 @@ export default function EditItemClient({
                     </div>
                     <FormInput
                         label="Item Name"
-                        name="title"
+                        name="name"
                         placeholder="Name of item"
-                        value={title}
-                        onInputChange={(e) => setTitle(e.target.value)}
+                        value={name}
+                        onInputChange={(e) => setName(e.target.value)}
                         required
                     />
                     <FormInput
                         label="Item Description"
-                        name="item_description"
+                        name="description"
                         placeholder="Write an item description here"
                         value={itemDescription}
                         onInputChange={(e) =>
@@ -241,7 +240,7 @@ export default function EditItemClient({
                     />
                     <FormInput
                         label="Location Details"
-                        name="location_details"
+                        name="locationDescription"
                         placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
                         value={locationDetails}
                         onInputChange={(e) =>
@@ -251,7 +250,7 @@ export default function EditItemClient({
                     />
                     <FormInput
                         label="Item Retrieval"
-                        name="retrieval_description"
+                        name="retrievalDescription"
                         placeholder="How do you want this item to be retrieved?"
                         value={retrievalDescription}
                         onInputChange={(e) =>
@@ -303,13 +302,13 @@ export default function EditItemClient({
                                 <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
                                     <FormInput
                                         label="Name"
-                                        name="name"
+                                        name="contactName"
                                         placeholder="Your name"
                                         className="grow"
                                     />
                                     <FormInput
                                         label="Contact Information"
-                                        name="contact_info"
+                                        name="contactDetails"
                                         placeholder="Phone number, email, Instagram, etc."
                                         className="grow"
                                     />
@@ -323,7 +322,7 @@ export default function EditItemClient({
                         )}
                     </div>
                     <button type="submit">
-                        Update {item?.title || "Item"}
+                        Update {item?.name || "Item"}
                     </button>
                 </form>
             </div>

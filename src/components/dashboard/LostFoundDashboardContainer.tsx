@@ -61,13 +61,13 @@ export default function LostFoundDashboardContainer() {
                     {lostItemsSelected ? (
                         <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg sticky top-0">
                             <SearchBar<LostItemPost>
-                                placeholder="Search by title or description"
+                                placeholder="Search by name or description"
                                 items={lostItemPosts || []}
                                 setFilteredItems={setFilteredPosts}
                                 searchableFields={[
-                                    "title",
+                                    "name",
                                     "description",
-                                    "lastSeen",
+                                    "lostDate",
                                     "category",
                                 ]}
                             />
@@ -80,15 +80,15 @@ export default function LostFoundDashboardContainer() {
                     ) : (
                         <div className="p-4 bg-white shadow-md rounded-lg">
                             <SearchBar<PlainItem>
-                                placeholder="Search by title, description, or location"
+                                placeholder="Search by name, description, or location"
                                 items={filterActiveItems(items || [])}
                                 setFilteredItems={setFilteredItems}
                                 searchableFields={[
-                                    "title",
-                                    "item_description",
-                                    "retrieval_description",
+                                    "name",
+                                    "description",
+                                    "retrievalDescription",
                                     "category",
-                                    "location_details",
+                                    "locationDescription",
                                 ]}
                             />
                         </div>

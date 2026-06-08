@@ -4,24 +4,19 @@ import { CATEGORY_KEYS } from "@/constants/Categories";
 
 const ItemSchema = new Schema(
     {
-        title: {
+        name: {
             required: true,
             type: String,
             trim: true,
-        },
-        isLost: {
-            required: true,
-            type: Boolean,
-            default: false // true if lost, false if found
         },
         image: {
             id: { type: String },
             url: { type: String },
         },
-        item_description: {
+        description: {
             type: String
         },
-        retrieval_description: {
+        retrievalDescription: {
             type: String
         },
         category: {
@@ -30,7 +25,7 @@ const ItemSchema = new Schema(
             enum: CATEGORY_KEYS,
             default: "misc"
         },
-        position: {
+        locationPin: {
             _id: false,
             type: {
                 lat: { type: Number, required: true },
@@ -38,37 +33,35 @@ const ItemSchema = new Schema(
             },
             required: true,
         },
-        location_details: {
+        locationDescription: {
             type: String,
             trim: true,
         },
-        person_found: {
+        personFound: {
             type: Schema.Types.ObjectId,
             ref: "User",
         },
-        person_lost: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-        },
-        lostdate: {
+        lostDate: {
             type: Date,
             default: Date.now
         },
-        contact_info: {
-            type: String,
-            trim: true
-        },
-        comments: {
-            type: String
+        contactInfo: {
+            _id: false,
+            type: {
+                name: { type: String },
+                details: { type: String },
+            },
         },
         deletedAt: {
             type: Date,
             default: null
         },
-        isArchived: {
+        status: {
+            type: String,
             required: true,
-            type: Boolean,
-            default: false,
+            enum: ['unclaimed', 'claimed', 'gone'],
+            default: 'unclaimed',
+            trim: true
         },
     },
     { timestamps: true }
@@ -78,9 +71,9 @@ type Item = InferSchemaType<typeof ItemSchema> & {
     _id: ObjectId;
 };
 
-export type PlainItem = Omit<Item, "_id" | "person_found"> & {
+export type PlainItem = Omit<Item, "_id" | "personFound"> & {
     _id: string;
-    person_found?: string;
+    personFound?: string;
 };
 
 export type { Item };

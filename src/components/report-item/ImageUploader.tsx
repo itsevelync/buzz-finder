@@ -6,9 +6,13 @@ import { FaImage, FaCloudUploadAlt } from "react-icons/fa";
 export default function ImageUploader({
     file,
     setFile,
+    fullWidth = false,
+    title = true,
 }: {
     file: File | null;
     setFile: React.Dispatch<React.SetStateAction<File | null>>;
+    fullWidth?: boolean;
+    title?: boolean;
 }) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -57,8 +61,10 @@ export default function ImageUploader({
     }
 
     return (
-        <div className="w-full lg:w-1/2 mx-auto flex flex-col items-center gap-2">
-            <h3 className="w-full">Item Image</h3>
+        <div
+            className={`w-full ${fullWidth ? "" : "lg:w-1/2"} mx-auto flex flex-col items-center gap-2`}
+        >
+            {title && <h3 className="w-full">Item Image</h3>}
             <div
                 className={`p-3 relative w-full h-80 md:h-100 mb-2 border rounded-lg flex flex-col items-center justify-center gap-3 overflow-hidden transition-all duration-200 cursor-pointer ${
                     isDragging

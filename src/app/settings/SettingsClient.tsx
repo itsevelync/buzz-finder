@@ -3,7 +3,7 @@
 import Logout from "@/components/auth/Logout";
 import { useState } from "react";
 import ProfileSettings from "@/components/profile/ProfileSettings";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import SecuritySettings from "@/components/profile/SecuritySettings";
 
@@ -14,6 +14,7 @@ interface SettingsClientProps {
 export default function SettingsClient({ initialTab }: SettingsClientProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const { user } = useUser();
 
@@ -28,13 +29,16 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
     const [darkMode, setDarkMode] = useState(false);
 
     const handleTabChange = (tabId: string) => {
-        router.replace(`${pathname}?tab=${tabId}`, {
+        const params = new URLSearchParams(searchParams.toString());
+
+        params.set("tab", tabId);
+
+        router.replace(`${pathname}?${params.toString()}`, {
             scroll: false,
         });
 
         setActiveTab(tabId);
     };
-
     return (
         <div className="min-h-screen bg-background text-foreground font-sans">
             <div className="mx-auto max-w-5xl px-6 py-10">

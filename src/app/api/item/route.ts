@@ -14,20 +14,20 @@ export async function GET(req: NextRequest) {
     console.log("GET request received at /api/item");
     // Searching for specific item by id
     const id = req.nextUrl.searchParams.get("_id");
-    const personFound = req.nextUrl.searchParams.get("person_found");
+    const personFound = req.nextUrl.searchParams.get("personFound");
 
     if (id) {
         if (!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
         const item = await ItemSchema.findById(id);
         return new Response(JSON.stringify(item), { status: 200 });
     } else {
-        const query: { person_found?: string; deletedAt: null } = {
+        const query: { personFound?: string; deletedAt: null } = {
             deletedAt: null,
         };
         if (personFound) {
-            query.person_found = personFound;
+            query.personFound = personFound;
         }
-        const items = await ItemSchema.find(query).sort({ lostdate: -1 });
+        const items = await ItemSchema.find(query).sort({ lostDate: -1 });
         return new Response(JSON.stringify(items), { status: 200 });
     }
 }
@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
     try {
         await dbConnect();
 
-        if (body.person_found && Types.ObjectId.isValid(body.person_found)) {
-            body.person_found = new Types.ObjectId(body.person_found as string);
+        if (body.personFound && Types.ObjectId.isValid(body.personFound)) {
+            body.personFound = new Types.ObjectId(body.personFound as string);
         }
 
         const newItem = await ItemSchema.create(body);
