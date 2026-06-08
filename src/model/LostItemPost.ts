@@ -1,7 +1,7 @@
 import mongoose, { Schema, InferSchemaType } from "mongoose";
 import { ObjectId } from "mongodb";
-import { User } from "next-auth";
 import { CATEGORY_KEYS } from "@/constants/Categories";
+import { User } from "./User";
 
 const LostItemPostSchema = new Schema(
     {

@@ -12,7 +12,7 @@ import Message from "@/model/Message";
 import User, { User as UserType } from "@/model/User";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 interface LeanMessage {
     _id: string;
@@ -45,7 +45,7 @@ function createConversationSummary(
     };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     const session = await auth();
     const userId = session?.user?._id;
 
@@ -53,8 +53,28 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(request.url);
+    const partnerId = searchParams.get("partnerId");
+
     await dbConnect();
 
+    // Case A: If a partnerId is provided, find that specific 1-on-1 conversation
+    if (partnerId) {
+        const conversation = await Conversation.findOne({
+            participantIds: { 
+                $all: [userId, partnerId], 
+                $size: 2 
+            }
+        }).select("_id").lean<{ _id: string }>();; // Efficiently select only the _id
+
+        if (!conversation) {
+            return NextResponse.json({ conversationId: null }, { status: 404 });
+        }
+
+        return NextResponse.json({ conversationId: conversation._id.toString() }, { status: 200 });
+    }
+
+    // Case B: Fetch ALL conversations
     const conversations = await Conversation.find({
         participantIds: userId,
     })

@@ -18,7 +18,7 @@ export async function GET(
     const { id } = await params;
     const item = await LostItem.findById(id).populate(
         "user",
-        "username image"
+        "name username image email"
     );
 
     if (!item) {

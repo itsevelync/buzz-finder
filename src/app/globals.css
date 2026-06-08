@@ -39,7 +39,7 @@ button {
   transition: 0.3s ease;
 }
 
-button:hover {
+button:enabled:hover {
   cursor: pointer;
 }
 
