@@ -15,7 +15,7 @@ export default function Navbar() {
     const avatarKey = `${user?._id ?? "guest"}-${avatarSrc}`;
 
     return (
-        <div className="fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15 z-100">
+        <div className="bg-background fixed h-full flex flex-col justify-between items-center p-3 border-r border-r-gray-300 w-15 z-100">
             <Link href="/" className="-mr-1">
                 <Image
                     src="/buzzfinder-logo.png"

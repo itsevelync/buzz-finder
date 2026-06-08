@@ -16,6 +16,10 @@ export default function PostOwnerContactInfo({
     session,
 }: PostOwnerContactInfoProps) {
     const router = useRouter();
+    
+    const isOwner =
+        session?.user?._id && session?.user?._id === lost_item.user?._id;
+
 
     const [loadingChat, setLoadingChat] = useState(false);
 
@@ -73,7 +77,7 @@ export default function PostOwnerContactInfo({
                 Item Owner Contact Information
             </h3>
 
-            <div className="flex flex-col gap-2 text-sm mb-4">
+            <div className="flex flex-col gap-2 text-sm">
                 <div>
                     <span className="font-medium">{lost_item.user?.name}</span>
                 </div>
@@ -99,10 +103,10 @@ export default function PostOwnerContactInfo({
                     </div>
                 )}
             </div>
-            <button
+            {!isOwner && <button
                 disabled={loadingChat || !session?.user?._id}
                 onClick={handleLoadChat}
-                className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
             >
                 <LuMessagesSquare />{" "}
                 {!session?.user?._id
@@ -110,7 +114,7 @@ export default function PostOwnerContactInfo({
                     : loadingChat
                       ? "Redirecting..."
                       : "Message Item Owner"}
-            </button>
+            </button>}
         </div>
     );
 }

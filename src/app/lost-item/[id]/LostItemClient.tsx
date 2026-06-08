@@ -121,9 +121,9 @@ export default function LostItemClient({
             <hr className="border-gray-200" />
 
             {/* Main content split into 2 Columns */}
-            <div className="z-500 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 {/* LEFT COLUMN */}
-                <div className="lg:sticky lg:top-6 z-10 flex flex-col gap-4 w-full">
+                <div className="flex flex-col gap-4 w-full">
                     {/* Item image */}
                     <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10 shadow">
                         {lost_item.image?.url ? (
@@ -152,7 +152,7 @@ export default function LostItemClient({
                         session={session}
                     />
 
-                    <div className="z-50 border border-gray-200 rounded-lg p-4 shadow-md bg-white flex flex-col gap-5">
+                    <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white flex flex-col gap-5">
                         {/* Context Actions Block */}
                         {isOwner && !lost_item.isFound && (
                             <ResolveItemModalWrapper
