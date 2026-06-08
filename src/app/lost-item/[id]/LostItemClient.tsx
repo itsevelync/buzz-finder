@@ -51,22 +51,22 @@ export default function LostItemClient({
     const isOwner =
         session?.user?._id && session?.user?._id === lost_item.user?._id;
 
-        async function getItemNotes(itemId: string) {
-            try {
-                const res = await fetch(`/api/item-note/?itemId=${itemId}`);
+    async function getItemNotes(itemId: string) {
+        try {
+            const res = await fetch(`/api/item-note/?itemId=${itemId}`);
 
-                if (!res.ok) {
-                    console.error(
-                        `Failed to fetch item notes: ${res.status} ${res.statusText}`,
-                    );
-                }
-
-                const data = await res.json();
-                setItemNotes(data);
-            } catch (error) {
-                console.error("Error fetching item:", error);
+            if (!res.ok) {
+                console.error(
+                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
+                );
             }
+
+            const data = await res.json();
+            setItemNotes(data);
+        } catch (error) {
+            console.error("Error fetching item:", error);
         }
+    }
 
     useEffect(() => {
         getItemNotes(lost_item._id.toString());
@@ -101,18 +101,20 @@ export default function LostItemClient({
                 </h1>
                 <p className="text-gray-500 mb-2">{`Posted on ${formattedCreatedDate}`}</p>
 
-                <div className="flex gap-3 w-full">
-                    <p
-                        style={{
-                            color: category.color,
-                            backgroundColor: category.color + "20",
-                        }}
-                        className="w-fit rounded-full px-4 py-1 text-sm font-medium flex items-center"
-                    >
-                        {category.label ?? "N/A"}
-                    </p>
-                    <UserInfo user={lost_item.user} />
-                    <div className="ml-auto">
+                <div className="flex flex-col items-center sm:flex-row gap-3 w-full">
+                    <div className="flex gap-3">
+                        <p
+                            style={{
+                                color: category.color,
+                                backgroundColor: category.color + "20",
+                            }}
+                            className="w-fit rounded-full px-4 py-1 text-sm font-medium flex items-center"
+                        >
+                            {category.label ?? "N/A"}
+                        </p>
+                        <UserInfo user={lost_item.user} />
+                    </div>
+                    <div className="sm:ml-auto">
                         <SharePostButton />
                     </div>
                 </div>
@@ -162,7 +164,10 @@ export default function LostItemClient({
                         )}
 
                         {!isOwner && !lost_item.isFound && (
-                            <SubmitItemNote lost_item={lost_item} getItemNotes={getItemNotes} />
+                            <SubmitItemNote
+                                lost_item={lost_item}
+                                getItemNotes={getItemNotes}
+                            />
                         )}
                     </div>
 

@@ -33,7 +33,7 @@ export default function SharePostButton() {
 
             {/* Modal */}
             {open && (
-                <div className="fixed inset-0 z-10000 flex items-center justify-center bg-black/40">
+                <div className="p-4 fixed inset-0 z-10000 flex items-center justify-center bg-black/40">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-5">
                         <div className="w-full flex justify-between items-start mb-2">
                             <h2 className="text-lg font-bold">
