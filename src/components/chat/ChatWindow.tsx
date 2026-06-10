@@ -293,7 +293,7 @@ export default function ChatWindow({
         <section className="flex h-full flex-1 flex-col bg-white/90">
             {activeConversationId ? (
                 <>
-                    <header className="flex items-center gap-2 border-b border-buzz-blue/10 p-3">
+                    <header className="flex items-center gap-2 border-b border-buzz-blue/10 py-3 px-3 md:px-4">
                         <button
                             onClick={() => {
                                 setActiveConversationId(null);
@@ -354,55 +354,58 @@ export default function ChatWindow({
 
                             {!isLoadingMessages && messages.length === 0 && (
                                 <div className="mx-auto mt-16 max-w-md text-center text-sm text-slate-500">
-                                    The conversation is empty. Send the first
+                                    This conversation is empty. Send the first
                                     message below.
                                 </div>
                             )}
 
-                            {!isLoadingMessages && messageGroups.map((group, gi) => (
-                                <div key={`group-${gi}`}>
-                                    <div className="flex justify-center">
-                                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
-                                            {formatGroupTimestamp(group.time)}
-                                        </span>
-                                    </div>
+                            {!isLoadingMessages &&
+                                messageGroups.map((group, gi) => (
+                                    <div key={`group-${gi}`}>
+                                        <div className="flex justify-center">
+                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
+                                                {formatGroupTimestamp(
+                                                    group.time,
+                                                )}
+                                            </span>
+                                        </div>
 
-                                    {group.items.map((message) => {
-                                        const isMine =
-                                            message.senderId ===
-                                            currentUser._id;
+                                        {group.items.map((message) => {
+                                            const isMine =
+                                                message.senderId ===
+                                                currentUser._id;
 
-                                        return (
-                                            <div
-                                                key={message._id}
-                                                className={`mt-3 flex ${isMine ? "justify-end" : "justify-start"}`}
-                                            >
+                                            return (
                                                 <div
-                                                    className={`flex flex-col w-full ${isMine ? "items-end" : "items-start"}`}
+                                                    key={message._id}
+                                                    className={`mt-3 flex ${isMine ? "justify-end" : "justify-start"}`}
                                                 >
                                                     <div
-                                                        className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm md:max-w-[68%] ${
-                                                            isMine
-                                                                ? "rounded-br-xs bg-buzz-blue text-white"
-                                                                : "rounded-bl-xs border border-slate-200 bg-white text-slate-800"
-                                                        }`}
+                                                        className={`flex flex-col w-full ${isMine ? "items-end" : "items-start"}`}
                                                     >
-                                                        <p className="whitespace-pre-wrap wrap-break-word">
-                                                            {message.text}
-                                                        </p>
-                                                    </div>
+                                                        <div
+                                                            className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm md:max-w-[68%] ${
+                                                                isMine
+                                                                    ? "rounded-br-xs bg-buzz-blue text-white"
+                                                                    : "rounded-bl-xs border border-slate-200 bg-white text-slate-800"
+                                                            }`}
+                                                        >
+                                                            <p className="whitespace-pre-wrap wrap-break-word">
+                                                                {message.text}
+                                                            </p>
+                                                        </div>
 
-                                                    <div className="mt-1 text-[11px] text-slate-400">
-                                                        {formatRelativeTime(
-                                                            message.createdAt,
-                                                        )}
+                                                        <div className="mt-1 text-[11px] text-slate-400">
+                                                            {formatRelativeTime(
+                                                                message.createdAt,
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ))}
+                                            );
+                                        })}
+                                    </div>
+                                ))}
 
                             <div ref={messagesEndRef} />
                         </div>

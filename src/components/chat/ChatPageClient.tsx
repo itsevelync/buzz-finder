@@ -11,6 +11,7 @@ import {
 import ChatWindow from "./ChatWindow";
 import ChatConversationsList from "./ChatConversationsList";
 import ChatNewConversationSearch from "./ChatNewConversationSearch";
+import { LuSquarePen, LuX } from "react-icons/lu";
 
 type ChatPageClientProps = {
     currentUser: ChatUserSummary;
@@ -35,6 +36,7 @@ export default function ChatPageClient({
         string | null
     >(initialConversationId);
     const [conversationList, setConversationList] = useState(conversations);
+    const [isSearching, setIsSearching] = useState(false);
 
     const [pendingConversation, setPendingConversation] =
         useState<ConversationSummary | null>(() => {
@@ -96,7 +98,8 @@ export default function ChatPageClient({
 
         // If state reflects URL exactly, halt operation to break execution recursion loops
         if (activeConversationId === currentIdInUrl) return;
-        if (activeConversationId?.startsWith("pending-") && !currentIdInUrl) return;
+        if (activeConversationId?.startsWith("pending-") && !currentIdInUrl)
+            return;
 
         const params = new URLSearchParams(searchParams.toString());
         if (
@@ -142,22 +145,44 @@ export default function ChatPageClient({
     return (
         <div className="flex h-full w-full overflow-hidden relative">
             {/* LEFT COLUMN: Conversation List */}
-            <aside
-                className="flex h-full w-full md:w-1/3 lg:w-95 flex-col bg-background md:border-r md:border-buzz-blue/10"
-            >
-                <div className="border-b border-buzz-blue/10 px-5 py-5">
-                    <h1 className="mb-4 text-3xl font-semibold text-buzz-blue">
-                        Messages
-                    </h1>
+            <aside className="flex h-full w-full md:w-1/3 lg:w-95 flex-col bg-background md:border-r md:border-buzz-blue/10">
+                <div className="border-b border-buzz-blue/10 p-4">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-semibold text-buzz-blue">
+                            Messages
+                        </h1>
 
-                    <ChatNewConversationSearch
-                        users={users}
-                        conversationItems={conversationItems}
-                        pendingConversation={pendingConversation}
-                        currentUser={currentUser}
-                        setPendingConversation={setPendingConversation}
-                        setActiveConversationId={setActiveConversationId}
-                    />
+                        {/* Toggle Button */}
+                        <button
+                            onClick={() => setIsSearching(!isSearching)}
+                            className="p-2 rounded-full hover:bg-buzz-blue/5 text-buzz-blue transition-colors"
+                            aria-label={
+                                isSearching ? "Close search" : "New message"
+                            }
+                        >
+                            {isSearching ? (
+                                <LuX className="h-6 w-6" />
+                            ) : (
+                                <LuSquarePen className="h-6 w-6" />
+                            )}
+                        </button>
+                    </div>
+
+                    {/* Conditionally rendered Search Component */}
+                    {isSearching && (
+                        <div className="animate-in fade-in duration-200 mt-4">
+                            <ChatNewConversationSearch
+                                users={users}
+                                conversationItems={conversationItems}
+                                pendingConversation={pendingConversation}
+                                currentUser={currentUser}
+                                setPendingConversation={setPendingConversation}
+                                setActiveConversationId={
+                                    setActiveConversationId
+                                }
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <ChatConversationsList
