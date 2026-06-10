@@ -135,7 +135,7 @@ export default function ChatNewConversationSearch({
     };
 
     return (
-        <div className="border-b border-buzz-blue/10 p-4">
+        <>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
                 New conversation
             </p>
@@ -244,6 +244,6 @@ export default function ChatNewConversationSearch({
                     </div>
                 )}
             </div>
-        </div>
+        </>
     );
 }

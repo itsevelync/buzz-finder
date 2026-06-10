@@ -1,16 +1,16 @@
 "use client";
 
+import { useEffect, useMemo, useState, useRef, TouchEvent } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusherClient";
 import {
     ChatMessageSummary,
     ChatUserSummary,
     ConversationSummary,
 } from "@/lib/chat";
-import { useEffect, useMemo, useState } from "react";
 import ChatWindow from "./ChatWindow";
 import ChatConversationsList from "./ChatConversationsList";
 import ChatNewConversationSearch from "./ChatNewConversationSearch";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type ChatPageClientProps = {
     currentUser: ChatUserSummary;
@@ -91,12 +91,12 @@ export default function ChatPageClient({
         };
     }, [currentUser._id]);
 
-    // FIX: Optimized url synchronized side-effect tracking loop
     useEffect(() => {
         const currentIdInUrl = searchParams.get("id");
 
         // If state reflects URL exactly, halt operation to break execution recursion loops
         if (activeConversationId === currentIdInUrl) return;
+        if (activeConversationId?.startsWith("pending-") && !currentIdInUrl) return;
 
         const params = new URLSearchParams(searchParams.toString());
         if (
@@ -113,21 +113,42 @@ export default function ChatPageClient({
         });
     }, [activeConversationId, pathname, router, searchParams]);
 
+    // Touch gesture tracking
+    const touchStartX = useRef<number>(0);
+    const touchCurrentX = useRef<number>(0);
+    const minSwipeDistance = 50; // Minimum distance in pixels to trigger swipe
+
+    // Handle Touch Start
+    const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+        touchStartX.current = e.targetTouches[0].clientX;
+        touchCurrentX.current = e.targetTouches[0].clientX;
+    };
+
+    // Handle Touch Move
+    const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
+        touchCurrentX.current = e.targetTouches[0].clientX;
+    };
+
+    // Handle Touch End (Swipe left-to-right to close right pane)
+    const handleTouchEnd = () => {
+        const distance = touchCurrentX.current - touchStartX.current;
+
+        // If the right panel is open, and user drags from left to right
+        if (activeConversationId && distance > minSwipeDistance) {
+            setActiveConversationId(null);
+        }
+    };
+
     return (
-        <div className="h-full px-3 py-4 md:px-6 md:py-6 bg-slate-50">
-            <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 lg:h-full lg:flex-row">
-                <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-buzz-blue/10 lg:w-95 bg-white">
-                    <div className="border-b border-buzz-blue/10 px-5 py-5">
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-buzz-gold">
-                            Messages
-                        </p>
-                        <h1 className="mt-2 text-3xl font-semibold text-buzz-blue">
-                            Your inbox
-                        </h1>
-                        <p className="mt-2 text-sm text-slate-500">
-                            Start a conversation with anyone on BuzzFinder.
-                        </p>
-                    </div>
+        <div className="flex h-full w-full overflow-hidden relative">
+            {/* LEFT COLUMN: Conversation List */}
+            <aside
+                className="flex h-full w-full md:w-1/3 lg:w-95 flex-col bg-background md:border-r md:border-buzz-blue/10"
+            >
+                <div className="border-b border-buzz-blue/10 px-5 py-5">
+                    <h1 className="mb-4 text-3xl font-semibold text-buzz-blue">
+                        Messages
+                    </h1>
 
                     <ChatNewConversationSearch
                         users={users}
@@ -137,16 +158,28 @@ export default function ChatPageClient({
                         setPendingConversation={setPendingConversation}
                         setActiveConversationId={setActiveConversationId}
                     />
+                </div>
 
-                    <ChatConversationsList
-                        key={conversationItems.length}
-                        conversationItems={conversationItems}
-                        activeConversationId={activeConversationId}
-                        setPendingConversation={setPendingConversation}
-                        setActiveConversationId={setActiveConversationId}
-                    />
-                </aside>
+                <ChatConversationsList
+                    key={conversationItems.length}
+                    conversationItems={conversationItems}
+                    activeConversationId={activeConversationId}
+                    setPendingConversation={setPendingConversation}
+                    setActiveConversationId={setActiveConversationId}
+                />
+            </aside>
 
+            {/* RIGHT COLUMN: Chat View */}
+            <div
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                className={`
+                    absolute right-0 z-50 flex h-full flex-col bg-slate-50 transition-transform duration-300 ease-in-out
+                    w-full md:static flex-1 md:translate-x-0 md:z-0
+                    ${activeConversationId ? "translate-x-0" : "translate-x-full"}
+                    `}
+            >
                 <ChatWindow
                     conversationItems={conversationItems}
                     currentUser={currentUser}

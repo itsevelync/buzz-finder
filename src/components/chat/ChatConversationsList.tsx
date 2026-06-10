@@ -44,7 +44,7 @@ export default function ChatConversationsList({
 
             <div className="space-y-2">
                 {conversationItems.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                    <div className="mt-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
                         No conversations yet. Search for someone above to start
                         a chat.
                     </div>
