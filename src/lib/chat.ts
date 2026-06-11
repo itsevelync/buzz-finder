@@ -15,7 +15,7 @@ export type ChatMessageSummary = {
 
 export type ConversationSummary = {
     _id: string;
-    participantIds: string[];
+    participants: { userId: string; lastReadAt: Date | string }[];
     lastMessageAt: string;
     partner: ChatUserSummary | null;
     lastMessage: ChatMessageSummary | null;

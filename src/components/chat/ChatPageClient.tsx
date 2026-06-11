@@ -3,11 +3,7 @@
 import { useEffect, useMemo, useState, useRef, TouchEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusherClient";
-import {
-    ChatMessageSummary,
-    ChatUserSummary,
-    ConversationSummary,
-} from "@/lib/chat";
+import { ChatUserSummary, ConversationSummary } from "@/lib/chat";
 import ChatWindow from "./ChatWindow";
 import ChatConversationsList from "./ChatConversationsList";
 import ChatNewConversationSearch from "./ChatNewConversationSearch";
@@ -18,7 +14,6 @@ type ChatPageClientProps = {
     users: ChatUserSummary[];
     conversations: ConversationSummary[];
     initialConversationId: string | null;
-    initialMessages: ChatMessageSummary[];
 };
 
 export default function ChatPageClient({
@@ -26,7 +21,6 @@ export default function ChatPageClient({
     users,
     conversations,
     initialConversationId,
-    initialMessages,
 }: ChatPageClientProps) {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -53,7 +47,16 @@ export default function ChatPageClient({
             if (partner) {
                 return {
                     _id: initialConversationId,
-                    participantIds: [currentUser._id, participantId],
+                    participants: [
+                        {
+                            userId: currentUser._id.toString(),
+                            lastReadAt: new Date(),
+                        },
+                        {
+                            userId: participantId.toString(),
+                            lastReadAt: new Date(),
+                        },
+                    ],
                     lastMessageAt: "",
                     partner,
                     lastMessage: null,
@@ -209,7 +212,6 @@ export default function ChatPageClient({
                     conversationItems={conversationItems}
                     currentUser={currentUser}
                     activeConversationId={activeConversationId}
-                    initialMessages={initialMessages}
                     setActiveConversationId={setActiveConversationId}
                     refreshConversations={refreshConversations}
                     setConversationList={setConversationList}

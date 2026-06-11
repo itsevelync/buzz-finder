@@ -41,8 +41,7 @@ export async function GET(
             return new NextResponse("Conversation not found", { status: 404 });
         }
 
-        // 👍 TypeScript now knows conversation is definitely a single object containing participantIds!
-        if (!conversation.participantIds.includes(session.user._id)) {
+        if (!conversation.participants.some((p) => p.userId === session.user?._id)) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 

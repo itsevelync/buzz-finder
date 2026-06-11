@@ -54,7 +54,7 @@ export default async function ChatPage({
         .lean<UserSearchResult[]>();
 
     const conversationDocs = await Conversation.find({
-        participantIds: currentUser._id,
+        "participants.userId": currentUser._id.toString(), // Dot notation + string ID
     })
         .sort({ lastMessageAt: -1 })
         .lean<ConversationType[]>();
@@ -91,15 +91,17 @@ export default async function ChatPage({
     const conversations: ConversationSummary[] = conversationDocs.map(
         (conversation) => {
             const conversationId = conversation._id.toString();
-            const partnerId = conversation.participantIds.find(
-                (participantId: string) => participantId !== currentUser._id,
-            );
+
+            const partnerId = conversation.participants.find(
+                (p) => p.userId !== currentUser._id,
+            )?.userId;
 
             return {
                 _id: conversationId,
-                participantIds: conversation.participantIds.map(
-                    (participantId: string) => participantId.toString(),
-                ),
+                participants: conversation.participants.map((p) => ({
+                    userId: p.userId.toString(),
+                    lastReadAt: new Date(p.lastReadAt).toISOString(),
+                })),
                 lastMessageAt: new Date(
                     conversation.lastMessageAt,
                 ).toISOString(),
@@ -110,15 +112,7 @@ export default async function ChatPage({
         },
     );
 
-    const initialConversationId =
-        resolvedSearchParams.id ?? conversations[0]?._id ?? null;
-
-    const initialMessages =
-        initialConversationId && !initialConversationId.startsWith("pending-")
-            ? await Message.find({ conversationId: initialConversationId })
-                  .sort({ createdAt: 1 })
-                  .lean<LeanMessage[]>()
-            : [];
+    const initialConversationId = resolvedSearchParams.id ?? null;
 
     return (
         <ChatPageClient
@@ -126,9 +120,6 @@ export default async function ChatPage({
             users={users.map((user) => toChatUserSummary(user))}
             conversations={conversations}
             initialConversationId={initialConversationId}
-            initialMessages={initialMessages.map((message) =>
-                toChatMessageSummary(message),
-            )}
         />
     );
 }

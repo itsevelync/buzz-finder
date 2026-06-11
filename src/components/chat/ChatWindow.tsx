@@ -20,7 +20,6 @@ type ChatWindowProps = {
     conversationItems: ConversationSummary[];
     currentUser: ChatUserSummary;
     activeConversationId: string | null;
-    initialMessages: ChatMessageSummary[];
     setActiveConversationId: (value: SetStateAction<string | null>) => void;
     refreshConversations: () => Promise<void>;
     setConversationList: Dispatch<SetStateAction<ConversationSummary[]>>;
@@ -34,14 +33,13 @@ export default function ChatWindow({
     conversationItems,
     currentUser,
     activeConversationId,
-    initialMessages,
     setActiveConversationId,
     refreshConversations,
     setConversationList,
     pendingConversation,
     setPendingConversation,
 }: ChatWindowProps) {
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] = useState<ChatMessageSummary[]>([]);
     const [draftMessage, setDraftMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -194,9 +192,9 @@ export default function ChatWindow({
             if (conversationId.startsWith("pending-")) {
                 // Prefer participant id from pendingConversation if available.
                 const participantId =
-                    pendingConversation?.participantIds?.find(
-                        (p) => p !== currentUser._id,
-                    ) || conversationId.replace("pending-", "");
+                    pendingConversation?.participants?.find(
+                        (p) => p.userId !== currentUser._id,
+                    )?.userId || conversationId.replace("pending-", "");
 
                 const convRes = await fetch("/api/conversations", {
                     method: "POST",
