@@ -1,4 +1,4 @@
-import LostItemForm from "@/components/report-item/LostItemForm";
+import FoundItemForm from "@/components/report-item/FoundItemForm";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import ItemModel, { PlainItem } from "@/model/Item";
@@ -23,5 +23,5 @@ export default async function EditItem({ params }: ItemPageProps) {
         notFound();
     }
 
-    return <LostItemForm userId={session?.user?._id} item={item} />;
+    return <FoundItemForm userId={session?.user?._id} item={item} />;
 }

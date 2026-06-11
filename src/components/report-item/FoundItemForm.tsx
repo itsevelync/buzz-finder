@@ -11,15 +11,15 @@ import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 
-interface LostItemFormProps {
+interface FoundItemFormProps {
     userId: string | undefined;
     item?: PlainItem;
 }
 
-export default function LostItemForm({
+export default function FoundItemForm({
     userId,
     item,
-}: LostItemFormProps) {
+}: FoundItemFormProps) {
     const router = useRouter();
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
