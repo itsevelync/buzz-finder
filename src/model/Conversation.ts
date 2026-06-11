@@ -1,16 +1,21 @@
 import mongoose, { Schema, InferSchemaType } from 'mongoose';
 
+const ParticipantSchema = new Schema({
+    userId: { type: String, required: true },
+    lastReadAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const ConversationSchema: Schema = new Schema({
-    participantIds: [{ type: String, required: true }],
+    participants: [ParticipantSchema],
     lastMessageAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
 export type ConversationType = Omit<
     InferSchemaType<typeof ConversationSchema>,
-    'participantIds' | 'lastMessageAt'
+    'participants' | 'lastMessageAt'
 > & {
     _id: string;
-    participantIds: string[];
+    participants: { userId: string; lastReadAt: Date | string }[];
     lastMessageAt: Date | string;
     createdAt: Date | string;
     updatedAt: Date | string;

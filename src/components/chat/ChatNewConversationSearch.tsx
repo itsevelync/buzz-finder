@@ -61,9 +61,9 @@ export default function ChatNewConversationSearch({
 
     const visibleUsers = useMemo(() => {
         const pendingParticipantId = pendingConversation
-            ? (pendingConversation.participantIds.find(
-                  (participantId) => participantId !== currentUser._id,
-              ) ?? null)
+            ? (pendingConversation.participants.find(
+                  (p) => p.userId !== currentUser._id,
+              )?.userId ?? null)
             : null;
 
         if (!pendingParticipantId) {
@@ -124,7 +124,10 @@ export default function ChatNewConversationSearch({
 
         const pendingConversation: ConversationSummary = {
             _id: pendingId,
-            participantIds: [currentUser._id, participantId],
+            participants: [
+                { userId: currentUser._id.toString(), lastReadAt: new Date() },
+                { userId: participantId.toString(), lastReadAt: new Date() },
+            ],
             lastMessageAt: "",
             partner,
             lastMessage: null,
@@ -135,7 +138,7 @@ export default function ChatNewConversationSearch({
     };
 
     return (
-        <div className="border-b border-buzz-blue/10 p-4">
+        <>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
                 New conversation
             </p>
@@ -244,6 +247,6 @@ export default function ChatNewConversationSearch({
                     </div>
                 )}
             </div>
-        </div>
+        </>
     );
 }

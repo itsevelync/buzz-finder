@@ -3,7 +3,7 @@ import {
     ChatUserSummary,
     ConversationSummary,
 } from "@/lib/chat";
-import { LuSend } from "react-icons/lu";
+import { LuChevronLeft, LuSend } from "react-icons/lu";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -15,12 +15,12 @@ import {
     useState,
 } from "react";
 import { pusherClient } from "@/lib/pusherClient";
+import { markAsRead } from "@/actions/Chat";
 
 type ChatWindowProps = {
     conversationItems: ConversationSummary[];
     currentUser: ChatUserSummary;
     activeConversationId: string | null;
-    initialMessages: ChatMessageSummary[];
     setActiveConversationId: (value: SetStateAction<string | null>) => void;
     refreshConversations: () => Promise<void>;
     setConversationList: Dispatch<SetStateAction<ConversationSummary[]>>;
@@ -34,14 +34,13 @@ export default function ChatWindow({
     conversationItems,
     currentUser,
     activeConversationId,
-    initialMessages,
     setActiveConversationId,
     refreshConversations,
     setConversationList,
     pendingConversation,
     setPendingConversation,
 }: ChatWindowProps) {
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] = useState<ChatMessageSummary[]>([]);
     const [draftMessage, setDraftMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -119,6 +118,13 @@ export default function ChatWindow({
                 return [...current, message];
             });
 
+            if (
+                message.conversationId === activeConversationId &&
+                document.hasFocus()
+            ) {
+                void markAsRead(activeConversationId);
+            }
+
             void refreshConversations();
         };
 
@@ -129,6 +135,23 @@ export default function ChatWindow({
             pusherClient.unsubscribe(`conversation-${activeConversationId}`);
         };
     }, [activeConversationId, refreshConversations]);
+
+    useEffect(() => {
+        if (!activeConversationId) return;
+
+        const performMarkAsRead = () => {
+            markAsRead(activeConversationId);
+        };
+
+        const handleFocus = () => {
+            performMarkAsRead();
+        };
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, [activeConversationId, messages]);
 
     useEffect(() => {
         if (!activeConversationId) {
@@ -194,9 +217,9 @@ export default function ChatWindow({
             if (conversationId.startsWith("pending-")) {
                 // Prefer participant id from pendingConversation if available.
                 const participantId =
-                    pendingConversation?.participantIds?.find(
-                        (p) => p !== currentUser._id,
-                    ) || conversationId.replace("pending-", "");
+                    pendingConversation?.participants?.find(
+                        (p) => p.userId !== currentUser._id,
+                    )?.userId || conversationId.replace("pending-", "");
 
                 const convRes = await fetch("/api/conversations", {
                     method: "POST",
@@ -227,6 +250,7 @@ export default function ChatWindow({
 
             await response.json();
             setDraftMessage("");
+            markAsRead(conversationId);
             await refreshConversations();
         } catch (error) {
             console.error(error);
@@ -290,10 +314,20 @@ export default function ChatWindow({
     }
 
     return (
-        <section className="flex h-full flex-1 flex-col overflow-hidden rounded-xl border border-buzz-blue/10 bg-white/90 shadow-[0_20px_60px_rgba(0,48,87,0.12)] backdrop-blur">
+        <section className="flex h-full flex-1 flex-col bg-white/90">
             {activeConversationId ? (
                 <>
-                    <header className="flex items-center justify-between gap-4 border-b border-buzz-blue/10 px-5 py-5">
+                    <header className="flex items-center gap-2 border-b border-buzz-blue/10 py-3 px-3 md:px-4">
+                        <button
+                            onClick={() => {
+                                setActiveConversationId(null);
+                                setPendingConversation(null);
+                            }}
+                            className="rounded-full p-1 text-gray-600 hover:bg-gray-100 active:bg-gray-200 md:hidden transition-colors"
+                            aria-label="Back to messages"
+                        >
+                            <LuChevronLeft size={24} />
+                        </button>
                         {activePartner ? (
                             <Link href={`user/${activePartner.username}`}>
                                 <div className="flex items-center gap-3">
@@ -343,56 +377,59 @@ export default function ChatWindow({
                             )}
 
                             {!isLoadingMessages && messages.length === 0 && (
-                                <div className="mx-auto mt-16 max-w-md rounded-[28px] border border-dashed border-slate-200 bg-white px-6 py-10 text-center text-sm text-slate-500 shadow-sm">
-                                    The conversation is empty. Send the first
+                                <div className="mx-auto mt-16 max-w-md text-center text-sm text-slate-500">
+                                    This conversation is empty. Send the first
                                     message below.
                                 </div>
                             )}
 
-                            {messageGroups.map((group, gi) => (
-                                <div key={`group-${gi}`}>
-                                    <div className="flex justify-center">
-                                        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
-                                            {formatGroupTimestamp(group.time)}
-                                        </span>
-                                    </div>
+                            {!isLoadingMessages &&
+                                messageGroups.map((group, gi) => (
+                                    <div key={`group-${gi}`}>
+                                        <div className="flex justify-center">
+                                            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500">
+                                                {formatGroupTimestamp(
+                                                    group.time,
+                                                )}
+                                            </span>
+                                        </div>
 
-                                    {group.items.map((message) => {
-                                        const isMine =
-                                            message.senderId ===
-                                            currentUser._id;
+                                        {group.items.map((message) => {
+                                            const isMine =
+                                                message.senderId ===
+                                                currentUser._id;
 
-                                        return (
-                                            <div
-                                                key={message._id}
-                                                className={`mt-3 flex ${isMine ? "justify-end" : "justify-start"}`}
-                                            >
+                                            return (
                                                 <div
-                                                    className={`flex flex-col w-full ${isMine ? "items-end" : "items-start"}`}
+                                                    key={message._id}
+                                                    className={`mt-3 flex ${isMine ? "justify-end" : "justify-start"}`}
                                                 >
                                                     <div
-                                                        className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm md:max-w-[68%] ${
-                                                            isMine
-                                                                ? "rounded-br-xs bg-buzz-blue text-white"
-                                                                : "rounded-bl-xs border border-slate-200 bg-white text-slate-800"
-                                                        }`}
+                                                        className={`flex flex-col w-full ${isMine ? "items-end" : "items-start"}`}
                                                     >
-                                                        <p className="whitespace-pre-wrap wrap-break-word">
-                                                            {message.text}
-                                                        </p>
-                                                    </div>
+                                                        <div
+                                                            className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm md:max-w-[68%] ${
+                                                                isMine
+                                                                    ? "rounded-br-xs bg-buzz-blue text-white"
+                                                                    : "rounded-bl-xs border border-slate-200 bg-white text-slate-800"
+                                                            }`}
+                                                        >
+                                                            <p className="whitespace-pre-wrap wrap-break-word">
+                                                                {message.text}
+                                                            </p>
+                                                        </div>
 
-                                                    <div className="mt-1 text-[11px] text-slate-400">
-                                                        {formatRelativeTime(
-                                                            message.createdAt,
-                                                        )}
+                                                        <div className="mt-1 text-[11px] text-slate-400">
+                                                            {formatRelativeTime(
+                                                                message.createdAt,
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ))}
+                                            );
+                                        })}
+                                    </div>
+                                ))}
 
                             <div ref={messagesEndRef} />
                         </div>
@@ -435,7 +472,7 @@ export default function ChatWindow({
                                 !draftMessage.trim() ||
                                 isSending
                             }
-                            className="absolute bottom-7.5 right-7 rounded-lg bg-buzz-blue p-2 text-md font-semibold text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="absolute bottom-8 right-7 rounded-lg bg-buzz-blue p-2 text-md font-semibold text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <LuSend />
                         </button>
@@ -452,12 +489,6 @@ export default function ChatWindow({
             ) : (
                 <div className="flex h-full flex-col items-center justify-center rounded-xl px-6 py-12 text-center">
                     <div className="max-w-md">
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-buzz-gold">
-                            BuzzFinder Chat
-                        </p>
-                        <h3 className="mt-3 text-2xl font-semibold text-buzz-blue">
-                            Create some BUZZ
-                        </h3>
                         <p className="mt-3 text-sm leading-6 text-slate-500">
                             Select a conversation from the left panel.
                         </p>

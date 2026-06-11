@@ -1,6 +1,8 @@
 import { ChatMessageSummary, ConversationSummary } from "@/lib/chat";
 import { Dispatch, SetStateAction } from "react";
 import Image from "next/image";
+import { useUser } from "@/context/UserContext";
+import { markAsRead } from "@/actions/Chat";
 
 type ChatConversationsListProps = {
     conversationItems: ConversationSummary[];
@@ -17,6 +19,8 @@ export default function ChatConversationsList({
     setPendingConversation,
     setActiveConversationId,
 }: ChatConversationsListProps) {
+    const { user } = useUser();
+
     function formatTime(dateValue: string) {
         return new Intl.DateTimeFormat("en", {
             hour: "numeric",
@@ -44,7 +48,7 @@ export default function ChatConversationsList({
 
             <div className="space-y-2">
                 {conversationItems.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+                    <div className="mt-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
                         No conversations yet. Search for someone above to start
                         a chat.
                     </div>
@@ -53,16 +57,27 @@ export default function ChatConversationsList({
                 {conversationItems.map((conversation) => {
                     const isActive = conversation._id === activeConversationId;
 
+                    const myParticipantData = conversation.participants?.find(
+                        (p) => p.userId === user?._id,
+                    );
+
+                    const isUnread =
+                        !isActive &&
+                        conversation.lastMessageAt &&
+                        myParticipantData?.lastReadAt &&
+                        new Date(conversation.lastMessageAt) >
+                            new Date(myParticipantData.lastReadAt);
+
                     return (
                         <button
                             key={conversation._id}
                             type="button"
                             onClick={() => {
-                                // Clear any pending conversation when selecting an existing one
                                 if (!conversation._id.startsWith("pending-")) {
                                     setPendingConversation(null);
                                 }
                                 setActiveConversationId(conversation._id);
+                                markAsRead(conversation._id);
                             }}
                             className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
                                 isActive
@@ -70,7 +85,8 @@ export default function ChatConversationsList({
                                     : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
                             }`}
                         >
-                            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-buzz-gold/15 text-sm font-semibold text-buzz-blue">
+                            {/* Avatar Section */}
+                            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-buzz-gold/15 text-sm font-semibold text-buzz-blue">
                                 {conversation.partner?.image ? (
                                     <Image
                                         src={conversation.partner.image}
@@ -83,36 +99,52 @@ export default function ChatConversationsList({
                                     <span>
                                         {conversation.partner?.name
                                             ?.slice(0, 1)
-                                            .toUpperCase() ?? "?"}
+                                            ?.toUpperCase() ?? "?"}
                                     </span>
                                 )}
                             </div>
 
+                            {/* Content Section */}
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-center justify-between gap-2">
-                                    <p className="truncate font-semibold">
+                                    <p
+                                        className={`truncate ${isUnread ? "font-bold text-slate-900" : "font-semibold"}`}
+                                    >
                                         {conversation.partner?.name ??
                                             "Unknown user"}
                                     </p>
-                                    {conversation.lastMessageAt && (
-                                        <span
-                                            className={`text-xs ${
-                                                isActive
-                                                    ? "text-white/70"
-                                                    : "text-slate-400"
-                                            }`}
-                                        >
-                                            {formatTime(
-                                                conversation.lastMessageAt,
-                                            )}
-                                        </span>
-                                    )}
+
+                                    <div className="flex items-center gap-2">
+                                        {conversation.lastMessageAt && (
+                                            <span
+                                                className={`text-xs ${
+                                                    isActive
+                                                        ? "text-white/70"
+                                                        : isUnread
+                                                          ? "font-semibold text-buzz-blue" // Highlight time text
+                                                          : "text-slate-400"
+                                                }`}
+                                            >
+                                                {formatTime(
+                                                    conversation.lastMessageAt,
+                                                )}
+                                            </span>
+                                        )}
+
+                                        {/* Visual indicator dot */}
+                                        {isUnread && (
+                                            <span className="h-2.5 w-2.5 rounded-full bg-buzz-blue animate-pulse" />
+                                        )}
+                                    </div>
                                 </div>
+
                                 <p
                                     className={`mt-1 truncate text-sm ${
                                         isActive
                                             ? "text-white/80"
-                                            : "text-slate-500"
+                                            : isUnread
+                                              ? "font-medium text-slate-800"
+                                              : "text-slate-500"
                                     }`}
                                 >
                                     {formatPreview(conversation.lastMessage)}

@@ -28,7 +28,7 @@ type UserSearchResult = Pick<UserType, "_id" | "name" | "username" | "image">;
 function createConversationSummary(
     conversation: {
         _id: { toString: () => string } | string;
-        participantIds: string[];
+        participants: { userId: string; lastReadAt: Date | string }[];
         lastMessageAt: Date | string;
     },
     partner: ChatUserSummary | null,
@@ -36,9 +36,10 @@ function createConversationSummary(
 ): ConversationSummary {
     return {
         _id: conversation._id.toString(),
-        participantIds: conversation.participantIds.map((participantId) =>
-            participantId.toString(),
-        ),
+        participants: conversation.participants.map((participant) => ({
+            userId: participant.userId.toString(),
+            lastReadAt: participant.lastReadAt // Keep as Date object, or .toISOString() if you need a string
+        })),
         lastMessageAt: new Date(conversation.lastMessageAt).toISOString(),
         partner,
         lastMessage,
@@ -61,11 +62,14 @@ export async function GET(request: NextRequest) {
     // Case A: If a partnerId is provided, find that specific 1-on-1 conversation
     if (partnerId) {
         const conversation = await Conversation.findOne({
-            participantIds: { 
-                $all: [userId, partnerId], 
-                $size: 2 
+            participants: {
+                $size: 2, // Ensures it's a direct 1-on-1 chat
+                $all: [
+                    { $elemMatch: { userId: userId } },
+                    { $elemMatch: { userId: partnerId } }
+                ]
             }
-        }).select("_id").lean<{ _id: string }>();; // Efficiently select only the _id
+        }).select("_id").lean<{ _id: string }>(); // Note: removed the extra semicolon
 
         if (!conversation) {
             return NextResponse.json({ conversationId: null }, { status: 404 });
@@ -76,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     // Case B: Fetch ALL conversations
     const conversations = await Conversation.find({
-        participantIds: userId,
+        "participants.userId": userId,
     })
         .sort({ lastMessageAt: -1 })
         .lean<ConversationType[]>();
@@ -105,9 +109,9 @@ export async function GET(request: NextRequest) {
     const partnerIds = Array.from(
         new Set(
             conversations.flatMap((conversation) =>
-                conversation.participantIds.filter(
-                    (participantId) => participantId !== userId,
-                ),
+                conversation.participants
+                    .map((p) => p.userId.toString())
+                    .filter((id) => id !== userId)
             ),
         ),
     );
@@ -125,9 +129,11 @@ export async function GET(request: NextRequest) {
     }
 
     const conversationSummaries = conversations.map((conversation) => {
-        const partnerId = conversation.participantIds.find(
-            (participantId) => participantId !== userId,
+        const partner = conversation.participants.find(
+            (participant) => participant.userId !== userId
         );
+
+        const partnerId = partner?.userId;
 
         return createConversationSummary(
             conversation,
@@ -169,16 +175,20 @@ export async function POST(request: Request) {
     }
 
     const existingConversation = await Conversation.findOne({
-        participantIds: {
-            $all: [userId, participantId],
-            $size: 2,
-        },
+        $and: [
+            { participants: { $elemMatch: { userId: userId } } },
+            { participants: { $elemMatch: { userId: participantId } } },
+            { participants: { $size: 2 } } // Ensures it's a 1-on-1 chat, not a group chat
+        ]
     }).lean<ConversationType>();
 
     const conversation: ConversationType =
         existingConversation ??
         (await Conversation.create({
-            participantIds: [userId, participantId],
+            participants: [
+                { userId: userId, lastReadAt: new Date() },
+                { userId: participantId, lastReadAt: new Date() }
+            ],
             lastMessageAt: new Date(),
         }).then((createdConversation) => createdConversation.toObject() as ConversationType));
 

@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import { toChatMessageSummary } from "@/lib/chat";
-import Conversation from "@/model/Conversation";
+import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
@@ -29,13 +29,13 @@ export async function POST(request: Request) {
             return new NextResponse("Missing fields", { status: 400 });
         }
 
-        const conversation = await Conversation.findById(conversationId);
+        const conversation = await Conversation.findById(conversationId).lean<ConversationType>();
 
         if (!conversation) {
             return new NextResponse("Conversation not found", { status: 404 });
         }
 
-        if (!conversation.participantIds.includes(userId)) {
+        if (!conversation.participants.some((p: { userId: string; lastReadAt: Date | string }) => p.userId === userId)) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 
@@ -57,16 +57,14 @@ export async function POST(request: Request) {
                 "new-message",
                 messagePayload,
             ),
-            pusherServer.trigger(`inbox-${userId}`, "conversation-updated", {
-                conversationId,
-            }),
-            ...conversation.participantIds
-                .filter((participantId: string) => participantId !== userId)
-                .map((participantId: string) =>
-                    pusherServer.trigger(`inbox-${participantId}`, "conversation-updated", {
-                        conversationId,
-                    }),
-                ),
+
+            ...conversation.participants.map((participant: { userId: string; lastReadAt: Date | string }) =>
+                pusherServer.trigger(
+                    `inbox-${participant.userId.toString()}`,
+                    "conversation-updated",
+                    { conversationId }
+                )
+            ),
         ]);
 
         return NextResponse.json(messagePayload, { status: 201 });

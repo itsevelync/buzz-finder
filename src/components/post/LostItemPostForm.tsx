@@ -188,15 +188,14 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
     }
 
     return (
-        <div className="max-w-6xl mx-auto p-4 sm:p-8 flex flex-col gap-8">
+        <div className="max-w-6xl mx-auto px-4 py-6 sm:px-8 sm:py-10 flex flex-col gap-8">
             {/* Header Content Block */}
-            <div className="border-b border-gray-100 pb-5">
-                <h1 className="text-3xl font-bold text-buzz-blue tracking-tight">
-                    Report a Lost Item
+            <div className="border-b border-gray-100 pb-6 pt-1 px-2">
+                <h1 className="text-4xl font-bold text-buzz-blue">
+                    Report Lost Item
                 </h1>
-                <p className="text-gray-500 text-sm mt-2">
-                    Fill out the following details to let the community help you
-                    locate your item.
+                <p className="text-gray-500 mt-2">
+                    Fill out the following details about an item you&rsquo;ve lost.
                 </p>
             </div>
 
@@ -204,8 +203,8 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
             <div className="flex flex-col md:flex-row gap-8 items-start">
                 {/* Media Uploader & Map Segment */}
                 <div className="w-full md:w-5/12 flex flex-col gap-6">
-                    <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex flex-col gap-2">
-                        <div className="flex items-center gap-2 text-gray-800 font-bold mb-1">
+                    <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-2">
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
                             <LuFileImage className="text-buzz-gold" />
                             <span>Item Photo Reference</span>
                         </div>
@@ -217,8 +216,8 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                         />
                     </div>
 
-                    <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex flex-col gap-3">
-                        <div className="flex items-center gap-2 text-gray-800 font-bold mb-1">
+                    <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
                             <LuMapPin className="text-buzz-gold" />
                             <span>Specify Pin Point Location *</span>
                         </div>
@@ -238,7 +237,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                         </div>
                         {showMap && (
                             <>
-                                <div className="h-72 w-full rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center shadow-inner bg-gray-50">
+                                <div className="h-72 w-full rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-50">
                                     {currPositionFetched ? (
                                         <LocationSelectMap
                                             height="100%"
@@ -267,10 +266,10 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                 {/* Main Entry Input Form Section */}
                 <div className="w-full md:w-7/12">
                     <form
-                        className="form bg-white border border-gray-200 shadow-sm rounded-xl p-5 flex flex-col gap-5"
+                        className="form bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-5"
                         onSubmit={handleFormSubmit}
                     >
-                        <div className="flex items-center gap-2 text-gray-800 font-bold mb-1">
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
                             <LuBox className="text-buzz-gold" />
                             <span>Item Details</span>
                         </div>
@@ -305,7 +304,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                             }
                         />
 
-                        <div className="flex items-center gap-2 text-gray-800 font-bold pt-3 mb-1">
+                        <div className="flex items-center gap-2 font-semibold pt-3 mb-1 text-lg">
                             <LuCalendar className="text-buzz-gold" />
                             <span>Last Known Location & Time</span>
                         </div>
@@ -326,16 +325,16 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 text-gray-800 font-bold pt-3">
+                        <div className="flex items-center gap-2 font-semibold pt-3 text-lg">
                             <LuContact className="text-buzz-gold" />
                             <span>Contact Information</span>
                         </div>
 
-                        <div className="bg-white shadow rounded p-6">
+                        <div className="p-1">
                             <p className="italic text-sm mb-3 opacity-60">
                                 {userId ? "Your account" : "This"} information
-                                will be visible on the item page so the item
-                                owner can contact you if needed.
+                                will be visible on the item page so that others
+                                can contact you if needed.
                             </p>
                             {userId && (
                                 <div className="flex items-center space-x-2">
@@ -387,7 +386,6 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed text-sm text-center"
                         >
                             {isSubmitting
                                 ? "Uploading Report Content..."

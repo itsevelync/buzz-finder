@@ -7,6 +7,7 @@ import { categories } from "@/constants/Categories";
 import { PlainItem } from "@/model/Item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 
 export default function ReportItemClient({
     userId,
@@ -27,6 +28,7 @@ export default function ReportItemClient({
         lng: number;
     }>(gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!currPositionFetched && navigator.geolocation) {
@@ -89,6 +91,8 @@ export default function ReportItemClient({
 
     async function handleFormSubmit(e: React.FormEvent) {
         e.preventDefault();
+        if (isSubmitting) return;
+        setIsSubmitting(true);
         console.log("Submitting form");
         const uploadedImage = await uploadImage();
         console.log("Uploaded image:", uploadedImage);
@@ -113,6 +117,11 @@ export default function ReportItemClient({
                 lat: selectedLocation.lat,
                 lng: selectedLocation.lng,
             },
+            locationDescription: (
+                form.elements.namedItem(
+                    "locationDescription",
+                ) as HTMLInputElement
+            ).value,
         };
         if (uploadedImage) {
             body.image = uploadedImage;
@@ -122,49 +131,81 @@ export default function ReportItemClient({
             body["personFound"] = userId;
         } else {
             body["contactInfo"] = {
-                name: (form.elements.namedItem("contactName") as HTMLInputElement).value,
-                details: (form.elements.namedItem("contactDetails") as HTMLInputElement)
-                    .value,
-            }
+                name: (
+                    form.elements.namedItem("contactName") as HTMLInputElement
+                ).value,
+                details: (
+                    form.elements.namedItem(
+                        "contactDetails",
+                    ) as HTMLInputElement
+                ).value,
+            };
         }
 
-        console.log(body);
-        fetch("/api/item", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-        })
-            .then((res) => {
-                if (res.ok) {
-                    alert("Item logged successfully");
-                    router.push("/dashboard");
-                } else {
-                    alert("Error logging item");
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                alert("Error logging item");
+        try {
+            const res = await fetch("/api/item", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
             });
+
+            if (res.ok) {
+                alert("Item logged successfully");
+                router.push("/dashboard");
+            } else {
+                alert("Error logging item");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error logging item");
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
-        <div className="p-6 md:p-10 flex flex-col gap-6">
-            <h1 className="text-4xl font-bold text-buzz-blue">
-                Report Found Item
-            </h1>
-            <div className="flex flex-col lg:flex-row gap-x-10 gap-y-4">
-                <ImageUploader file={file} setFile={setFile} />
+        <div className="max-w-6xl mx-auto px-4 py-6 sm:px-8 sm:py-10 flex flex-col gap-8">
+            {/* Header */}
+            <div className="border-b border-gray-100 pb-6 pt-1 px-2">
+                <h1 className="text-4xl font-bold text-buzz-blue">
+                    Report Found Item
+                </h1>
+                <p className="text-gray-500 mt-2">
+                    Submit information about a lost item you found.
+                </p>
+            </div>
 
-                <form
-                    className="form w-full md:w-1/2"
-                    onSubmit={handleFormSubmit}
-                >
-                    <div className="w-full">
-                        <h3 className="mb-2">Item Location *</h3>
-                        <div className="h-100 rounded-lg overflow-hidden border-buzz-blue/20 border flex items-center justify-center shadow-md">
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+                {/* LEFT COLUMN */}
+                <div className="w-full md:w-5/12 flex flex-col gap-6">
+                    {/* Image Upload */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-2">
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
+                            <LuFileImage className="text-buzz-gold" />
+                            <span>Item Image</span>
+                        </div>
+
+                        <ImageUploader
+                            file={file}
+                            setFile={setFile}
+                            fullWidth
+                            title={false}
+                        />
+                    </div>
+                </div>
+
+                {/* RIGHT COLUMN */}
+                <div className="w-full md:w-7/12 flex flex-col gap-6">
+                    {/* Map */}
+                    <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
+                            <LuMapPin className="text-buzz-gold" />
+                            <span>Item Location *</span>
+                        </div>
+
+                        <div className="h-72 w-full rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-50">
                             {currPositionFetched ? (
                                 <LocationSelectMap
                                     height="100%"
@@ -175,110 +216,144 @@ export default function ReportItemClient({
                                     category={category}
                                 />
                             ) : (
-                                <p className="p-3 text-3xl text-gray-500">
+                                <p className="text-sm text-gray-400 animate-pulse">
                                     Loading map...
                                 </p>
                             )}
                         </div>
-                        <p className="text-center italic mt-2 opacity-55">
-                            Move map to adjust pin location
+
+                        <p className="text-center italic text-xs text-gray-400">
+                            Drag or pan the map to adjust pin location
                         </p>
                     </div>
-                    <FormInput
-                        label="Item Name"
-                        name="name"
-                        placeholder="Red Wallet, Silver Keychain, Beige Scarf, etc."
-                        required
-                    />
-                    <FormInput
-                        label="Item Description"
-                        name="description"
-                        placeholder='Color, size, brand, and any unique features (e.g., "Red leather wallet with a small scratch").'
-                        rows={3}
-                        isTextarea
-                    />
-                    <FormInput
-                        label="Location Details"
-                        name="locationDescription"
-                        placeholder="Specify location (e.g., near the library entrance, third floor, etc.)"
-                        isTextarea
-                    />
-                    <FormInput
-                        label="Item Retrieval"
-                        name="retrievalDescription"
-                        placeholder='e.g., "Left at the main circulation desk" or "Call me to arrange a meetup."'
-                        isTextarea
-                    />
-                    <FormInput
-                        label="Category"
-                        name="category"
-                        placeholder="Select an Item Category"
-                        isSelect
-                        selectOptions={categoryOptions}
-                        value={category}
-                        onInputChange={(e) =>
-                            setCategory(
-                                e.target.value as keyof typeof categories,
-                            )
-                        }
-                    />
-                    <div className="bg-white shadow rounded p-6">
-                        <h3 className="text-lg font-semibold">
-                            Contact Information
-                        </h3>
+                    <form
+                        className="form bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-5"
+                        onSubmit={handleFormSubmit}
+                    >
+                        {/* Item Details */}
+                        <div className="flex items-center gap-2 font-semibold mb-1 text-lg">
+                            <LuBox className="text-buzz-gold" />
+                            <span>Item Details</span>
+                        </div>
 
-                        <p className="italic text-sm mb-3 opacity-60">
-                            {userId ? "Your account" : "This"} information will
-                            be visible on the item page so the item owner can
-                            contact you if needed.
-                        </p>
-                        {userId && (
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    type="checkbox"
-                                    id="useAccountInfo"
-                                    checked={!useAccountInfo}
-                                    onChange={(e) => {
-                                        setUseAccountInfo(
-                                            !e.target.checked as boolean,
-                                        );
-                                    }}
-                                />
-                                <label
-                                    htmlFor="useAccountInfo"
-                                    className="text-sm"
-                                >
-                                    Don&rsquo;t connect my account information
-                                </label>
-                            </div>
-                        )}
+                        <FormInput
+                            label="Item Name"
+                            name="name"
+                            placeholder="Red Wallet, Silver Keychain, Beige Scarf, etc."
+                            required
+                        />
 
-                        {!useAccountInfo && (
-                            <>
-                                <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
-                                    <FormInput
-                                        label="Name"
-                                        name="contactName"
-                                        placeholder="Your name"
-                                        className="grow"
+                        <FormInput
+                            label="Item Description"
+                            name="description"
+                            placeholder='Color, size, brand, and any unique features (e.g., "Red leather wallet with a small scratch").'
+                            rows={4}
+                            isTextarea
+                        />
+
+                        <FormInput
+                            label="Category"
+                            name="category"
+                            placeholder="Select an Item Category"
+                            isSelect
+                            selectOptions={categoryOptions}
+                            value={category}
+                            onInputChange={(e) =>
+                                setCategory(
+                                    e.target.value as keyof typeof categories,
+                                )
+                            }
+                        />
+
+                        {/* Location / Retrieval */}
+                        <div className="flex items-center gap-2 font-semibold pt-3 mb-1 text-lg">
+                            <LuMapPin className="text-buzz-gold" />
+                            <span>Location & Retrieval Details</span>
+                        </div>
+
+                        <FormInput
+                            label="Location Details"
+                            name="locationDescription"
+                            placeholder="Near the library entrance, student center, third floor, etc."
+                            isTextarea
+                        />
+
+                        <FormInput
+                            label="Item Retrieval"
+                            name="retrievalDescription"
+                            placeholder='e.g., "Left at the circulation desk" or "Contact me to arrange pickup."'
+                            isTextarea
+                        />
+
+                        {/* Contact Info */}
+                        <div className="flex items-center gap-2 font-semibold pt-3 text-lg">
+                            <LuContact className="text-buzz-gold" />
+                            <span>Contact Information</span>
+                        </div>
+
+                        <div>
+                            <p className="italic text-sm mb-3 opacity-60">
+                                {userId ? "Your account" : "This"} information
+                                will be visible on the item page so the owner
+                                can contact you if needed.
+                            </p>
+
+                            {userId && (
+                                <div className="flex items-center space-x-2">
+                                    <input
+                                        type="checkbox"
+                                        id="useAccountInfo"
+                                        checked={!useAccountInfo}
+                                        onChange={(e) => {
+                                            setUseAccountInfo(
+                                                !e.target.checked as boolean,
+                                            );
+                                        }}
                                     />
-                                    <FormInput
-                                        label="Contact Information"
-                                        name="contactDetails"
-                                        placeholder="Phone number, email, Instagram, etc."
-                                        className="grow"
-                                    />
+
+                                    <label
+                                        htmlFor="useAccountInfo"
+                                        className="text-sm"
+                                    >
+                                        Don&rsquo;t connect my account
+                                        information
+                                    </label>
                                 </div>
+                            )}
 
-                                <p className="italic opacity-60 text-sm mt-1">
-                                    Leave these fields empty to post
-                                    anonymously.
-                                </p>
-                            </>
-                        )}
-                    </div>
-                    <button type="submit">Submit Found Item</button>
-                </form>
+                            {!useAccountInfo && (
+                                <>
+                                    <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
+                                        <FormInput
+                                            label="Name"
+                                            name="contactName"
+                                            placeholder="Your name"
+                                            className="grow"
+                                        />
+
+                                        <FormInput
+                                            label="Contact Information"
+                                            name="contactDetails"
+                                            placeholder="Phone number, email, Instagram, etc."
+                                            className="grow"
+                                        />
+                                    </div>
+
+                                    <p className="italic opacity-60 text-sm mt-1">
+                                        Leave these fields empty to post
+                                        anonymously.
+                                    </p>
+                                </>
+                            )}
+                        </div>
+
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting
+                                ? "Submitting Found Item..."
+                                : "Submit Found Item"}
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     );
