@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import { toChatMessageSummary } from "@/lib/chat";
-import Conversation from "@/model/Conversation";
+import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
             return new NextResponse("Missing fields", { status: 400 });
         }
 
-        const conversation = await Conversation.findById(conversationId);
+        const conversation = await Conversation.findById(conversationId).lean<ConversationType>();
 
         if (!conversation) {
             return new NextResponse("Conversation not found", { status: 404 });

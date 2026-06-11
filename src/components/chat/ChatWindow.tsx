@@ -15,6 +15,7 @@ import {
     useState,
 } from "react";
 import { pusherClient } from "@/lib/pusherClient";
+import { markAsRead } from "@/actions/Chat";
 
 type ChatWindowProps = {
     conversationItems: ConversationSummary[];
@@ -117,6 +118,13 @@ export default function ChatWindow({
                 return [...current, message];
             });
 
+            if (
+                message.conversationId === activeConversationId &&
+                document.hasFocus()
+            ) {
+                void markAsRead(activeConversationId);
+            }
+
             void refreshConversations();
         };
 
@@ -127,6 +135,23 @@ export default function ChatWindow({
             pusherClient.unsubscribe(`conversation-${activeConversationId}`);
         };
     }, [activeConversationId, refreshConversations]);
+
+    useEffect(() => {
+        if (!activeConversationId) return;
+
+        const performMarkAsRead = () => {
+            markAsRead(activeConversationId);
+        };
+
+        const handleFocus = () => {
+            performMarkAsRead();
+        };
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+        };
+    }, [activeConversationId, messages]);
 
     useEffect(() => {
         if (!activeConversationId) {
@@ -225,6 +250,7 @@ export default function ChatWindow({
 
             await response.json();
             setDraftMessage("");
+            markAsRead(conversationId);
             await refreshConversations();
         } catch (error) {
             console.error(error);

@@ -1,10 +1,12 @@
 import mongoose, { Schema, InferSchemaType } from 'mongoose';
 
+const ParticipantSchema = new Schema({
+    userId: { type: String, required: true },
+    lastReadAt: { type: Date, default: Date.now }
+}, { _id: false });
+
 const ConversationSchema: Schema = new Schema({
-    participants: [{
-        userId: { type: String, required: true },
-        lastReadAt: { type: Date, default: Date.now }
-    }],
+    participants: [ParticipantSchema],
     lastMessageAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

@@ -112,7 +112,11 @@ export default async function ChatPage({
         },
     );
 
-    const initialConversationId = resolvedSearchParams.id ?? null;
+    const validId = conversations.some(
+        (item) => item._id === resolvedSearchParams.id,
+    );
+
+    const initialConversationId = validId ? resolvedSearchParams.id : null;
 
     return (
         <ChatPageClient
