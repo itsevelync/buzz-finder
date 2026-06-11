@@ -1,8 +1,8 @@
-import EditItemClient from "./EditItemClient";
+import LostItemForm from "@/components/report-item/LostItemForm";
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
-import type { Item } from "@/model/Item";
-import ItemModel from "@/model/Item";
+import ItemModel, { PlainItem } from "@/model/Item";
+import { notFound } from "next/navigation";
 
 interface ItemPageProps {
     params: Promise<{
@@ -15,6 +15,13 @@ export default async function EditItem({ params }: ItemPageProps) {
     const session = await auth();
     await dbConnect();
     const itemDoc = await ItemModel.findById(id).lean();
-    const item = itemDoc ? JSON.parse(JSON.stringify(itemDoc)) as Item : null;
-    return <EditItemClient userId={session?.user?._id} itemId={id} item={item} />;
+    const item = itemDoc
+        ? (JSON.parse(JSON.stringify(itemDoc)) as PlainItem)
+        : undefined;
+
+    if (!itemDoc) {
+        notFound();
+    }
+
+    return <LostItemForm userId={session?.user?._id} item={item} />;
 }
