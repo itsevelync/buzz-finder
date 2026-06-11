@@ -472,7 +472,7 @@ export default function ChatWindow({
                                 !draftMessage.trim() ||
                                 isSending
                             }
-                            className="absolute bottom-7.5 right-7 rounded-lg bg-buzz-blue p-2 text-md font-semibold text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="absolute bottom-8 right-7 rounded-lg bg-buzz-blue p-2 text-md font-semibold text-white shadow-sm transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <LuSend />
                         </button>

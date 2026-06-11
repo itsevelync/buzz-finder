@@ -39,9 +39,9 @@ export default function UserProfileClient({
     }
 
     return (
-        <div className="p-8 max-w-6xl flex flex-col items-center m-auto">
+        <div className="px-2 py-6 sm:px-8 sm:py-8 max-w-6xl flex flex-col items-center m-auto">
             <div className="w-full max-w-2xl">
-                <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-20 mb-6 w-full">
+                <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-20 mt-4 mb-6 w-full">
                     <div className="flex items-center gap-6">
                         <Image
                             src={userProfile?.image || "/default-icon.svg"}
@@ -62,16 +62,16 @@ export default function UserProfileClient({
                     <div className="flex gap-3 grow px-4 justify-around">
                         <div className="flex flex-col items-center">
                             <h2 className="font-bold text-2xl text-buzz-blue">
-                                {lostItemPosts.length}
+                                {foundItems.length}
                             </h2>
-                            <p>Lost Items</p>
+                            <p>Found Items</p>
                         </div>
                         <div className="border-l border-l-buzz-blue opacity-50 my-1"></div>
                         <div className="flex flex-col items-center">
                             <h2 className="font-bold text-2xl text-buzz-blue">
-                                {foundItems.length}
+                                {lostItemPosts.length}
                             </h2>
-                            <p>Found Items</p>
+                            <p>Lost Items</p>
                         </div>
                     </div>
                 </div>

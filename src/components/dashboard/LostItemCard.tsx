@@ -34,7 +34,7 @@ export default function LostItemCard({
     return (
         <a
             href={"/lost-item/" + lostItemPost._id}
-            className="w-full max-w-255"
+            className="w-full max-w-255 flex"
         >
             <div className="rounded-lg w-full flex flex-col shadow p-6 gap-4 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                 <div className="flex flex-row items-center gap-2 justify-between flex-wrap">
