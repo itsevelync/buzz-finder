@@ -17,6 +17,7 @@ import { useUser } from "@/context/UserContext";
 import { LostItemPost } from "@/model/LostItemPost";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 interface LostItemPostFormProps {
     item?: LostItemPost;
@@ -192,10 +193,10 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
 
             if (res.ok) {
                 if (item) {
-                    alert("Lost item updated successfully");
+                    toast.success("Lost item updated successfully");
                     router.push("/lost-item/" + item._id);
                 } else {
-                    alert("Successfully reported lost item!");
+                    toast.success("Successfully reported lost item!");
                     form.reset();
                     setFile(null);
                     router.push("/dashboard?tab=lost");
@@ -203,13 +204,13 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
                 router.refresh();
             } else {
                 const errData = await res.json();
-                alert(
+                toast.error(
                     `Error ${item ? "updating" : "reporting"} lost item: ${errData.error || "Server issue"}`,
                 );
             }
         } catch (err) {
             console.error("Submission network crash:", err);
-            alert(
+            toast.error(
                 `Network error ${item ? "updating" : "reporting"} lost item. Please try again.`,
             );
         } finally {

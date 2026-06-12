@@ -4,8 +4,9 @@ import { dbConnect } from "@/lib/mongo";
 import Navbar from "@/components/navigation/Navbar";
 import TopBar from "@/components/navigation/TopBar";
 import BottomBar from "@/components/navigation/BottomBar";
-import NextAuthProvider from "@/components/providers/NextAuthProvider";
 import "./globals.css";
+import NextAuthProvider from "@/components/providers/NextAuthProvider";
+import { ToastContainer } from "react-toastify";
 
 export const viewport: Viewport = {
     initialScale: 1,
@@ -42,6 +43,7 @@ export default async function RootLayout({
                         </div>
                         <div className="md:pl-15 md:py-0 w-full grow overflow-y-auto">
                             {children}
+                            <ToastContainer />
                         </div>
                         <div className="bottom-0 w-full md:hidden z-100">
                             <BottomBar />

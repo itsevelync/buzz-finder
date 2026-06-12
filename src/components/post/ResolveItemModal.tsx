@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuCheck, LuX } from "react-icons/lu";
+import { toast } from "react-toastify";
 
 interface ResolveModalProps {
     itemId: string;
@@ -27,11 +28,11 @@ export default function ResolveItemModal({ itemId, itemName }: ResolveModalProps
                 setIsOpen(false);
                 router.refresh();
             } else {
-                alert("Could not update item status. Please try again.");
+                toast.error("Could not update item status. Please try again.");
             }
         } catch (err) {
             console.error("Error setting item resolution flag:", err);
-            alert("Network error updating post.");
+            toast.error("Network error updating post.");
         } finally {
             setIsUpdating(false);
         }

@@ -9,6 +9,7 @@ import { useState } from "react";
 import { updateUser } from "@/actions/User";
 import { UserUpdateData } from "@/actions/User";
 import FormInput from "../ui/FormInput";
+import { toast } from "react-toastify";
 
 export default function ProfileSettings() {
     const { user, setUser } = useUser();
@@ -85,7 +86,7 @@ export default function ProfileSettings() {
         const updatedUser = { ...user, ...values };
         setUser(updatedUser);
 
-        alert("Profile updated successfully");
+        toast.success("Profile updated successfully");
 
         await update({
             name: values.name,

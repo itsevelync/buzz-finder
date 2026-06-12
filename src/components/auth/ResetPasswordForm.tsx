@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { updateUserFromEmail } from "@/actions/User";
 import FormInput from "../ui/FormInput";
+import { toast } from "react-toastify";
 
 type ErrorState = {
     message: string;
@@ -104,7 +105,7 @@ export default function ResetPasswordForm() {
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
-            alert(
+            toast.success(
                 "Password updated successfully. Redirecting you to login page."
             );
             router.push("/login");
@@ -128,7 +129,7 @@ export default function ResetPasswordForm() {
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
-            alert(
+            toast.success(
                 "Code verified successfully. You can now set a new password."
             );
             setVerified(true);

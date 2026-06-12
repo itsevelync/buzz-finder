@@ -11,6 +11,7 @@ import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { useUser } from "@/context/UserContext";
+import { toast } from "react-toastify";
 
 interface FoundItemFormProps {
     item?: PlainItem;
@@ -168,18 +169,18 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
 
             if (res.ok) {
                 if (item) {
-                    alert("Item updated successfully");
+                    toast.success("Item updated successfully");
                     router.push("/item/" + item._id);
                 } else {
-                    alert("Item logged successfully");
+                    toast.success("Item logged successfully");
                     router.push("/dashboard");
                 }
             } else {
-                alert(item ? "Error updating item" : "Error logging item");
+                toast.error(item ? "Error updating item" : "Error logging item");
             }
         } catch (err) {
             console.error(err);
-            alert(item ? "Error updating item" : "Error logging item");
+            toast.error(item ? "Error updating item" : "Error logging item");
         } finally {
             setIsSubmitting(false);
         }

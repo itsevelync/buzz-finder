@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FaHandPaper, FaTimesCircle } from "react-icons/fa";
 import { statuses, ItemStatus } from "@/constants/Statuses";
+import { toast } from "react-toastify";
 
 interface ItemStatusActionsProps {
     itemId: string;
@@ -30,7 +31,7 @@ export default function ItemStatusActions({ itemId, currentStatus }: ItemStatusA
                 setActiveModal(null);
                 router.refresh(); // Reloads the server data seamlessly
             } else {
-                alert("Failed to update item status. Please try again.");
+                toast.error("Failed to update item status. Please try again.");
             }
         } catch (error) {
             console.error("Error updating status:", error);

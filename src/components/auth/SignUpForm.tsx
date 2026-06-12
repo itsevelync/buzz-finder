@@ -7,6 +7,7 @@ import SocialLogins from "./SocialLogins";
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/actions/User";
 import FormInput from "../ui/FormInput";
+import { toast } from "react-toastify";
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function SignUpForm() {
     if (response?.error) {
       setError(response.error);
     } else if (response?.success) {
-      alert("Account created successfully. Redirecting you to the login page.");
+      toast.success("Account created successfully. Redirecting you to the login page.");
       router.push("/login");
     }
   }
