@@ -71,7 +71,7 @@ export default function LostFoundDashboardContainer() {
                                     "category",
                                 ]}
                             />
-                            <Link href="/report-item?type=lost">
+                            <Link className="hidden sm:block" href="/report-item?type=lost">
                                 <button className="px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
                                     <FaPlus /> Post
                                 </button>
@@ -91,7 +91,7 @@ export default function LostFoundDashboardContainer() {
                                     "locationDescription",
                                 ]}
                             />
-                            <Link href="/report-item?type=found">
+                            <Link className="hidden sm:block" href="/report-item?type=found">
                                 <button className="whitespace-nowrap px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
                                     <FaPlus /> New Item
                                 </button>
