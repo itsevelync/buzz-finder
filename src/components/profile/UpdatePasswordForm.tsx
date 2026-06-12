@@ -2,7 +2,6 @@
 
 import { updateUser } from "@/actions/User";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 import { useUser } from "@/context/UserContext";
@@ -17,7 +16,6 @@ export default function UpdateProfileForm() {
     const { update } = useSession();
     const userID = user?._id ?? "";
 
-    const router = useRouter();
     const [error, setError] = useState("");
 
     async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
