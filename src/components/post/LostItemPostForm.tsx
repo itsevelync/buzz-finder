@@ -5,7 +5,6 @@ import FormInput from "@/components/ui/FormInput";
 import LocationSelectMap from "@/components/maps/LocationSelectMap";
 import ImageUploader from "@/components/report-item/ImageUploader";
 import { categories } from "@/constants/Categories";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import {
     LuBox,
@@ -14,26 +13,38 @@ import {
     LuFileImage,
     LuMapPin,
 } from "react-icons/lu";
+import { useUser } from "@/context/UserContext";
+import { LostItemPost } from "@/model/LostItemPost";
+import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa";
 
 interface LostItemPostFormProps {
-    session: Session | null;
+    item?: LostItemPost;
 }
 
-export default function LostItemPostForm({ session }: LostItemPostFormProps) {
+export default function LostItemPostForm({ item }: LostItemPostFormProps) {
     const router = useRouter();
+    const { user } = useUser();
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const userId = session?.user?._id;
-    const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
+    const userId = user?._id;
+    const [useAccountInfo, setUseAccountInfo] = useState(
+        item ? !!item.user : !!userId,
+    );
+
+    useEffect(() => {
+        setUseAccountInfo(item ? !!item.user : !!userId);
+    }, [item, userId]);
 
     // Map State
-    const [showMap, setShowMap] = useState(true);
+    const [showMap, setShowMap] = useState(item ? !!item.locationPin : true);
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
-    }>(gtCampus);
+    }>(item?.locationPin ?? gtCampus);
     const [currentPosition, setCurrentPosition] = useState<{
         lat: number;
         lng: number;
@@ -41,10 +52,17 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
 
     // Media State
     const [file, setFile] = useState<File | null>(null);
-    const [category, setCategory] = useState<keyof typeof categories | "">("");
+    const [category, setCategory] = useState<keyof typeof categories | "">(
+        item?.category ?? "",
+    );
 
     // Detect and handle client-side user positioning initialization
     useEffect(() => {
+        if (!navigator.geolocation || item) {
+            setCurrPositionFetched(true);
+            return;
+        }
+
         if (!currPositionFetched && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -65,7 +83,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                 },
             );
         }
-    }, [currPositionFetched]);
+    }, [currPositionFetched, item]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -118,7 +136,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
 
         try {
             // 1. Asynchronously execute the media upload process ahead of document submission
-            const uploadedImage = await uploadImage();
+            const uploadedImage = file ? await uploadImage() : item?.image;
 
             const body: Record<string, unknown> = {};
             const fields = [
@@ -159,29 +177,41 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                 };
             }
 
-            const res = await fetch("/api/lost-item-post", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const res = await fetch(
+                item
+                    ? `/api/lost-item-post/${item._id}`
+                    : "/api/lost-item-post",
+                {
+                    method: item ? "PATCH" : "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
                 },
-                body: JSON.stringify(body),
-            });
+            );
 
             if (res.ok) {
-                alert("Successfully reported lost item!");
-                form.reset();
-                setFile(null);
-                router.push("/dashboard?tab=lost");
+                if (item) {
+                    alert("Lost item updated successfully");
+                    router.push("/lost-item/" + item._id);
+                } else {
+                    alert("Successfully reported lost item!");
+                    form.reset();
+                    setFile(null);
+                    router.push("/dashboard?tab=lost");
+                }
                 router.refresh();
             } else {
                 const errData = await res.json();
                 alert(
-                    `Error reporting lost item: ${errData.error || "Server issue"}`,
+                    `Error ${item ? "updating" : "reporting"} lost item: ${errData.error || "Server issue"}`,
                 );
             }
         } catch (err) {
             console.error("Submission network crash:", err);
-            alert("Network error reporting lost item. Please try again.");
+            alert(
+                `Network error ${item ? "updating" : "reporting"} lost item. Please try again.`,
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -189,13 +219,22 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-6 sm:px-8 sm:py-10 flex flex-col gap-8">
+            {item && (
+                <Link
+                    href={`/lost-item/${item._id}`}
+                    className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all"
+                >
+                    <FaChevronLeft /> Back to Item Page
+                </Link>
+            )}
             {/* Header Content Block */}
             <div className="border-b border-gray-100 pb-6 pt-1 px-2">
                 <h1 className="text-4xl font-bold text-buzz-blue">
-                    Report Lost Item
+                    {item ? "Update" : "Report"} Lost Item
                 </h1>
                 <p className="text-gray-500 mt-2">
-                    Fill out the following details about an item you&rsquo;ve lost.
+                    Fill out the following details about an item you&rsquo;ve
+                    lost.
                 </p>
             </div>
 
@@ -211,6 +250,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                         <ImageUploader
                             file={file}
                             setFile={setFile}
+                            initialImage={item?.image?.url || ""}
                             fullWidth
                             title={false}
                         />
@@ -279,6 +319,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                             name="name"
                             placeholder="e.g., Silver iPhone 15 Pro with clear case"
                             required
+                            defaultValue={item?.name}
                         />
 
                         <FormInput
@@ -288,6 +329,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                             rows={4}
                             isTextarea
                             required
+                            defaultValue={item?.description || ""}
                         />
 
                         <FormInput
@@ -315,6 +357,7 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                                 name="locationDescription"
                                 placeholder="e.g., Library 3rd Floor"
                                 required
+                                defaultValue={item?.locationDescription || ""}
                             />
 
                             <FormInput
@@ -322,6 +365,13 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                                 name="lostDate"
                                 type="date"
                                 required
+                                defaultValue={
+                                    item?.lostDate
+                                        ? new Date(item.lostDate)
+                                              .toISOString()
+                                              .split("T")[0]
+                                        : ""
+                                }
                             />
                         </div>
 
@@ -366,12 +416,18 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                                             name="contactName"
                                             placeholder="Your name"
                                             className="grow"
+                                            defaultValue={
+                                                item?.contactInfo?.name || ""
+                                            }
                                         />
                                         <FormInput
                                             label="Contact Information"
                                             name="contactDetails"
                                             placeholder="Phone number, email, Instagram, etc."
                                             className="grow"
+                                            defaultValue={
+                                                item?.contactInfo?.details || ""
+                                            }
                                         />
                                     </div>
 
@@ -383,13 +439,14 @@ export default function LostItemPostForm({ session }: LostItemPostFormProps) {
                             )}
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                        >
+                        <button type="submit" disabled={isSubmitting}>
                             {isSubmitting
-                                ? "Uploading Report Content..."
-                                : "Report Lost Item"}
+                                ? item
+                                    ? "Updating..."
+                                    : "Uploading Report Content..."
+                                : item
+                                  ? "Update Lost Item"
+                                  : "Report Lost Item"}
                         </button>
                     </form>
                 </div>

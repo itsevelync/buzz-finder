@@ -59,6 +59,8 @@ export default function FoundItemForm({
                     setCurrPositionFetched(true);
                 },
             );
+        } else {
+            setCurrPositionFetched(true);
         }
     }, [item, currPositionFetched]);
 
