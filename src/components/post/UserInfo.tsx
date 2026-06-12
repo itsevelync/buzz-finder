@@ -1,9 +1,15 @@
 import { User } from "@/model/User";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function UserInfo({ user }: { user: User | undefined }) {
+    const Wrapper = user ? Link : "div";
+
     return (
-        <div className="flex flex-row items-center gap-2 bg-gray-50 border border-gray-100 rounded-full py-1.5 px-3 w-fit">
+        <Wrapper
+            href={user ? `/user/${user.username}` : ""}
+            className="flex flex-row items-center gap-2 bg-gray-50 border border-gray-100 rounded-full py-1.5 px-3 w-fit"
+        >
             <Image
                 src={user?.image ?? "/default-icon.svg"}
                 alt="User avatar"
@@ -17,6 +23,6 @@ export default function UserInfo({ user }: { user: User | undefined }) {
                     {user?.username ?? "Guest"}
                 </span>
             </p>
-        </div>
+        </Wrapper>
     );
 }

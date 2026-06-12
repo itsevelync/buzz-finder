@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
@@ -12,11 +12,9 @@ import LostFoundSelector from "@/components/dashboard/LostFoundSelector";
 import ItemList from "@/components/dashboard/ItemList";
 import PostList from "@/components/dashboard/PostList";
 
-import { MdContactMail } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
-
 import { useUser } from "../../../context/UserContext";
 import Link from "next/link";
+import { LuIdCard, LuMessagesSquare, LuPencil } from "react-icons/lu";
 
 interface UserProfileClientProps {
     userProfile: User | null;
@@ -32,7 +30,25 @@ export default function UserProfileClient({
     const { user: activeUser } = useUser();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [lostItemsSelected, setLostItemsSelected] = useState(false);
-    const canEditProfile = activeUser?._id === userProfile?._id;
+    const myProfile = activeUser?._id === userProfile?._id;
+    const [chatURL, setChatURL] = useState("/chat");
+
+    useEffect(() => {
+        async function loadChatId() {
+            const response = await fetch(
+                `/api/conversations?partnerId=${userProfile?._id}`,
+            );
+            const data = await response.json();
+
+            const chatId = data.conversationId;
+            if (chatId) {
+                setChatURL("/chat?id=" + chatId);
+            } else {
+                setChatURL("/chat?id=pending-" + userProfile?._id);
+            }
+        }
+        loadChatId();
+    }, [userProfile]);
 
     if (!userProfile) {
         return <p>User not found.</p>;
@@ -76,21 +92,28 @@ export default function UserProfileClient({
                     </div>
                 </div>
                 {userProfile?.description && (
-                    <p className="mb-5">{userProfile.description}</p>
+                    <p className="mb-4">{userProfile.description}</p>
                 )}
-                <div className="w-full justify-center sm:justify-normal flex items-center gap-3">
+                <div className="w-full justify-center flex items-center gap-3">
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
+                        className="w-full justify-center font-medium mt-3 border text-buzz-blue border-buzz-blue/40 rounded-md flex gap-3 items-center px-4 py-2 hover:bg-buzz-blue/5"
                     >
-                        <MdContactMail /> Contact Info
+                        <LuIdCard size={20} /> Contact Info
                     </button>
-                    {canEditProfile && (
+                    {myProfile ? (
                         <Link
                             href="/settings?tab=profile"
-                            className="font-medium mt-3 border text-buzz-blue border-buzz-blue/30 rounded flex gap-2 items-center px-3 py-1"
+                            className="w-full justify-center mt-3 border text-background border-buzz-blue/30 bg-buzz-blue rounded-md flex gap-3 items-center px-4 py-2 hover:opacity-90 transition"
                         >
-                            <MdEdit /> Edit Profile
+                            <LuPencil /> Edit Profile
+                        </Link>
+                    ) : (
+                        <Link
+                            href={chatURL}
+                            className="w-full justify-center mt-3 border text-background border-buzz-blue/30 bg-buzz-blue rounded-md flex gap-3 items-center px-4 py-2"
+                        >
+                            <LuMessagesSquare /> Message
                         </Link>
                     )}
                 </div>
