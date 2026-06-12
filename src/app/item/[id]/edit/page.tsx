@@ -1,8 +1,12 @@
 import FoundItemForm from "@/components/report-item/FoundItemForm";
-import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import ItemModel, { PlainItem } from "@/model/Item";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Edit Found Item - BuzzFinder",
+};
 
 interface ItemPageProps {
     params: Promise<{
@@ -12,7 +16,7 @@ interface ItemPageProps {
 
 export default async function EditItem({ params }: ItemPageProps) {
     const { id } = await params;
-    const session = await auth();
+
     await dbConnect();
     const itemDoc = await ItemModel.findById(id).lean();
     const item = itemDoc
@@ -23,5 +27,5 @@ export default async function EditItem({ params }: ItemPageProps) {
         notFound();
     }
 
-    return <FoundItemForm userId={session?.user?._id} item={item} />;
+    return <FoundItemForm item={item} />;
 }

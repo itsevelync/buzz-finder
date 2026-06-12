@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useRef, type CSSProperties } from "react";
 import styles from "./chatbot.module.css";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "BuzzBot - BuzzFinder",
+};
 
 type ChatMessage = {
   id: number;

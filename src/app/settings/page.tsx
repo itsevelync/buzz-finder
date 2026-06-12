@@ -1,4 +1,9 @@
 import SettingsClient from "./SettingsClient";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Settings - BuzzFinder",
+};
 
 export default async function Settings({
     searchParams,

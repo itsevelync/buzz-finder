@@ -9,6 +9,11 @@ import { PlainItem } from "@/model/Item";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import { auth } from "@/auth";
 import ItemStatusActions from "@/components/report-item/ItemStatusActions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Found Item - BuzzFinder",
+};
 
 interface ItemPageProps {
     params: {

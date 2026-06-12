@@ -4,6 +4,11 @@ import LostItemPost, {
     LostItemPost as LostItemPostType,
 } from "@/model/LostItemPost";
 import LostItemPostForm from "@/components/post/LostItemPostForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Edit Lost Item - BuzzFinder",
+};
 
 interface EditLostItemProps {
     params: Promise<{

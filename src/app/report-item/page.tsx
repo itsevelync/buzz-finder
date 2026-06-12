@@ -1,9 +1,13 @@
-// app/report-item/page.tsx
 import FoundItemForm from "@/components/report-item/FoundItemForm";
 import ReportTypeSelection from "@/components/report-item/ReportTypeSelection";
 import Link from "next/link";
 import { LuChevronLeft } from "react-icons/lu";
 import LostItemPostForm from "@/components/post/LostItemPostForm";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Report Item - BuzzFinder",
+};
 
 interface PageProps {
     searchParams: Promise<{ type?: string }>;

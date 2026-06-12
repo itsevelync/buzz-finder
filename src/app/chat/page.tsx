@@ -12,6 +12,11 @@ import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import User, { User as UserType } from "@/model/User";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Messages - BuzzFinder",
+};
 
 interface LeanMessage {
     _id: string;
@@ -123,7 +128,7 @@ export default async function ChatPage({
             currentUser={currentUser}
             users={users.map((user) => toChatUserSummary(user))}
             conversations={conversations}
-            initialConversationId={initialConversationId}
+            initialConversationId={initialConversationId ?? null}
         />
     );
 }

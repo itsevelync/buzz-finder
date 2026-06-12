@@ -3,6 +3,11 @@ import { LostItemPost } from "@/model/LostItemPost";
 import Link from "next/link";
 import { auth } from "@/auth";
 import LostItemClient from "./LostItemClient";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Lost Item - BuzzFinder",
+};
 
 async function getLostItem(id: string): Promise<LostItemPost | null> {
     try {
