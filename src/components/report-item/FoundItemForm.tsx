@@ -8,30 +8,41 @@ import { PlainItem } from "@/model/Item";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
+import Link from "next/link";
+import { FaChevronLeft } from "react-icons/fa";
+import { useUser } from "@/context/UserContext";
+import { toast } from "react-toastify";
 
-export default function ReportItemClient({
-    userId,
-}: {
-    userId: string | undefined;
-}) {
+interface FoundItemFormProps {
+    item?: PlainItem;
+}
+
+export default function FoundItemForm({ item }: FoundItemFormProps) {
     const router = useRouter();
+    const { user } = useUser();
+    const userId = user?._id;
+
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
-    const [category, setCategory] = useState<keyof typeof categories | "">("");
+    const [category, setCategory] = useState<keyof typeof categories | "">(
+        item?.category ?? "",
+    );
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
-    }>(gtCampus);
+    }>(item?.locationPin ?? gtCampus);
     const [currentPosition, setCurrentPosition] = useState<{
         lat: number;
         lng: number;
     }>(gtCampus);
-    const [useAccountInfo, setUseAccountInfo] = useState(userId ? true : false);
+    const [useAccountInfo, setUseAccountInfo] = useState(
+        item ? !!item.personFound : !!userId,
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (!currPositionFetched && navigator.geolocation) {
+        if (!item && !currPositionFetched && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     setSelectedLocation({
@@ -49,8 +60,10 @@ export default function ReportItemClient({
                     setCurrPositionFetched(true);
                 },
             );
+        } else {
+            setCurrPositionFetched(true);
         }
-    }, [currPositionFetched]);
+    }, [item, currPositionFetched]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -89,12 +102,12 @@ export default function ReportItemClient({
         }
     }
 
-    async function handleFormSubmit(e: React.FormEvent) {
+    async function handleFormSubmit(e: React.SubmitEvent) {
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
         console.log("Submitting form");
-        const uploadedImage = await uploadImage();
+        const uploadedImage = file ? await uploadImage() : item?.image;
         console.log("Uploaded image:", uploadedImage);
 
         const form = e.target as HTMLFormElement;
@@ -143,23 +156,31 @@ export default function ReportItemClient({
         }
 
         try {
-            const res = await fetch("/api/item", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const res = await fetch(
+                item ? `/api/item/${item._id}` : "/api/item",
+                {
+                    method: item ? "PATCH" : "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
                 },
-                body: JSON.stringify(body),
-            });
+            );
 
             if (res.ok) {
-                alert("Item logged successfully");
-                router.push("/dashboard");
+                if (item) {
+                    toast.success("Item updated successfully");
+                    router.push("/item/" + item._id);
+                } else {
+                    toast.success("Item logged successfully");
+                    router.push("/dashboard");
+                }
             } else {
-                alert("Error logging item");
+                toast.error(item ? "Error updating item" : "Error logging item");
             }
         } catch (err) {
             console.error(err);
-            alert("Error logging item");
+            toast.error(item ? "Error updating item" : "Error logging item");
         } finally {
             setIsSubmitting(false);
         }
@@ -167,13 +188,25 @@ export default function ReportItemClient({
 
     return (
         <div className="max-w-6xl mx-auto px-4 py-6 sm:px-8 sm:py-10 flex flex-col gap-8">
+            {item && (
+                <Link
+                    href={`/item/${item._id}`}
+                    className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all"
+                >
+                    <FaChevronLeft /> Back to Item Page
+                </Link>
+            )}
             {/* Header */}
             <div className="border-b border-gray-100 pb-6 pt-1 px-2">
                 <h1 className="text-4xl font-bold text-buzz-blue">
-                    Report Found Item
+                    {item
+                        ? `Edit ${item?.name || "Found Item"}`
+                        : "Report Found Item"}
                 </h1>
                 <p className="text-gray-500 mt-2">
-                    Submit information about a lost item you found.
+                    {item
+                        ? "Update the information for this found item."
+                        : "Submit information about a lost item you found."}{" "}
                 </p>
             </div>
 
@@ -190,6 +223,7 @@ export default function ReportItemClient({
                         <ImageUploader
                             file={file}
                             setFile={setFile}
+                            initialImage={item?.image?.url || ""}
                             fullWidth
                             title={false}
                         />
@@ -206,7 +240,7 @@ export default function ReportItemClient({
                         </div>
 
                         <div className="h-72 w-full rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-50">
-                            {currPositionFetched ? (
+                            {item || currPositionFetched ? (
                                 <LocationSelectMap
                                     height="100%"
                                     width="100%"
@@ -241,6 +275,7 @@ export default function ReportItemClient({
                             name="name"
                             placeholder="Red Wallet, Silver Keychain, Beige Scarf, etc."
                             required
+                            defaultValue={item?.name}
                         />
 
                         <FormInput
@@ -249,6 +284,7 @@ export default function ReportItemClient({
                             placeholder='Color, size, brand, and any unique features (e.g., "Red leather wallet with a small scratch").'
                             rows={4}
                             isTextarea
+                            defaultValue={item?.description || ""}
                         />
 
                         <FormInput
@@ -276,6 +312,7 @@ export default function ReportItemClient({
                             name="locationDescription"
                             placeholder="Near the library entrance, student center, third floor, etc."
                             isTextarea
+                            defaultValue={item?.locationDescription || ""}
                         />
 
                         <FormInput
@@ -283,6 +320,7 @@ export default function ReportItemClient({
                             name="retrievalDescription"
                             placeholder='e.g., "Left at the circulation desk" or "Contact me to arrange pickup."'
                             isTextarea
+                            defaultValue={item?.retrievalDescription || ""}
                         />
 
                         {/* Contact Info */}
@@ -329,6 +367,9 @@ export default function ReportItemClient({
                                             name="contactName"
                                             placeholder="Your name"
                                             className="grow"
+                                            defaultValue={
+                                                item?.contactInfo?.name || ""
+                                            }
                                         />
 
                                         <FormInput
@@ -336,6 +377,9 @@ export default function ReportItemClient({
                                             name="contactDetails"
                                             placeholder="Phone number, email, Instagram, etc."
                                             className="grow"
+                                            defaultValue={
+                                                item?.contactInfo?.details || ""
+                                            }
                                         />
                                     </div>
 
@@ -349,8 +393,12 @@ export default function ReportItemClient({
 
                         <button type="submit" disabled={isSubmitting}>
                             {isSubmitting
-                                ? "Submitting Found Item..."
-                                : "Submit Found Item"}
+                                ? item
+                                    ? "Updating..."
+                                    : "Submitting Found Item..."
+                                : item
+                                  ? `Update ${item?.name || "Item"}`
+                                  : "Submit Found Item"}
                         </button>
                     </form>
                 </div>

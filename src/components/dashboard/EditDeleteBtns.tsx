@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 interface EditDeleteBtnsProps {
     editURL: string;
@@ -30,15 +31,15 @@ export default function EditDeleteBtns({
             });
 
             if (!res.ok) {
-                alert("Error deleting item. Please try again");
+                toast.error("Error deleting item. Please try again");
                 return;
             }
 
-            alert("Item deleted successfully.");
+            toast.success("Item deleted successfully.");
             router.push(redirect);
         } catch (error) {
             console.log(error);
-            alert("Error deleting item. Please try again");
+            toast.error("Error deleting item. Please try again");
         }
     }
 

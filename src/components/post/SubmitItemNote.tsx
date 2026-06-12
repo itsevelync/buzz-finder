@@ -4,6 +4,7 @@ import { useUser } from "@/context/UserContext";
 import { ItemNote } from "@/model/ItemNote";
 import { LostItemPost } from "@/model/LostItemPost";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 interface SubmitItemNoteProps {
     lost_item: LostItemPost;
@@ -40,18 +41,18 @@ export default function SubmitItemNote({
             });
 
             if (res.ok) {
-                alert("Successfully submitted item note!");
+                toast.success("Successfully submitted item note!");
                 setNote("");
                 getItemNotes(lost_item._id.toString());
             } else {
                 const errData = await res.json();
-                alert(
+                toast.error(
                     `Error reporting lost item: ${errData.error || "Server issue"}`,
                 );
             }
         } catch (err) {
             console.error("Submission network crash:", err);
-            alert("Network error reporting lost item. Please try again.");
+            toast.error("Network error reporting lost item. Please try again.");
         } finally {
             setSubmitting(false);
         }

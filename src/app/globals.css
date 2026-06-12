@@ -9,6 +9,13 @@
   --font-mona-sans: "Mona Sans", sans-serif;
 }
 
+.Toastify__toast-theme--light {
+  --toastify-color-success: var(--buzz-gold);
+  --toastify-icon-color-success: var(--toastify-color-success);
+  --toastify-color-progress-success: var(--toastify-color-success);
+  --toastify-font-family: var(--font-mona-sans);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

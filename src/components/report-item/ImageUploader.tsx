@@ -6,11 +6,13 @@ import { FaImage, FaCloudUploadAlt } from "react-icons/fa";
 export default function ImageUploader({
     file,
     setFile,
+    initialImage,
     fullWidth = false,
     title = true,
 }: {
     file: File | null;
     setFile: React.Dispatch<React.SetStateAction<File | null>>;
+    initialImage?: string;
     fullWidth?: boolean;
     title?: boolean;
 }) {
@@ -92,15 +94,21 @@ export default function ImageUploader({
                 }}
             >
                 {file ? (
-                    <>
-                        <NextImage
-                            className="object-contain max-w-full max-h-full"
-                            src={URL.createObjectURL(file)}
-                            alt="Image Preview"
-                            height={500}
-                            width={500}
-                        />
-                    </>
+                    <NextImage
+                        className="object-contain max-w-full max-h-full"
+                        src={URL.createObjectURL(file)}
+                        alt="Image Preview"
+                        height={500}
+                        width={500}
+                    />
+                ) : initialImage ? (
+                    <NextImage
+                        className="object-contain max-w-full max-h-full"
+                        src={initialImage}
+                        alt="Image Preview"
+                        height={500}
+                        width={500}
+                    />
                 ) : (
                     <>
                         <FaImage className="text-7xl" />

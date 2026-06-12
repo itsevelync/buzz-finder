@@ -3,6 +3,11 @@ import UserProfileClient from "./UserProfileClient";
 import type { User } from "@/model/User";
 import type { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "User Profile - BuzzFinder",
+};
 
 interface ProfilePageProps {
     params: {

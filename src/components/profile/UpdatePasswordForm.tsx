@@ -2,10 +2,10 @@
 
 import { updateUser } from "@/actions/User";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 import { useUser } from "@/context/UserContext";
+import { toast } from "react-toastify";
 
 export default function UpdateProfileForm() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -16,7 +16,6 @@ export default function UpdateProfileForm() {
     const { update } = useSession();
     const userID = user?._id ?? "";
 
-    const router = useRouter();
     const [error, setError] = useState("");
 
     async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
@@ -43,7 +42,7 @@ export default function UpdateProfileForm() {
         setPassword("")
         setCurrentPassword("")
         setPasswordConfirm("")
-        alert("Password updated successfully!");
+        toast.success("Password updated successfully!");
     }
 
     const getPasswordStrength = (password: string) => {

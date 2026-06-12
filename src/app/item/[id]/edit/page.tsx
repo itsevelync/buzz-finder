@@ -1,8 +1,12 @@
-import EditItemClient from "./EditItemClient";
-import { auth } from "@/auth";
+import FoundItemForm from "@/components/report-item/FoundItemForm";
 import { dbConnect } from "@/lib/mongo";
-import type { Item } from "@/model/Item";
-import ItemModel from "@/model/Item";
+import ItemModel, { PlainItem } from "@/model/Item";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Edit Found Item - BuzzFinder",
+};
 
 interface ItemPageProps {
     params: Promise<{
@@ -12,9 +16,16 @@ interface ItemPageProps {
 
 export default async function EditItem({ params }: ItemPageProps) {
     const { id } = await params;
-    const session = await auth();
+
     await dbConnect();
     const itemDoc = await ItemModel.findById(id).lean();
-    const item = itemDoc ? JSON.parse(JSON.stringify(itemDoc)) as Item : null;
-    return <EditItemClient userId={session?.user?._id} itemId={id} item={item} />;
+    const item = itemDoc
+        ? (JSON.parse(JSON.stringify(itemDoc)) as PlainItem)
+        : undefined;
+
+    if (!itemDoc) {
+        notFound();
+    }
+
+    return <FoundItemForm item={item} />;
 }

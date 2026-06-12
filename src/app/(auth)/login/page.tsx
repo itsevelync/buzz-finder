@@ -3,6 +3,11 @@ import AuthPageLayout from "@/components/auth/AuthPageLayout";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Login - BuzzFinder",
+};
 
 export default async function SignInPage() {
     const session = await auth();

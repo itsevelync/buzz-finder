@@ -175,7 +175,7 @@ export default function LostItemClient({
                     {isOwner && (
                         <div className="border-t border-gray-100 flex justify-center">
                             <EditDeleteBtns
-                                editURL={`/lost-item-post/${lost_item._id}/edit`}
+                                editURL={`/lost-item/${lost_item._id}/edit`}
                                 deleteAPIRoute={`/api/lost-item-post/${lost_item._id}`}
                                 redirect="/dashboard?tab=lost"
                             />
