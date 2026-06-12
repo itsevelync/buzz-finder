@@ -44,7 +44,7 @@ export default async function RootLayout({
                             <div className="hidden md:flex flex-row z-100">
                                 <Navbar />
                             </div>
-                            <div className="md:pl-15 md:py-0 w-full grow overflow-y-auto">
+                            <div id="children-outer-container" className="md:pl-15 md:py-0 w-full grow overflow-y-auto">
                                 {children}
                                 <ToastContainer />
                             </div>

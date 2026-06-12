@@ -12,9 +12,20 @@ export function usePagination({ totalItems, itemsPerPage }: UsePaginationProps) 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
 
-    const nextPage = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
-    const prevPage = () => setCurrentPage((p) => Math.max(p - 1, 1));
-    const goToPage = (page: number) => setCurrentPage(page);
+    const handlePageChange = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+        const element = document.getElementById("children-outer-container");
+        if (element) {
+            element.scrollTo({
+                top: 0,
+                behavior: "auto",
+            });
+        }
+    };
+
+    const nextPage = () => handlePageChange(Math.min(currentPage + 1, totalPages));
+    const prevPage = () => handlePageChange(Math.max(currentPage - 1, 1));
+    const goToPage = (page: number) => handlePageChange(page);
 
     const generatePageNumbers = () => {
         const pages: (number | string)[] = [];
