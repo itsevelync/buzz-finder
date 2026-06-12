@@ -10,17 +10,17 @@ import { useRouter } from "next/navigation";
 import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
+import { useUser } from "@/context/UserContext";
 
 interface FoundItemFormProps {
-    userId: string | undefined;
     item?: PlainItem;
 }
 
-export default function FoundItemForm({
-    userId,
-    item,
-}: FoundItemFormProps) {
+export default function FoundItemForm({ item }: FoundItemFormProps) {
     const router = useRouter();
+    const { user } = useUser();
+    const userId = user?._id;
+
     const gtCampus = { lat: 33.778, lng: -84.398 };
     const [file, setFile] = useState<File | null>(null);
     const [category, setCategory] = useState<keyof typeof categories | "">(

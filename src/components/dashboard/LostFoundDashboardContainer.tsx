@@ -71,14 +71,14 @@ export default function LostFoundDashboardContainer() {
                                     "category",
                                 ]}
                             />
-                            <Link href="post">
+                            <Link href="/report-item?type=lost">
                                 <button className="px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
                                     <FaPlus /> Post
                                 </button>
                             </Link>
                         </div>
                     ) : (
-                        <div className="p-4 bg-white shadow-md rounded-lg">
+                        <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg">
                             <SearchBar<PlainItem>
                                 placeholder="Search by name, description, or location"
                                 items={filterActiveItems(items || [])}
@@ -91,6 +91,11 @@ export default function LostFoundDashboardContainer() {
                                     "locationDescription",
                                 ]}
                             />
+                            <Link href="/report-item?type=found">
+                                <button className="whitespace-nowrap px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
+                                    <FaPlus /> New Item
+                                </button>
+                            </Link>
                         </div>
                     )}
                 </div>

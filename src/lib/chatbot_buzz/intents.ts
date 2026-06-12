@@ -74,7 +74,7 @@ export const intents: Intent[] = [
       "where do i post a found item"
     ],
     responses: [
-      "Nice! To post a found item, use the **Post Item** page (or visit `/post`) and include where you found it so the owner can reach you.",
+      "Nice! To post a found item, use the **Post Item** page (or visit `/report-item?type=lost`) and include where you found it so the owner can reach you.",
       "You can post a found item from the **Post Item** section. Add a short description, location, and how the owner can contact you."
     ]
   },
