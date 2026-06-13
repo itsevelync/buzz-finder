@@ -7,7 +7,7 @@ export default function UserInfo({ user }: { user: User | undefined }) {
 
     return (
         <Wrapper
-            href={user ? `/user/${user.username}` : ""}
+            href={user ? `/user/${user.username}` : "?"}
             className="flex flex-row items-center gap-2 bg-gray-50 border border-gray-100 rounded-full py-1.5 px-3 w-fit"
         >
             <Image

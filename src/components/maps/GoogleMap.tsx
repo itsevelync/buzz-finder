@@ -307,7 +307,7 @@ function CurrentLocationButton({
             <button
                 type="button"
                 onClick={handleCenterClick}
-                className="cursor-pointer mr-2.5 mb-2.5 flex items-center justify-center text-2xl rounded-full w-10 h-10 bg-white shadow-[0px_1px_4px_-1px_rgba(0,0,0,0.3)] text-black/60 hover:bg-gray-50 transition-colors"
+                className="cursor-pointer mr-2.5 flex items-center justify-center text-2xl rounded-full w-10 h-10 bg-white shadow-[0px_1px_4px_-1px_rgba(0,0,0,0.3)] text-black/60 hover:bg-gray-50 transition-colors"
                 aria-label="Center map on current location"
                 title="Center map on current location"
             >

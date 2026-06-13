@@ -17,10 +17,7 @@ export async function GET(req: NextRequest) {
         query.user = user;
     }
 
-    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate(
-        "user",
-        "username image"
-    );
+    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate("user");
     return new Response(JSON.stringify(lostItemPosts), { status: 200 });
 }
 /**

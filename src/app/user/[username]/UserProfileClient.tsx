@@ -53,15 +53,7 @@ export default function UserProfileClient({
     }, [userProfile]);
 
     function handleOpenContactInfoModal() {
-        openModal(
-            <ContactInfoModal
-                email={userProfile.email}
-                phone={userProfile.phoneNum}
-                discord={userProfile.discord}
-                instagram={userProfile.instagram}
-                linkedIn={userProfile.linkedIn}
-            />,
-        );
+        openModal(<ContactInfoModal user={userProfile} />);
     }
 
     if (!userProfile) {
@@ -139,7 +131,7 @@ export default function UserProfileClient({
 
             <div>
                 {lostItemsSelected ? (
-                    <PostList lostItemPosts={lostItemPosts} columns={4} />
+                    <PostList lostItemPosts={lostItemPosts} columns={3} />
                 ) : (
                     <ItemList items={foundItems} />
                 )}

@@ -4,7 +4,8 @@ import { LostItemPost } from "@/model/LostItemPost";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { LuMail, LuMessagesSquare, LuPhone, LuUser } from "react-icons/lu";
+import { LuContact, LuMessagesSquare } from "react-icons/lu";
+import { ContactInfoList } from "../profile/ContactInfoList";
 
 interface PostOwnerContactInfoProps {
     lost_item: LostItemPost;
@@ -16,10 +17,9 @@ export default function PostOwnerContactInfo({
     session,
 }: PostOwnerContactInfoProps) {
     const router = useRouter();
-    
+
     const isOwner =
         session?.user?._id && session?.user?._id === lost_item.user?._id;
-
 
     const [loadingChat, setLoadingChat] = useState(false);
 
@@ -53,9 +53,10 @@ export default function PostOwnerContactInfo({
         const itemOwner = lost_item.contactInfo;
 
         return (
-            <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white">
-                <h3 className="font-semibold mb-3">
-                    Item Owner Contact Information
+            <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <LuContact className="text-buzz-gold" /> Item Owner Contact
+                    Information
                 </h3>
 
                 <div className="flex flex-col gap-1 text-sm mb-1">
@@ -71,50 +72,31 @@ export default function PostOwnerContactInfo({
         );
     }
 
-    return (
-        <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white">
-            <h3 className="font-semibold mb-3">
-                Item Owner Contact Information
-            </h3>
+    if (lost_item.user) {
+        return (
+            <div className="border border-gray-200 rounded-lg p-4 bg-white">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <LuContact className="text-buzz-gold" /> Item Owner Contact
+                    Information
+                </h3>
 
-            <div className="flex flex-col gap-2 text-sm">
-                <div>
-                    <span className="font-medium">{lost_item.user?.name}</span>
-                </div>
+                <ContactInfoList user={lost_item.user} />
 
-                {lost_item.user?.username && (
-                    <div className="flex items-center gap-2 text-gray-700">
-                        <LuUser />
-                        <span>{lost_item.user?.username}</span>
-                    </div>
-                )}
-
-                {lost_item.user?.email && (
-                    <div className="flex items-center gap-2 text-gray-700">
-                        <LuMail />
-                        <span>{lost_item.user?.email}</span>
-                    </div>
-                )}
-
-                {lost_item.user?.phoneNum && (
-                    <div className="flex items-center gap-2 text-gray-700">
-                        <LuPhone />
-                        <span>{lost_item.user?.phoneNum}</span>
-                    </div>
+                {!isOwner && (
+                    <button
+                        disabled={loadingChat || !session?.user?._id}
+                        onClick={handleLoadChat}
+                        className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                    >
+                        <LuMessagesSquare />{" "}
+                        {!session?.user?._id
+                            ? "Log in to message item owner"
+                            : loadingChat
+                              ? "Redirecting..."
+                              : "Message Item Owner"}
+                    </button>
                 )}
             </div>
-            {!isOwner && <button
-                disabled={loadingChat || !session?.user?._id}
-                onClick={handleLoadChat}
-                className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-                <LuMessagesSquare />{" "}
-                {!session?.user?._id
-                    ? "Log in to message item owner"
-                    : loadingChat
-                      ? "Redirecting..."
-                      : "Message Item Owner"}
-            </button>}
-        </div>
-    );
+        );
+    }
 }

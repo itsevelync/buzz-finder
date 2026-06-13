@@ -18,16 +18,37 @@ const ItemNoteSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "User",
         },
+        parentId: {
+            type: Schema.Types.ObjectId,
+            ref: "ItemNote",
+            default: null,
+        },
+        likes: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        deletedAt: {
+            type: Date,
+            default: null,
+        },
     },
     { timestamps: true }
 );
 
 type BaseItemNote = InferSchemaType<typeof ItemNoteSchema>;
 
-export type ItemNote = Omit<BaseItemNote, "user"> & {
+export type ItemNote = Omit<BaseItemNote, "user" | "parentId" | "likes"> & {
     _id: ObjectId;
     user?: AuthUser | User;
+    parentId?: ObjectId | ItemNote | null | string;
+    likes: (ObjectId | AuthUser | User)[];
 };
 
 export default mongoose.models?.ItemNote ??
     mongoose.model("ItemNote", ItemNoteSchema);
+
+export type ItemNoteTree = ItemNote & {
+    replies: ItemNoteTree[];
+};
