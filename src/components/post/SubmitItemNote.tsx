@@ -32,7 +32,7 @@ export default function SubmitItemNote({
                 body.user = user;
             }
 
-            const res = await fetch("/api/item-note", {
+            const res = await fetch("/api/item-notes", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

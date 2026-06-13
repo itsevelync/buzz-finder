@@ -53,15 +53,7 @@ export default function UserProfileClient({
     }, [userProfile]);
 
     function handleOpenContactInfoModal() {
-        openModal(
-            <ContactInfoModal
-                email={userProfile.email}
-                phone={userProfile.phoneNum}
-                discord={userProfile.discord}
-                instagram={userProfile.instagram}
-                linkedIn={userProfile.linkedIn}
-            />,
-        );
+        openModal(<ContactInfoModal user={userProfile} />);
     }
 
     if (!userProfile) {

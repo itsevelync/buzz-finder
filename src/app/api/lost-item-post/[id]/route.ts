@@ -16,10 +16,7 @@ export async function GET(
   try {
     await dbConnect();
     const { id } = await params;
-    const item = await LostItem.findById(id).populate(
-        "user",
-        "name username image email"
-    );
+    const item = await LostItem.findById(id).populate("user");
 
     if (!item) {
       return NextResponse.json(

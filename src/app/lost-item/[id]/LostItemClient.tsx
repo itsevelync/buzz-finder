@@ -18,7 +18,7 @@ import {
 import ResolveItemModal from "@/components/post/ResolveItemModal";
 import { Session } from "next-auth";
 import UserInfo from "@/components/post/UserInfo";
-import { ItemNote } from "@/model/ItemNote";
+import { ItemNoteTree } from "@/model/ItemNote";
 import PostOwnerContactInfo from "@/components/post/PostOwnerContactInfo";
 import SubmitItemNote from "@/components/post/SubmitItemNote";
 import ItemNotes from "@/components/post/ItemNotes";
@@ -35,7 +35,7 @@ export default function LostItemClient({
     lost_item,
     session,
 }: LostItemClientProps) {
-    const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
+    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
     const { openModal } = useModal();
 
     const category = categories[lost_item.category] || {
@@ -62,7 +62,7 @@ export default function LostItemClient({
 
     async function getItemNotes(itemId: string) {
         try {
-            const res = await fetch(`/api/item-note/?itemId=${itemId}`);
+            const res = await fetch(`/api/lost-item-post/${itemId}/item-note`);
 
             if (!res.ok) {
                 console.error(
@@ -108,7 +108,7 @@ export default function LostItemClient({
 
             {/* Found Status Banner Announcement */}
             {lost_item.isFound && (
-                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3 shadow-xs animate-in slide-in-from-top-2 duration-200">
+                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
                     <LuBadgeCheck className="text-lg text-emerald-600" />
                     <h3 className="font-medium text-emerald-950 text-base leading-tight">
                         This item has been successfully recovered!
@@ -152,7 +152,7 @@ export default function LostItemClient({
                 {/* LEFT COLUMN */}
                 <div className="flex flex-col gap-4 w-full">
                     {/* Item image */}
-                    <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10 shadow">
+                    <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
                         {lost_item.image?.url ? (
                             <Image
                                 src={lost_item.image.url}
@@ -180,12 +180,12 @@ export default function LostItemClient({
                     />
 
                     {!lost_item.isFound && (
-                        <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white flex flex-col gap-5">
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white flex flex-col gap-5">
                             {/* Context Actions Block */}
                             {isOwner ? (
                                 <button
                                     onClick={openResolveItemModal}
-                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded transition text-sm flex items-center justify-center gap-2"
                                 >
                                     <LuCheck className="text-xs" /> Mark as
                                     Found
@@ -219,7 +219,7 @@ export default function LostItemClient({
                             <LuBox className="text-buzz-gold" /> Item
                             Description
                         </h3>
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap bg-white border border-dashed border-gray-200 rounded-lg p-4 shadow-sm">
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap bg-white border border-dashed border-gray-200 rounded-lg p-4">
                             {lost_item.description ||
                                 "The owner did not provide an extended description for this item."}
                         </p>
@@ -246,7 +246,7 @@ export default function LostItemClient({
                         </p>
 
                         {/* Map Container */}
-                        <div className="h-90 w-full rounded-lg overflow-hidden border border-foreground/10 flex justify-center items-center bg-foreground/2 text-foreground/70 shadow">
+                        <div className="h-90 w-full rounded-lg overflow-hidden border border-foreground/10 flex justify-center items-center bg-foreground/2 text-foreground/70">
                             {lost_item.locationPin ? (
                                 <CenteredMap
                                     width="100%"
@@ -261,7 +261,7 @@ export default function LostItemClient({
                     </div>
 
                     {/* Item Notes */}
-                    <ItemNotes itemNotes={itemNotes} />
+                    <ItemNotes itemNotes={itemNotes} setItemNotes={setItemNotes} />
                 </div>
             </div>
         </div>

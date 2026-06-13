@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { LuPencil, LuTrash } from "react-icons/lu";
+import ConfirmationModal from "../ui/ConfirmationModal";
+import { useState } from "react";
+import { useModal } from "@/context/ModalContext";
 
 interface EditDeleteBtnsProps {
     editURL: string;
@@ -17,13 +20,11 @@ export default function EditDeleteBtns({
     redirect = "/dashboard",
 }: EditDeleteBtnsProps) {
     const router = useRouter();
+    const { openModal } = useModal();
+    const [confirming, setConfirming] = useState(false);
 
     async function handleDelete() {
-        const isConfirmed = window.confirm(
-            "Are you sure you want to delete this item?"
-        );
-
-        if (!isConfirmed) return;
+        setConfirming(true);
 
         try {
             const res = await fetch(deleteAPIRoute, {
@@ -40,22 +41,35 @@ export default function EditDeleteBtns({
         } catch (error) {
             console.log(error);
             toast.error("Error deleting item. Please try again");
+        } finally {
+            setConfirming(false);
         }
+    }
+
+    function openConfirmDeleteModal() {
+        openModal(
+            <ConfirmationModal
+                title="Delete Item"
+                body="Are you sure you want to delete this item?"
+                onConfirm={handleDelete}
+                loading={confirming}
+            />,
+        );
     }
 
     return (
         <div className="flex gap-2 mt-5">
             <Link
                 href={editURL}
-                className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-buzz-blue border-blue-300 bg-blue-100 rounded-full items-center"
+                className="hover:bg-buzz-gold/8 hover:saturate-150 flex gap-2 px-4 py-1 text-buzz-gold border border-buzz-gold rounded-full items-center transition"
             >
-                <FaPencilAlt /> Edit
+                <LuPencil /> Edit
             </Link>
             <button
-                className="hover:brightness-90 hover:saturate-120 flex gap-2 border px-4 py-1 text-[#c63c3c] border-red-300 bg-red-100 rounded-full items-center"
-                onClick={handleDelete}
+                className="hover:bg-buzz-blue/7 hover:saturate-150 flex gap-2 px-4 py-1 text-buzz-blue border border-buzz-blue rounded-full items-center"
+                onClick={openConfirmDeleteModal}
             >
-                <FaTrash /> Delete
+                <LuTrash /> Delete
             </button>
         </div>
     );
