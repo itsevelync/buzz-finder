@@ -93,7 +93,7 @@ export default function ItemStatusActions({
     function handleOpenClaimModal() {
         openModal({
             content: (
-                <div className="bg-white rounded-lg w-full p-6 shadow-xl space-y-3 border border-gray-100">
+                <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-3 border border-gray-100">
                     <div className="flex justify-between items-start">
                         <h2 className="flex items-center gap-3 text-buzz-gold text-2xl font-bold">
                             <LuMapPinCheckInside /> Confirm Claim Item
@@ -134,7 +134,7 @@ export default function ItemStatusActions({
     function handleOpenGoneModal() {
         openModal({
             content: (
-                <div className="bg-white rounded-lg w-full p-6 shadow-xl space-y-3 border border-gray-100">
+                <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-3 border border-gray-100">
                     <div className="flex justify-between items-start">
                         <h2 className="flex items-center gap-3 text-buzz-blue text-2xl font-bold">
                             <LuSearchX /> Report Missing Item
