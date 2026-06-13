@@ -19,10 +19,9 @@ type DateRange = "all" | "24h" | "7d" | "30d";
 
 interface SidebarSearchFiltersProps {
     items: PlainItem[];
-    setFilteredItems: (items: PlainItem[]) => void;
+    setFilteredItems: Dispatch<SetStateAction<PlainItem[]>>;
     width: number;
-    displayItems: PlainItem[];
-    setDisplayItems: Dispatch<SetStateAction<PlainItem[]>>;
+    filteredItems: PlainItem[];
     currentPosition: {
         lat: number;
         lng: number;
@@ -33,8 +32,7 @@ export default function SidebarSearchFilters({
     items,
     setFilteredItems,
     width,
-    displayItems,
-    setDisplayItems,
+    filteredItems,
     currentPosition,
 }: SidebarSearchFiltersProps) {
     const [dateSort, setDateSort] = useState<DateSort>("newest");
@@ -134,15 +132,14 @@ export default function SidebarSearchFilters({
             }
 
             mapItemsRef.current = result;
-            setFilteredItems(result);
-            setDisplayItems(sortItems(result, sort));
+            setFilteredItems(sortItems(result, sort));
         },
-        [setDisplayItems, setFilteredItems, sortItems],
+        [setFilteredItems, sortItems],
     );
 
     function handleDateSort(sort: DateSort) {
         setDateSort(sort);
-        setDisplayItems(sortItems(mapItemsRef.current, sort));
+        setFilteredItems(sortItems(mapItemsRef.current, sort));
     }
 
     function handleCategoryToggle(key: string) {
@@ -464,8 +461,8 @@ export default function SidebarSearchFilters({
 
             {/* Results Count */}
             <div className="text-xs text-gray-400 font-medium pt-1">
-                {displayItems.length} item
-                {displayItems.length !== 1 ? "s" : ""} found
+                {filteredItems.length} item
+                {filteredItems.length !== 1 ? "s" : ""} found
             </div>
         </div>
     );
