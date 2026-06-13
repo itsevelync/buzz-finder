@@ -6,8 +6,7 @@ export default function SecuritySettings() {
     const { openModal, closeModal } = useModal();
 
     function handleOpenDeleteProfileModal() {
-        openModal({
-            content: <DeleteProfileModal onClose={closeModal} />,
+        openModal(<DeleteProfileModal onClose={closeModal} />, {
             maxWidth: "2xl",
         });
     }

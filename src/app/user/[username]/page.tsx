@@ -30,17 +30,17 @@ export default async function Profile({ params }: ProfilePageProps) {
     if (userProfile?._id) {
         try {
             const foundResponse = await fetch(
-                `${process.env.NEXTAUTH_URL}/api/item?personFound=${userProfile._id}`
+                `${process.env.NEXTAUTH_URL}/api/item?personFound=${userProfile._id}`,
             );
             const lostResponse = await fetch(
-                `${process.env.NEXTAUTH_URL}/api/lost-item-post?user=${userProfile._id}`
+                `${process.env.NEXTAUTH_URL}/api/lost-item-post?user=${userProfile._id}`,
             );
             if (foundResponse.ok) {
                 foundItems = await foundResponse.json();
             } else {
                 console.error(
                     "Error fetching found items:",
-                    foundResponse.statusText
+                    foundResponse.statusText,
                 );
             }
             if (lostResponse.ok) {
@@ -48,12 +48,16 @@ export default async function Profile({ params }: ProfilePageProps) {
             } else {
                 console.error(
                     "Error fetching lost items:",
-                    lostResponse.statusText
+                    lostResponse.statusText,
                 );
             }
         } catch (error) {
             console.error("Error fetching found items:", error);
         }
+    }
+
+    if (!userProfile) {
+        return <p>User not found.</p>;
     }
 
     return (

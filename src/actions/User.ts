@@ -6,6 +6,7 @@ import { Types } from "mongoose";
 import { signIn, signOut } from "@/auth";
 import bcrypt from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
+import { MongoServerError } from "mongodb";
 
 interface NewUser {
     name: string;
@@ -112,7 +113,11 @@ export async function updateUser(userId: string, userData: UserUpdateData & { cu
 
         return { success: "User updated successfully." };
     } catch (err: unknown) {
-        console.error(err);
+        const mongoErr = err as MongoServerError;
+
+        if (mongoErr.codeName === "DuplicateKey" && mongoErr.keyPattern.username === 1) {
+            return { error: "This username is already taken." }
+        }
         return { error: "Unable to update user, please try again." };
     }
 }

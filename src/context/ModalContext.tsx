@@ -4,14 +4,13 @@ import { createContext, useContext, useState, ReactNode } from "react";
 
 export type ModalWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "full";
 
-interface OpenModalOptions {
-    content: ReactNode;
+interface ModalOptions {
     maxWidth?: ModalWidth;
 }
 
 interface ModalContextType {
     isOpen: boolean;
-    openModal: (options: OpenModalOptions) => void;
+    openModal: (content: ReactNode, options?: ModalOptions) => void;
     closeModal: () => void;
     modalContent: ReactNode | null;
     maxWidth: ModalWidth;
@@ -24,9 +23,9 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     const [modalContent, setModalContent] = useState<ReactNode | null>(null);
     const [maxWidth, setMaxWidth] = useState<ModalWidth>("md");
 
-    function openModal({ content, maxWidth = "md" }: OpenModalOptions) {
+    function openModal(content: ReactNode, options?: ModalOptions) {
         setModalContent(content);
-        setMaxWidth(maxWidth);
+        setMaxWidth(options?.maxWidth ?? "md");
         setIsOpen(true);
     }
 

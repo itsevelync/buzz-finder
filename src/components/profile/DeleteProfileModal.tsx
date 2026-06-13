@@ -6,15 +6,11 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 import { useUser } from "@/context/UserContext";
-import { IoClose } from "react-icons/io5";
+import { useModal } from "@/context/ModalContext";
+import { LuTriangleAlert, LuX } from "react-icons/lu";
 
-interface DeleteProfileModalProps {
-    onClose: () => void;
-}
-
-export default function DeleteProfileModal({
-    onClose,
-}: DeleteProfileModalProps) {
+export default function DeleteProfileModal() {
+    const { closeModal } = useModal();
     const { user, setUser } = useUser();
     const { update } = useSession();
     const userID = user?._id ?? "";
@@ -43,15 +39,19 @@ export default function DeleteProfileModal({
     }
 
     return (
-        <div className="p-5 border border-buzz-blue/40 w-full shadow-lg rounded-lg bg-white">
-            <div className="flex justify-between gap-2">
-                <h1 className="text-lg font-medium">Delete Profile</h1>
-                <IoClose
-                    className="transition-all p-0.5 cursor-pointer text-2xl rounded hover:bg-buzz-blue/10"
-                    onClick={onClose}
-                />
+        <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-2.5 border border-gray-100">
+            <div className="flex justify-between items-start">
+                <h2 className="flex items-center gap-3 text-2xl font-bold text-buzz-blue">
+                    <LuTriangleAlert /> Delete Profile
+                </h2>
+                <button
+                    onClick={closeModal}
+                    className="text-foreground/40 hover:bg-foreground/5 rounded-sm p-1 -mr-2 -mt-2"
+                >
+                    <LuX className="text-lg" />
+                </button>
             </div>
-            <p className="opacity-50 text-sm mb-4">
+            <p className="opacity-70 mb-4">
                 Permanently delete your BuzzFinder account? This action cannot
                 be undone.
             </p>

@@ -28,7 +28,7 @@ export default function ItemList({
 
     if (!items || items.length === 0) {
         return (
-            <div className="p-12 flex flex-col gap-4 items-center">
+            <div className="p-16 flex flex-col gap-4 items-center">
                 <div className="rounded-full p-4 border-2 border-foreground/20">
                     <LuCompass size={60} />
                 </div>

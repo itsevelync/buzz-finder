@@ -210,7 +210,7 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
                 </p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
                 {/* LEFT COLUMN */}
                 <div className="w-full md:w-5/12 flex flex-col gap-6">
                     {/* Image Upload */}

@@ -117,9 +117,9 @@ export default async function ChatPage({
         },
     );
 
-    const validId = conversations.some(
-        (item) => item._id === resolvedSearchParams.id,
-    );
+    const validId =
+        conversations.some((item) => item._id === resolvedSearchParams.id) ||
+        users.some((user) => "pending-" + user._id === resolvedSearchParams.id);
 
     const initialConversationId = validId ? resolvedSearchParams.id : null;
 
