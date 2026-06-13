@@ -131,7 +131,7 @@ export default function UserProfileClient({
 
             <div>
                 {lostItemsSelected ? (
-                    <PostList lostItemPosts={lostItemPosts} columns={4} />
+                    <PostList lostItemPosts={lostItemPosts} columns={3} />
                 ) : (
                     <ItemList items={foundItems} />
                 )}

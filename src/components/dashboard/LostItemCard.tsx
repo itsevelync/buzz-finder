@@ -23,8 +23,10 @@ function UserMini({ user }: { user?: LostItemPost["user"] }) {
 
 export default function LostItemCard({
     lostItemPost,
+    columns = 2,
 }: {
     lostItemPost: LostItemPost;
+    columns?: number;
 }) {
     const category = categories[lostItemPost.category] ?? {
         label: "Unknown",
@@ -55,16 +57,16 @@ export default function LostItemCard({
             <div className="relative w-full flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                 {/* FOUND BADGE */}
                 {lostItemPost.isFound && (
-                    <div className="absolute top-2 lg:top-4 right-2 lg:right-4 z-1 flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className={`absolute top-2 right-2 ${columns <= 2 ? "lg:top-4 lg:right-4" : ""} z-1 flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full text-xs font-medium`}>
                         <LuBadgeCheck className="text-sm" />
                         Found
                     </div>
                 )}
 
-                <div className="flex flex-1 flex-col lg:flex-row-reverse lg:gap-6">
+                <div className={`flex flex-1 flex-col ${columns <= 2 ? "lg:flex-row-reverse lg:gap-6" : ""}`}>
                     {/* IMAGE */}
                     {lostItemPost.image?.url && (
-                        <div className={`${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} relative w-full lg:w-28 h-35 lg:h-28 rounded-t-lg lg:rounded-b-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}>
+                        <div className={`${columns <= 2 ? `${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} lg:w-28 lg:h-28 lg:rounded-b-lg` : ""} relative w-full h-35 rounded-t-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}>
                             <Image
                                 src={lostItemPost.image.url}
                                 alt={lostItemPost.name ?? "Lost item"}
