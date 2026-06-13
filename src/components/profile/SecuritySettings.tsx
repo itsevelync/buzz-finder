@@ -3,10 +3,10 @@ import UpdateProfileForm from "./UpdatePasswordForm";
 import { useModal } from "@/context/ModalContext";
 
 export default function SecuritySettings() {
-    const { openModal, closeModal } = useModal();
+    const { openModal } = useModal();
 
     function handleOpenDeleteProfileModal() {
-        openModal(<DeleteProfileModal onClose={closeModal} />, {
+        openModal(<DeleteProfileModal />, {
             maxWidth: "2xl",
         });
     }
