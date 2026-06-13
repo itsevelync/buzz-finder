@@ -7,9 +7,15 @@ import Image from "next/image";
 import { FaChevronLeft } from "react-icons/fa";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import CenteredMap from "@/components/maps/CenteredMap";
-import { LuBadgeCheck, LuBox, LuImageOff, LuMapPin } from "react-icons/lu";
-import SharePostButton from "@/components/post/ShareButton";
-import ResolveItemModalWrapper from "@/components/post/ResolveItemModal";
+import {
+    LuBadgeCheck,
+    LuBox,
+    LuCheck,
+    LuImageOff,
+    LuMapPin,
+    LuShare2,
+} from "react-icons/lu";
+import ResolveItemModal from "@/components/post/ResolveItemModal";
 import { Session } from "next-auth";
 import UserInfo from "@/components/post/UserInfo";
 import { ItemNote } from "@/model/ItemNote";
@@ -17,6 +23,8 @@ import PostOwnerContactInfo from "@/components/post/PostOwnerContactInfo";
 import SubmitItemNote from "@/components/post/SubmitItemNote";
 import ItemNotes from "@/components/post/ItemNotes";
 import { useEffect, useState } from "react";
+import ShareModal from "@/components/post/ShareModal";
+import { useModal } from "@/context/ModalContext";
 
 interface LostItemClientProps {
     lost_item: LostItemPost;
@@ -28,6 +36,7 @@ export default function LostItemClient({
     session,
 }: LostItemClientProps) {
     const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
+    const { openModal } = useModal();
 
     const category = categories[lost_item.category] || {
         label: "Unknown",
@@ -72,6 +81,19 @@ export default function LostItemClient({
         getItemNotes(lost_item._id.toString());
     }, [lost_item._id]);
 
+    function openShareModal() {
+        openModal(<ShareModal />);
+    }
+
+    function openResolveItemModal() {
+        openModal(
+            <ResolveItemModal
+                itemId={String(lost_item._id)}
+                itemName={lost_item.name ?? "this item"}
+            />,
+        );
+    }
+
     return (
         <div className="p-4 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
             {/* Top Navigation */}
@@ -114,9 +136,12 @@ export default function LostItemClient({
                         </p>
                         <UserInfo user={lost_item.user} />
                     </div>
-                    <div className="sm:ml-auto">
-                        <SharePostButton />
-                    </div>
+                    <button
+                        onClick={openShareModal}
+                        className="sm:ml-auto flex items-center gap-2 text-sm text-foreground-90 hover:text-foreground hover:bg-foreground/3 border border-foreground/30 rounded px-3 py-1.5 transition"
+                    >
+                        <LuShare2 /> Share Post
+                    </button>
                 </div>
             </div>
 
@@ -154,22 +179,25 @@ export default function LostItemClient({
                         session={session}
                     />
 
-                    <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white flex flex-col gap-5">
-                        {/* Context Actions Block */}
-                        {isOwner && !lost_item.isFound && (
-                            <ResolveItemModalWrapper
-                                itemId={String(lost_item._id)}
-                                itemName={lost_item.name ?? "this item"}
-                            />
-                        )}
-
-                        {!isOwner && !lost_item.isFound && (
-                            <SubmitItemNote
-                                lost_item={lost_item}
-                                getItemNotes={getItemNotes}
-                            />
-                        )}
-                    </div>
+                    {!lost_item.isFound && (
+                        <div className="border border-gray-200 rounded-lg p-4 shadow-md bg-white flex flex-col gap-5">
+                            {/* Context Actions Block */}
+                            {isOwner ? (
+                                <button
+                                    onClick={openResolveItemModal}
+                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded shadow-sm transition text-sm flex items-center justify-center gap-2"
+                                >
+                                    <LuCheck className="text-xs" /> Mark as
+                                    Found
+                                </button>
+                            ) : (
+                                <SubmitItemNote
+                                    lost_item={lost_item}
+                                    getItemNotes={getItemNotes}
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {/* Edit/delete buttons for poster */}
                     {isOwner && (

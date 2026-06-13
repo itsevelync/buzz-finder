@@ -6,7 +6,8 @@ import { FaHandPaper } from "react-icons/fa";
 import { statuses, ItemStatus } from "@/constants/Statuses";
 import { toast } from "react-toastify";
 import { useModal } from "@/context/ModalContext";
-import { LuMapPinCheckInside, LuSearchX, LuX } from "react-icons/lu";
+import { LuMapPinCheckInside, LuSearchX } from "react-icons/lu";
+import ConfirmationModal from "../ui/ConfirmationModal";
 
 interface ItemStatusActionsProps {
     itemId: string;
@@ -91,83 +92,37 @@ export default function ItemStatusActions({
     }
 
     function handleOpenClaimModal() {
-        openModal({
-            content: (
-                <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-3 border border-gray-100">
-                    <div className="flex justify-between items-start">
-                        <h2 className="flex items-center gap-3 text-buzz-gold text-2xl font-bold">
-                            <LuMapPinCheckInside /> Confirm Claim Item
-                        </h2>
-                        <button
-                            onClick={closeModal}
-                            className="text-foreground/40 hover:bg-foreground/5 rounded-sm p-1 -mr-2 -mt-2"
-                        >
-                            <LuX className="text-lg" />
-                        </button>
-                    </div>
-                    <p className="text-foreground/75">
-                        Mark this item as{" "}
-                        <strong className="text-foreground">claimed</strong> if
-                        it has been safely recovered or returned to its owner.
-                    </p>
-                    <div className="flex items-center justify-end gap-3 pt-2">
-                        <button
-                            onClick={closeModal}
-                            disabled={loading}
-                            className="px-4 py-2 border border-foreground/20 rounded-md font-medium text-foreground/70 hover:bg-gray-50 transition"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => handleUpdateStatus("claimed")}
-                            disabled={loading}
-                            className="px-4 py-2 bg-buzz-gold text-white rounded-md font-medium hover:brightness-110 transition disabled:opacity-50"
-                        >
-                            {loading ? "Updating..." : "Yes, Mark as Claimed"}
-                        </button>
-                    </div>
-                </div>
-            ),
-        });
+        openModal(
+            <ConfirmationModal
+                title="Confirm Item Claim"
+                icon={LuMapPinCheckInside}
+                body={
+                    <>
+                        You are marking this item as <strong>claimed</strong>.
+                        Confirm that it has been safely recovered or returned to
+                        its owner.
+                    </>
+                }
+                confirmLabel="Yes, Mark Claimed"
+                confirmingLabel="Updating..."
+                onConfirm={() => handleUpdateStatus("claimed")}
+                color="gold"
+                loading={loading}
+            />,
+        );
     }
 
     function handleOpenGoneModal() {
-        openModal({
-            content: (
-                <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-3 border border-gray-100">
-                    <div className="flex justify-between items-start">
-                        <h2 className="flex items-center gap-3 text-buzz-blue text-2xl font-bold">
-                            <LuSearchX /> Report Missing Item
-                        </h2>
-                        <button
-                            onClick={closeModal}
-                            className="text-foreground/40 hover:bg-foreground/5 rounded-sm p-1 -mr-2 -mt-2"
-                        >
-                            <LuX className="text-lg" />
-                        </button>
-                    </div>
-                    <p className="text-foreground/75">
-                        Is the item no longer at the specified location?
-                    </p>
-                    <div className="flex items-center justify-end gap-3 pt-2">
-                        <button
-                            onClick={closeModal}
-                            disabled={loading}
-                            className="px-4 py-2 border border-foreground/20 rounded-md font-medium text-foreground/70 hover:bg-gray-50 transition"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={() => handleUpdateStatus("gone")}
-                            disabled={loading}
-                            className="px-4 py-2 bg-buzz-blue text-white rounded-md font-medium hover:brightness-130 transition disabled:opacity-50"
-                        >
-                            {loading ? "Reporting..." : "Confirm Gone"}
-                        </button>
-                    </div>
-                </div>
-            ),
-        });
+        openModal(
+            <ConfirmationModal
+                title="Report Missing Item"
+                icon={LuSearchX}
+                body="Is the item no longer at the specified location?"
+                confirmLabel="Confirm Gone"
+                onConfirm={() => handleUpdateStatus("gone")}
+                loading={loading}
+            />,
+        );
     }
 
     return (
