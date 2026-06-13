@@ -26,6 +26,7 @@ const UserSchema = new Schema(
             required: true,
             type: String,
             trim: true,
+            unique: true,
         },
         phoneNum: {
             required: false,
@@ -42,6 +43,11 @@ const UserSchema = new Schema(
             trim: true,
         },
         instagram: {
+            required: false,
+            type: String,
+            trim: true,
+        },
+        linkedIn: {
             required: false,
             type: String,
             trim: true,

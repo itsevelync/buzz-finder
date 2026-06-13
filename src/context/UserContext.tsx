@@ -18,7 +18,7 @@ type UserContextUser = Pick<
     User,
     "_id" | "name" | "username" | "email" | "image"
 > &
-    Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram">>;
+    Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram" | "linkedIn">>;
 
 interface UserContextValue {
     user: UserContextUser | null;
