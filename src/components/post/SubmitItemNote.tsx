@@ -107,7 +107,7 @@ export default function SubmitItemNote({
                 <button
                     disabled={submitting || !note.trim()}
                     onClick={handleSubmit}
-                    className="w-full bg-buzz-blue text-white py-2.5 text-sm rounded font-medium hover:opacity-90 disabled:opacity-50"
+                    className="w-full bg-buzz-gold text-white py-2 px-4 rounded-full hover:opacity-90 disabled:opacity-50"
                 >
                     {submitting ? "Submitting..." : "Submit Item Note"}
                 </button>

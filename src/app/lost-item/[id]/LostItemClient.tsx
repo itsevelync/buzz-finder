@@ -185,10 +185,9 @@ export default function LostItemClient({
                             {isOwner ? (
                                 <button
                                     onClick={openResolveItemModal}
-                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded transition text-sm flex items-center justify-center gap-2"
+                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded-md transition text-sm flex items-center justify-center gap-2"
                                 >
-                                    <LuCheck className="text-xs" /> Mark as
-                                    Found
+                                    <LuCheck /> Mark as Found
                                 </button>
                             ) : (
                                 <SubmitItemNote

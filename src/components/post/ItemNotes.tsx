@@ -1,5 +1,5 @@
 import { ItemNote, ItemNoteTree } from "@/model/ItemNote";
-import { LuSticker } from "react-icons/lu";
+import { LuSticker, LuTriangleAlert } from "react-icons/lu";
 import { ItemNoteCard } from "./ItemNoteCard";
 import { Dispatch, SetStateAction, useState } from "react";
 import { useUser } from "@/context/UserContext";
@@ -123,6 +123,7 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
         openModal(
             <ConfirmationModal
                 title="Delete Note"
+                 icon={LuTriangleAlert}
                 body="Are you sure you want to delete this item note?"
                 onConfirm={() => _onDelete(noteId)}
                 loading={loading}

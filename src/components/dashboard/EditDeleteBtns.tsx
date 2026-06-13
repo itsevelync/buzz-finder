@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { LuPencil, LuTrash } from "react-icons/lu";
+import { LuPencil, LuTrash, LuTriangleAlert } from "react-icons/lu";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import { useState } from "react";
 import { useModal } from "@/context/ModalContext";
@@ -50,6 +50,7 @@ export default function EditDeleteBtns({
         openModal(
             <ConfirmationModal
                 title="Delete Item"
+                icon={LuTriangleAlert}
                 body="Are you sure you want to delete this item?"
                 onConfirm={handleDelete}
                 loading={confirming}
