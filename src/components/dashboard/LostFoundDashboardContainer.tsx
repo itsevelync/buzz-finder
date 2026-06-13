@@ -107,7 +107,7 @@ export default function LostFoundDashboardContainer() {
                         <div className="p-5">Error loading items</div>
                     ) : lostItemsSelected ? (
                         <PostList
-                            lostItemPosts={filteredPosts}
+                            lostItemPosts={filteredPosts} columns={2}
                         />
                     ) : (
                         <ItemList items={filteredItems} />
