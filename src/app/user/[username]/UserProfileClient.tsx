@@ -111,7 +111,7 @@ export default function UserProfileClient({
                     ) : (
                         <Link
                             href={chatURL}
-                            className="w-full justify-center mt-3 border text-background border-buzz-blue/30 bg-buzz-blue rounded-md flex gap-3 items-center px-4 py-2"
+                            className="w-full justify-center mt-3 border text-background border-buzz-blue/30 bg-buzz-blue rounded-md flex gap-3 items-center px-4 py-2 hover:opacity-90 transition"
                         >
                             <LuMessagesSquare /> Message
                         </Link>

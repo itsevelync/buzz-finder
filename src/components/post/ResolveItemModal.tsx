@@ -46,7 +46,7 @@ export default function ResolveItemModal({
         openModal({
             content: (
                 <div className="bg-white rounded-lg shadow-xl border border-gray-100 w-full p-5 text-sm">
-                    <div className="flex items-center justify-between pb-1">
+                    <div className="flex items-start justify-between pb-1">
                         <h3 className="text-lg font-bold text-gray-900">
                             Confirm Found Item
                         </h3>
