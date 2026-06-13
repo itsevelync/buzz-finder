@@ -30,7 +30,6 @@ export default function MapClient({
                     {!isMobile && (
                         <ItemSidebar
                             items={items}
-                            filteredItems={filteredItems}
                             setFilteredItems={setFilteredItems}
                             currentPosition={currentPosition}
                         />

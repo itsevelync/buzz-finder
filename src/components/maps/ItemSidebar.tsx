@@ -4,13 +4,12 @@ import { useSelectedPin } from "@/context/PinContext";
 import { PlainItem } from "@/model/Item";
 import FoundItemCard from "../dashboard/FoundItemCard";
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
-import { useState, useRef, Dispatch, SetStateAction } from "react";
+import { useState, useRef } from "react";
 import SidebarSearchFilters from "./SidebarSearchFilters";
 
 interface ItemSidebarProps {
     items: PlainItem[];
-    filteredItems: PlainItem[];
-    setFilteredItems: Dispatch<SetStateAction<PlainItem[]>>;
+    setFilteredItems: (items: PlainItem[]) => void;
 
     currentPosition: {
         lat: number;
@@ -20,7 +19,6 @@ interface ItemSidebarProps {
 
 export default function ItemSidebar({
     items,
-    filteredItems,
     setFilteredItems,
     currentPosition,
 }: ItemSidebarProps) {
@@ -29,6 +27,7 @@ export default function ItemSidebar({
     const [isResizing, setIsResizing] = useState(false);
 
     const sidebarRef = useRef<HTMLDivElement | null>(null);
+    const [displayItems, setDisplayItems] = useState<PlainItem[]>(items);
 
     const { setSelectedId } = useSelectedPin();
 
@@ -84,7 +83,8 @@ export default function ItemSidebar({
                     items={items}
                     setFilteredItems={setFilteredItems}
                     width={width}
-                    filteredItems={filteredItems}
+                    displayItems={displayItems}
+                    setDisplayItems={setDisplayItems}
                     currentPosition={currentPosition}
                 />
 
@@ -100,7 +100,7 @@ export default function ItemSidebar({
                                 : "grid-cols-1"
                     } gap-3 p-5 overflow-y-auto`}
                 >
-                    {filteredItems.map((item) => (
+                    {displayItems.map((item) => (
                         <div
                             key={item._id.toString()}
                             className="cursor-pointer"
