@@ -240,7 +240,7 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
             </div>
 
             {/* Split layout: Media & Map Component Block on Left, Main Input Form Fields on Right */}
-            <div className="flex flex-col md:flex-row gap-8 items-start">
+            <div className="flex flex-col md:flex-row gap-6 items-start">
                 {/* Media Uploader & Map Segment */}
                 <div className="w-full md:w-5/12 flex flex-col gap-6">
                     <div className="bg-white border border-gray-200 rounded-lg p-5 flex flex-col gap-2">
