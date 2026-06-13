@@ -1,15 +1,19 @@
+import { useUser } from "@/context/UserContext";
 import DeleteProfileModal from "./DeleteProfileModal";
 import UpdateProfileForm from "./UpdatePasswordForm";
 import { useModal } from "@/context/ModalContext";
 
 export default function SecuritySettings() {
     const { openModal } = useModal();
+    const {user} = useUser();
 
     function handleOpenDeleteProfileModal() {
         openModal(<DeleteProfileModal />, {
             maxWidth: "2xl",
         });
     }
+
+    if (!user) return;
 
     return (
         <div className="space-y-8">
