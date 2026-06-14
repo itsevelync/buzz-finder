@@ -1,4 +1,8 @@
 export async function markAsRead(conversationId: string) {
+    if (conversationId.startsWith("pending-")) {
+        return;
+    }
+
     try {
         const res = await fetch(
             `/api/conversations/${conversationId}/read`,
