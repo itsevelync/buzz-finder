@@ -16,7 +16,9 @@ export default function MapClient({
     items: PlainItem[];
 }) {
     const [filteredItems, setFilteredItems] = useState<PlainItem[]>(items);
-    const isMobile = useIsMobile(600);
+
+    // Sidebar mobile height
+    const [height, setHeight] = useState(85);
 
     const [currentPosition, setCurrentPosition] = useState<{
         lat: number;
@@ -24,22 +26,23 @@ export default function MapClient({
     } | null>(null);
 
     return (
-        <div className="w-full h-full flex">
+        <div className="w-full h-full flex relative">
             <LocationProvider>
                 <SelectedPinProvider defaultSelectedId={itemId}>
-                    {!isMobile && (
-                        <ItemSidebar
-                            items={items}
-                            setFilteredItems={setFilteredItems}
-                            currentPosition={currentPosition}
-                        />
-                    )}
+                    <ItemSidebar
+                        items={items}
+                        setFilteredItems={setFilteredItems}
+                        currentPosition={currentPosition}
+                        height={height}
+                        setHeight={setHeight}
+                    />
                     <GoogleMap
                         width="100%"
                         height="100%"
                         items={filteredItems}
                         currentPosition={currentPosition}
                         setCurrentPosition={setCurrentPosition}
+                        setHeight={setHeight}
                     />
                 </SelectedPinProvider>
             </LocationProvider>

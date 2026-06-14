@@ -10,7 +10,15 @@ import {
     ControlPosition,
     AdvancedMarker,
 } from "@vis.gl/react-google-maps";
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { useLocation } from "@/context/LocationContext";
 import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
@@ -41,6 +49,7 @@ export default function GoogleMap(props: {
             lng: number;
         } | null>
     >;
+    setHeight: Dispatch<SetStateAction<number>>;
 }) {
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
@@ -143,7 +152,10 @@ export default function GoogleMap(props: {
     return (
         <>
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-                <div style={{ height: props.height, width: props.width }}>
+                <div
+                    style={{ height: props.height, width: props.width }}
+                    onClick={() => props.setHeight(85)} // Sidebar mobile height
+                >
                     <Map
                         defaultCenter={props.currentPosition}
                         defaultZoom={16}
