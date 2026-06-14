@@ -171,13 +171,19 @@ export default function ItemSidebar({
         el.addEventListener("pointerup", onUp);
     }
 
-    function handleResize() {
-        if (isMobile) {
-            setWidth(window.innerWidth);
-        }
-    }
+    useEffect(() => {
+        const handleResize = () => {
+            if (isMobile) {
+                setWidth(window.innerWidth);
+            }
+        };
 
-    window.addEventListener("resize", handleResize);
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, [isMobile]);
 
     if (!isMobile) {
         return (

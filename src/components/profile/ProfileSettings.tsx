@@ -29,6 +29,7 @@ export default function ProfileSettings() {
     const [name, setName] = useState(user?.name ?? "");
     const [username, setUsername] = useState(user?.username ?? "");
     const [email, setEmail] = useState(user?.email ?? "");
+    const [hideEmail, setHideEmail] = useState(user?.hideEmail ?? false);
     const [description, setDescription] = useState(user?.description ?? "");
     const [profileImage, setProfileImage] = useState<File | null>(null);
 
@@ -60,6 +61,7 @@ export default function ProfileSettings() {
         setName(user?.name ?? "");
         setUsername(user?.username ?? "");
         setEmail(user?.email ?? "");
+        setHideEmail(user?.hideEmail ?? false);
         setDescription(user?.description ?? "");
         setPhoneNumber(
             usNumber
@@ -240,14 +242,11 @@ export default function ProfileSettings() {
             const uploadedImageUrl = await uploadImage();
             const nextImage = uploadedImageUrl ?? user.image;
 
-            const values: UserUpdateData & {
-                instagram?: string;
-                discord?: string;
-                linkedIn?: string;
-            } = {
+            const values: UserUpdateData = {
                 name,
                 username,
                 email,
+                hideEmail,
                 phoneNum: finalFullPhoneNumber || "",
                 description: description || "",
                 image: nextImage || "",
@@ -274,6 +273,7 @@ export default function ProfileSettings() {
                 image: nextImage,
                 username: values.username,
                 email: values.email,
+                hideEmail: values.hideEmail,
                 phoneNum: values.phoneNum,
                 description: values.description,
             });
@@ -345,43 +345,44 @@ export default function ProfileSettings() {
                             value={email}
                             required
                             onInputChange={(e) => setEmail(e.target.value)}
+                            className="md:col-span-2"
                         />
-
-                        {/* Enhanced Country + Phone Layout mapped out cleanly to maintain aesthetics */}
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="phoneNumber">Phone Number</label>
-                            <div className="flex rounded-lg">
-                                <select
-                                    id="countryCodeDropdown"
-                                    name="countryCodeDropdown"
-                                    required
-                                    value={isUSNumber ? "+1" : "custom"}
-                                    onChange={handleCountryCodeDropdownChange}
-                                    className="bg-gray-50 rounded-r-none! border-r-0!"
-                                >
-                                    <option value="+1">🇺🇸 +1</option>
-                                    <option value="custom">Other</option>
-                                </select>
-
-                                <input
-                                    type="tel"
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    value={phoneNumber}
-                                    onChange={handlePhoneChange}
-                                    placeholder={
-                                        isUSNumber
-                                            ? "(555) 555-5555"
-                                            : "+442071234567"
-                                    }
-                                    className="w-full rounded-l-none!"
-                                />
-                            </div>
+                        <div className="flex items-center gap-2 mb-3">
+                            <input
+                                type="checkbox"
+                                id="hideEmail"
+                                checked={hideEmail}
+                                onChange={(e) =>
+                                    setHideEmail(
+                                        e.target.checked,
+                                    )
+                                }
+                            />
+                            <label htmlFor="hideEmail" className="text-sm">
+                                Hide email from public profile
+                            </label>
                         </div>
                     </div>
 
+                    {/* Bio Field */}
+                    <FormInput
+                        isTextarea
+                        name="bio"
+                        label="Bio"
+                        rows={5}
+                        placeholder="Tell people about yourself..."
+                        value={description}
+                        onInputChange={(e) => setDescription(e.target.value)}
+                    />
+
+                    
+                <h2 className="text-lg font-semibold pt-2">
+                    Contact Information
+                </h2>
+
                     {/* Social Handles Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2">
+
                         {/* Instagram */}
                         <div className="flex flex-col gap-1">
                             <label htmlFor="instagram">Instagram</label>
@@ -421,7 +422,7 @@ export default function ProfileSettings() {
                         </div>
 
                         {/* LinkedIn */}
-                        <div className="flex flex-col gap-1 md:col-span-2">
+                        <div className="flex flex-col gap-1">
                             <label htmlFor="linkedIn">LinkedIn</label>
                             <div className="flex rounded-lg">
                                 <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-400 select-none text-xs sm:text-sm">
@@ -441,18 +442,39 @@ export default function ProfileSettings() {
                                 />
                             </div>
                         </div>
-                    </div>
 
-                    {/* Bio Field */}
-                    <FormInput
-                        isTextarea
-                        name="bio"
-                        label="Bio"
-                        rows={5}
-                        placeholder="Tell people about yourself..."
-                        value={description}
-                        onInputChange={(e) => setDescription(e.target.value)}
-                    />
+                        {/* Enhanced Country + Phone Layout mapped out cleanly to maintain aesthetics */}
+                        <div className="flex flex-col gap-1">
+                            <label htmlFor="phoneNumber">Phone Number</label>
+                            <div className="flex rounded-lg">
+                                <select
+                                    id="countryCodeDropdown"
+                                    name="countryCodeDropdown"
+                                    required
+                                    value={isUSNumber ? "+1" : "custom"}
+                                    onChange={handleCountryCodeDropdownChange}
+                                    className="bg-gray-50 rounded-r-none! border-r-0!"
+                                >
+                                    <option value="+1">🇺🇸 +1</option>
+                                    <option value="custom">Other</option>
+                                </select>
+
+                                <input
+                                    type="tel"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    value={phoneNumber}
+                                    onChange={handlePhoneChange}
+                                    placeholder={
+                                        isUSNumber
+                                            ? "(555) 555-5555"
+                                            : "+442071234567"
+                                    }
+                                    className="w-full rounded-l-none!"
+                                />
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Action Trigger Block */}
                     <button type="submit" disabled={isSubmitting}>

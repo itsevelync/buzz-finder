@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import LostItemPostSchema from "@/model/LostItemPost";
+import LostItemPostSchema, { LostItemPost } from "@/model/LostItemPost";
 import { dbConnect } from "@/lib/mongo";
 
 /**
@@ -18,8 +18,21 @@ export async function GET(req: NextRequest) {
         query.user = user;
     }
 
-    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate("user");
-    return new Response(JSON.stringify(lostItemPosts), { status: 200 });
+    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate("user").lean<LostItemPost[]>();
+
+    const sanitizedPosts = lostItemPosts.map(post => {
+        if (post.user) {
+            if (post.user.hideEmail) {
+                delete post.user.email;
+            }
+
+            delete post.user.hideEmail;
+        }
+
+        return post;
+    });
+
+    return new Response(JSON.stringify(sanitizedPosts), { status: 200 });
 }
 
 /**

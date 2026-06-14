@@ -1,6 +1,6 @@
 'use server'
 
-import User from "@/model/User";
+import User, { User as UserType } from "@/model/User";
 import { dbConnect } from "@/lib/mongo";
 import { Types } from "mongoose";
 import { signIn, signOut } from "@/auth";
@@ -23,6 +23,10 @@ export interface UserUpdateData {
     phoneNum?: string;
     description?: string;
     image?: string;
+    instagram?: string;
+    discord?: string;
+    linkedIn?: string;
+    hideEmail?: boolean;
 }
 
 interface UserDeleteData {
@@ -56,19 +60,30 @@ export async function getUserByEmail(email: string) {
 }
 
 // Finds a user by their username.
-export async function getUserByUsername(username: string) {
-    try {
-        await dbConnect();
-        const userDoc = await User.findOne({ username });
-        if (!userDoc) return null;
-        const user = userDoc.toObject();
-        return { ...user, _id: user._id.toString() };
-    } catch (e: unknown) {
-        if (e instanceof Error) {
-            throw new Error("Error finding user by username:", e);
-        }
-        throw new Error("Unexpected error finding user by username.");
+export async function getUserByUsername(
+    username: string,
+    viewerId?: string
+) {
+    await dbConnect();
+
+    const userDoc = await User.findOne({ username })
+        .select("-password")
+        .lean<UserType>();
+
+    if (!userDoc) return null;
+
+    const isOwner =
+        viewerId &&
+        userDoc._id.toString() === viewerId;
+
+    if (userDoc.hideEmail && !isOwner) {
+        delete userDoc.email;
     }
+
+    return {
+        ...userDoc,
+        _id: userDoc._id.toString(),
+    };
 }
 
 export async function updateUser(userId: string, userData: UserUpdateData & { currentPassword?: string }) {

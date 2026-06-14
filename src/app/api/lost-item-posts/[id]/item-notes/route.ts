@@ -11,12 +11,24 @@ export async function GET(
 
         const { id } = await params;
 
-        const notes = await ItemNoteModel.find({
+        let notes = await ItemNoteModel.find({
             lostItemId: id,
         })
             .populate("user")
             .sort({ createdAt: 1 })
             .lean<ItemNote[]>();
+
+        notes = notes.map(note => {
+            if (note.user) {
+                if (note.user.hideEmail) {
+                    delete note.user.email;
+                }
+
+                delete note.user.hideEmail;
+            }
+
+            return note;
+        });
 
         const noteMap = new Map();
 

@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { deleteUser, updateUser } from "@/actions/User";
 
-import User from "@/model/User";
+import User, { User as UserType } from "@/model/User";
 import mongoose from "mongoose";
+import { auth } from "@/auth";
 
 export async function GET(
     req: Request,
@@ -14,7 +15,17 @@ export async function GET(
         }
 
         const { id } = await params;
-        const user = await User.findById(id).select("-password");
+        const session = await auth();
+
+        const viewerId = session?.user?._id;
+
+        const user = await User.findById(id).select("-password").lean<UserType>();
+
+        const isOwner = viewerId === user?._id.toString();
+
+        if (user?.hideEmail && !isOwner) {
+            delete user.email;
+        }
 
         if (!user) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });

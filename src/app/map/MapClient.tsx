@@ -6,7 +6,6 @@ import type { PlainItem } from "@/model/Item";
 import { useState } from "react";
 import { LocationProvider } from "@/context/LocationContext";
 import { SelectedPinProvider } from "@/context/PinContext";
-import { useIsMobile } from "@/hooks/IsMobile";
 
 export default function MapClient({
     itemId,

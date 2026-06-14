@@ -1,5 +1,5 @@
 import { dbConnect } from "@/lib/mongo";
-import LostItem from "@/model/LostItemPost";
+import LostItem, { LostItemPost } from "@/model/LostItemPost";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -17,13 +17,17 @@ export async function GET(
         await dbConnect();
 
         const { id } = await params;
-        const item = await LostItem.findById(id).populate("user");
+        const item = await LostItem.findById(id).populate("user").lean<LostItemPost>();
 
         if (!item) {
             return NextResponse.json(
                 { message: "Lost item not found" },
                 { status: 404 }
             );
+        }
+
+        if (item.user?.hideEmail) {
+            delete item.user.email;
         }
 
         return NextResponse.json({ item }, { status: 200 });

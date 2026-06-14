@@ -135,10 +135,10 @@ export default function LostItemCard({
                         </div>
 
                         {/* CONTACT */}
-                        <div className="mt-auto pb-4 px-4 text-sm text-gray-400 border-t border-gray-100 pt-3">
+                        {/* <div className="mt-auto pb-4 px-4 text-sm text-gray-400 border-t border-gray-100 pt-3">
                             Contact:{" "}
                             <span className="text-gray-600">{contact}</span>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
