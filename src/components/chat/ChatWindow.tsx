@@ -487,23 +487,16 @@ export default function ChatWindow({
                         {activePartner ? (
                             <Link href={`user/${activePartner.username}`}>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-buzz-blue/10 text-buzz-blue">
-                                        {activePartner.image ? (
-                                            <Image
-                                                src={activePartner.image}
-                                                alt={activePartner.name}
-                                                width={50}
-                                                height={50}
-                                                className="h-full w-full rounded-full object-cover"
-                                            />
-                                        ) : (
-                                            <span className="text-sm font-semibold">
-                                                {activePartner.name
-                                                    ?.slice(0, 1)
-                                                    .toUpperCase() ?? "B"}
-                                            </span>
-                                        )}
-                                    </div>
+                                    <Image
+                                        src={
+                                            activePartner.image ||
+                                            "/default-icon.svg"
+                                        }
+                                        alt={activePartner.name}
+                                        width={50}
+                                        height={50}
+                                        className="h-12 w-12 rounded-full object-cover"
+                                    />
 
                                     <div>
                                         <h2 className="text-xl font-semibold text-buzz-blue">
