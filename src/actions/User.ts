@@ -89,16 +89,13 @@ export async function updateUser(userId: string, userData: UserUpdateData & { cu
         const dataToUpdate = { ...updateFields };
 
         if (dataToUpdate.password) {
-            if (!currentPassword) {
-                return { error: "Current password is required to update password." };
+            if (currentPassword) {
+                const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+                if (!isMatch) {
+                    return { error: "Current password is incorrect." };
+                }
             }
-
-            const isMatch = await bcrypt.compare(currentPassword, user.password);
-
-            if (!isMatch) {
-                return { error: "Current password is incorrect." };
-            }
-
             dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
         }
 
