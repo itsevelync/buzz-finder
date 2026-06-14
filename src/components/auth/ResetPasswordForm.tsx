@@ -181,7 +181,7 @@ export default function ResetPasswordForm() {
                 )}
                 <div>
                     Please enter the verification code we sent to{" "}
-                    {formData.email}.
+                    {formData.email}. Be sure to check your spam or promotions folder, or wait a few minutes for it to arrive.
                 </div>
                 <form className="form" onSubmit={handleCodeSubmit}>
                     <div>

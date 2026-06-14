@@ -37,7 +37,7 @@ export async function sendResetCode(email: string) {
         sendSmtpEmail.subject = "BuzzFinder Password Reset Code";
         sendSmtpEmail.templateId = 1;
         sendSmtpEmail.to = [{ email: email }];
-        sendSmtpEmail.params = { resetCode: resetCode.code };
+        sendSmtpEmail.params = { resetCode: resetCode.code, name: user.name };
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);
 
@@ -70,8 +70,8 @@ export async function generateResetCode(userId: string): Promise<ResetCodeDocume
         const resetCode = new ResetCode({
             userId: new Types.ObjectId(userId),
             code,
-            // Code expires in 1 hour
-            expiresAt: new Date(Date.now() + 3600000),
+            // Code expires in 10 minutes
+            expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
         await resetCode.save();
