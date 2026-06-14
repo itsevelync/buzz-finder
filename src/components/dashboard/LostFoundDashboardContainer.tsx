@@ -35,8 +35,8 @@ export default function LostFoundDashboardContainer() {
                 setLoading(true);
 
                 const [itemsRes, postsRes] = await Promise.all([
-                    fetch("/api/item"),
-                    fetch("/api/lost-item-post"),
+                    fetch("/api/items"),
+                    fetch("/api/lost-item-posts"),
                 ]);
 
                 if (!itemsRes.ok || !postsRes.ok) {

@@ -4,7 +4,7 @@ import { PlainItem } from "@/model/Item";
 //for general use (getting all items, even archived ones) but idk how often we'll use it
 //might not even need this as a function
 export async function getAllItems(): Promise<PlainItem[]> {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/item`);
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/items`);
     if (!res.ok) throw new Error(`Failed to fetch items: ${res.status}`);
     return res.json();
 }

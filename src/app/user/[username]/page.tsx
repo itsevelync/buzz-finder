@@ -30,10 +30,10 @@ export default async function Profile({ params }: ProfilePageProps) {
     if (userProfile?._id) {
         try {
             const foundResponse = await fetch(
-                `${process.env.NEXTAUTH_URL}/api/item?personFound=${userProfile._id}`,
+                `${process.env.NEXTAUTH_URL}/api/items?personFound=${userProfile._id}`,
             );
             const lostResponse = await fetch(
-                `${process.env.NEXTAUTH_URL}/api/lost-item-post?user=${userProfile._id}`,
+                `${process.env.NEXTAUTH_URL}/api/lost-item-posts?user=${userProfile._id}`,
             );
             if (foundResponse.ok) {
                 foundItems = await foundResponse.json();

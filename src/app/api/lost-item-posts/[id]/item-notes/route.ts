@@ -49,10 +49,7 @@ export async function GET(
         return Response.json(rootNotes);
     } catch (e: unknown) {
         if (e instanceof Error) {
-            console.error(
-                "GET /api/item-note error:",
-                e,
-            );
+            console.error("GET /api/item-notes error:", e);
 
             return Response.json(
                 { error: e.message },
@@ -61,10 +58,7 @@ export async function GET(
         }
 
         return Response.json(
-            {
-                error:
-                    "An unexpected error occurred at GET /api/item-note.",
-            },
+            { error: "An unexpected error occurred at GET /api/item-notes." },
             { status: 500 },
         );
     }

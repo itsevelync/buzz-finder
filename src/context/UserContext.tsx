@@ -41,7 +41,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         const fetchUser = async (userId: string) => {
             try {
-                const res = await fetch(`/api/user/${userId}`, {
+                const res = await fetch(`/api/users/${userId}`, {
                     signal: controller.signal,
                 });
                 if (res.ok) {

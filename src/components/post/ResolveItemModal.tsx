@@ -22,7 +22,7 @@ export default function ResolveItemModal({
     async function handleConfirmResolve() {
         setIsUpdating(true);
         try {
-            const res = await fetch(`/api/lost-item-post/${itemId}`, {
+            const res = await fetch(`/api/lost-item-posts/${itemId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ isFound: true }),

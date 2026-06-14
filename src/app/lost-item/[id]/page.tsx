@@ -13,7 +13,7 @@ async function getLostItem(id: string): Promise<LostItemPost | null> {
     try {
         await dbConnect();
         const res = await fetch(
-            `${process.env.NEXTAUTH_URL}/api/lost-item-post/${id}`,
+            `${process.env.NEXTAUTH_URL}/api/lost-item-posts/${id}`,
             {
                 method: "GET",
                 headers: {

@@ -180,8 +180,8 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
 
             const res = await fetch(
                 item
-                    ? `/api/lost-item-post/${item._id}`
-                    : "/api/lost-item-post",
+                    ? `/api/lost-item-posts/${item._id}`
+                    : "/api/lost-item-posts",
                 {
                     method: item ? "PATCH" : "POST",
                     headers: {

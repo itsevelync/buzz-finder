@@ -28,7 +28,7 @@ export default function ItemStatusActions({
     ) => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/item/${itemId}`, {
+            const res = await fetch(`/api/items/${itemId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",

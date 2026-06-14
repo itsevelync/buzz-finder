@@ -10,29 +10,30 @@ interface RouteContext {
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    await dbConnect();
-    const { id } = await params;
-    const item = await LostItem.findById(id).populate("user");
+    try {
+        await dbConnect();
 
-    if (!item) {
-      return NextResponse.json(
-        { message: "Lost item not found" },
-        { status: 404 }
-      );
+        const { id } = await params;
+        const item = await LostItem.findById(id).populate("user");
+
+        if (!item) {
+            return NextResponse.json(
+                { message: "Lost item not found" },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ item }, { status: 200 });
+    } catch (error) {
+        console.error("Error fetching item:", error);
+        return NextResponse.json(
+            { message: "Internal server error" },
+            { status: 500 }
+        );
     }
-
-    return NextResponse.json({ item }, { status: 200 });
-  } catch (error) {
-    console.error("Error fetching item:", error);
-    return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
-    );
-  }
 }
 
 export async function PATCH(req: NextRequest, context: RouteContext) {
@@ -46,6 +47,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         const updateData = await req.json();
 
         await dbConnect();
+
         const updatedPost = await LostItem.findByIdAndUpdate(
             id,
             { $set: updateData },
@@ -72,6 +74,7 @@ export async function DELETE(
 ) {
     try {
         await dbConnect();
+
         const { id } = await params;
 
         const item = await LostItem.findByIdAndUpdate(id, { deletedAt: new Date() },
@@ -90,6 +93,7 @@ export async function DELETE(
         );
     } catch (error) {
         console.error("Error deleting lost item post:", error);
+
         return NextResponse.json(
             { message: "Internal server error" },
             { status: 500 }

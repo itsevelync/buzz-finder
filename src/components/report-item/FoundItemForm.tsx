@@ -157,7 +157,7 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
 
         try {
             const res = await fetch(
-                item ? `/api/item/${item._id}` : "/api/item",
+                item ? `/api/items/${item._id}` : "/api/items",
                 {
                     method: item ? "PATCH" : "POST",
                     headers: {
