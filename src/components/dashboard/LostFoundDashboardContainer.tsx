@@ -6,7 +6,6 @@ import LostFoundSelector from "./LostFoundSelector";
 import { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 import ItemList from "./ItemList";
-import useSWR from "swr";
 import SearchBar from "../ui/SearchBar";
 import PostList from "./PostList";
 import Link from "next/link";
@@ -16,39 +15,63 @@ import { filterActiveItems } from "@/actions/ItemFilter";
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
     const searchParams = useSearchParams();
+
     const [lostItemsSelected, setLostItemsSelected] = useState<boolean>(
-        searchParams.get("tab") === "lost"
+        searchParams.get("tab") === "lost",
     );
+
+    const [items, setItems] = useState<PlainItem[]>([]);
+    const [lostItemPosts, setLostItemPosts] = useState<LostItemPost[]>([]);
+
     const [filteredItems, setFilteredItems] = useState<PlainItem[]>([]);
     const [filteredPosts, setFilteredPosts] = useState<LostItemPost[]>([]);
-    const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-    const {
-        data: items,
-        error: itemsError,
-        isLoading: itemsLoading,
-    } = useSWR<PlainItem[]>("/api/item", fetcher);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    const {
-        data: lostItemPosts,
-        error: lostItemsError,
-        isLoading: lostItemsLoading,
-    } = useSWR<LostItemPost[]>("/api/lost-item-post", fetcher);
-
-    // Reset filtered items when data or tab changes
     useEffect(() => {
-        if (items) {
-            setFilteredItems(filterActiveItems(items));
+        async function fetchData() {
+            try {
+                setLoading(true);
+
+                const [itemsRes, postsRes] = await Promise.all([
+                    fetch("/api/item"),
+                    fetch("/api/lost-item-post"),
+                ]);
+
+                if (!itemsRes.ok || !postsRes.ok) {
+                    throw new Error("Failed to fetch data");
+                }
+
+                const [itemsData, postsData] = await Promise.all([
+                    itemsRes.json(),
+                    postsRes.json(),
+                ]);
+
+                setItems(itemsData);
+                setLostItemPosts(postsData);
+
+                setFilteredItems(filterActiveItems(itemsData));
+                setFilteredPosts(postsData);
+            } catch (err) {
+                console.error(err);
+                setError(true);
+            } finally {
+                setLoading(false);
+            }
         }
-        if (lostItemPosts) {
-            setFilteredPosts(lostItemPosts);
-        }
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
         const currentTab = searchParams.get("tab");
         const newTab = lostItemsSelected ? "lost" : "found";
+
         if (currentTab !== newTab) {
             router.replace(`?tab=${newTab}`);
         }
-    }, [items, lostItemPosts, lostItemsSelected, router, searchParams]);
+    }, [lostItemsSelected, router, searchParams]);
 
     return (
         <div>
@@ -58,11 +81,12 @@ export default function LostFoundDashboardContainer() {
                         lostItemsSelected={lostItemsSelected}
                         setLostItemsSelected={setLostItemsSelected}
                     />
+
                     {lostItemsSelected ? (
                         <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg sticky top-0">
                             <SearchBar<LostItemPost>
                                 placeholder="Search by name or description"
-                                items={lostItemPosts || []}
+                                items={lostItemPosts}
                                 setFilteredItems={setFilteredPosts}
                                 searchableFields={[
                                     "name",
@@ -71,7 +95,11 @@ export default function LostFoundDashboardContainer() {
                                     "category",
                                 ]}
                             />
-                            <Link className="hidden sm:block" href="/report-item?type=lost">
+
+                            <Link
+                                className="hidden sm:block"
+                                href="/report-item?type=lost"
+                            >
                                 <button className="px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
                                     <FaPlus /> Post
                                 </button>
@@ -81,7 +109,7 @@ export default function LostFoundDashboardContainer() {
                         <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg">
                             <SearchBar<PlainItem>
                                 placeholder="Search by name, description, or location"
-                                items={filterActiveItems(items || [])}
+                                items={filterActiveItems(items)}
                                 setFilteredItems={setFilteredItems}
                                 searchableFields={[
                                     "name",
@@ -91,7 +119,11 @@ export default function LostFoundDashboardContainer() {
                                     "locationDescription",
                                 ]}
                             />
-                            <Link className="hidden sm:block" href="/report-item?type=found">
+
+                            <Link
+                                className="hidden sm:block"
+                                href="/report-item?type=found"
+                            >
                                 <button className="whitespace-nowrap px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
                                     <FaPlus /> New Item
                                 </button>
@@ -101,14 +133,12 @@ export default function LostFoundDashboardContainer() {
                 </div>
 
                 <div>
-                    {itemsLoading || lostItemsLoading ? (
+                    {loading ? (
                         <div className="p-5">Loading...</div>
-                    ) : itemsError || lostItemsError || !items ? (
+                    ) : error ? (
                         <div className="p-5">Error loading items</div>
                     ) : lostItemsSelected ? (
-                        <PostList
-                            lostItemPosts={filteredPosts} columns={2}
-                        />
+                        <PostList lostItemPosts={filteredPosts} columns={2} />
                     ) : (
                         <ItemList items={filteredItems} />
                     )}
