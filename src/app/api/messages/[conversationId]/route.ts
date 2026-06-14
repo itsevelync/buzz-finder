@@ -45,14 +45,36 @@ export async function GET(
             return new NextResponse("Forbidden", { status: 403 });
         }
 
-        const messages = await Message.find({
-            conversationId: conversationId,
-        })
-            .sort({ createdAt: "asc" })
+        const { searchParams } = new URL(request.url);
+        const limitParam = Number(searchParams.get("limit") ?? "20");
+        const limit = Number.isFinite(limitParam)
+            ? Math.min(Math.max(Math.floor(limitParam), 1), 50)
+            : 20;
+
+        const beforeParam = searchParams.get("before");
+        const beforeDate = beforeParam ? new Date(beforeParam) : null;
+        const hasValidBefore = beforeDate !== null && !Number.isNaN(beforeDate.getTime());
+
+        const query: {
+            conversationId: string;
+            createdAt?: { $lt: Date };
+        } = {
+            conversationId,
+        };
+
+        if (hasValidBefore && beforeDate) {
+            query.createdAt = { $lt: beforeDate };
+        }
+
+        const messages = await Message.find(query)
+            .sort({ createdAt: -1 })
+            .limit(limit)
             .lean<LeanMessage[]>(); // ✨ Typed as an array of messages
 
         return NextResponse.json(
-            messages.map((message) => toChatMessageSummary(message)),
+            messages
+                .reverse()
+                .map((message) => toChatMessageSummary(message)),
         );
     } catch (error) {
         console.error(error);

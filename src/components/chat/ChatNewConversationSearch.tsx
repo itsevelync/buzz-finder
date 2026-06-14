@@ -18,6 +18,7 @@ type ChatNewConversationSearchProps = {
         SetStateAction<ConversationSummary | null>
     >;
     setActiveConversationId: Dispatch<SetStateAction<string | null>>;
+    setIsSearching: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function ChatNewConversationSearch({
@@ -27,6 +28,7 @@ export default function ChatNewConversationSearch({
     currentUser,
     setPendingConversation,
     setActiveConversationId,
+    setIsSearching,
 }: ChatNewConversationSearchProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
@@ -107,6 +109,7 @@ export default function ChatNewConversationSearch({
 
     const selectSearchUser = (userId: string) => {
         void startConversation(userId);
+        setIsSearching(false);
         setSearchTerm("");
         setSelectedUserIndex(0);
     };
