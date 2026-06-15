@@ -18,6 +18,7 @@ import { LostItemPost } from "@/model/LostItemPost";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useUserLocation } from "@/context/UserLocationContext";
 
 interface LostItemPostFormProps {
     item?: LostItemPost;
@@ -26,6 +27,7 @@ interface LostItemPostFormProps {
 export default function LostItemPostForm({ item }: LostItemPostFormProps) {
     const router = useRouter();
     const { user } = useUser();
+    const { currPositionFetched } = useUserLocation();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,50 +43,16 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
     // Map State
     const [showMap, setShowMap] = useState(item ? !!item.locationPin : true);
     const gtCampus = { lat: 33.778, lng: -84.398 };
-    const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
     }>(item?.locationPin ?? gtCampus);
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    }>(gtCampus);
 
     // Media State
     const [file, setFile] = useState<File | null>(null);
     const [category, setCategory] = useState<keyof typeof categories | "">(
         item?.category ?? "",
     );
-
-    // Detect and handle client-side user positioning initialization
-    useEffect(() => {
-        if (!navigator.geolocation || item) {
-            setCurrPositionFetched(true);
-            return;
-        }
-
-        if (!currPositionFetched && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const coords = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
-                    setSelectedLocation(coords);
-                    setCurrentPosition(coords);
-                    setCurrPositionFetched(true);
-                },
-                (error) => {
-                    console.error(
-                        "Error securing real-time browser location coordinates:",
-                        error,
-                    );
-                    setCurrPositionFetched(true);
-                },
-            );
-        }
-    }, [currPositionFetched, item]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -287,7 +255,6 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
                                             setSelectedLocation={
                                                 setSelectedLocation
                                             }
-                                            currentPosition={currentPosition}
                                             category={category}
                                         />
                                     ) : (

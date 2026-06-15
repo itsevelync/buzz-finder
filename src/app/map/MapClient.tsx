@@ -19,11 +19,6 @@ export default function MapClient({
     // Sidebar mobile height
     const [height, setHeight] = useState(85);
 
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
-
     return (
         <div className="w-full h-full flex relative">
             <LocationProvider>
@@ -31,7 +26,6 @@ export default function MapClient({
                     <ItemSidebar
                         items={items}
                         setFilteredItems={setFilteredItems}
-                        currentPosition={currentPosition}
                         height={height}
                         setHeight={setHeight}
                     />
@@ -39,8 +33,6 @@ export default function MapClient({
                         width="100%"
                         height="100%"
                         items={filteredItems}
-                        currentPosition={currentPosition}
-                        setCurrentPosition={setCurrentPosition}
                         setHeight={setHeight}
                     />
                 </SelectedPinProvider>

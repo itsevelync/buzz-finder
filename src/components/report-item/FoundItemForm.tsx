@@ -5,13 +5,14 @@ import ImageUploader from "@/components/report-item/ImageUploader";
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
 import { PlainItem } from "@/model/Item";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { useUser } from "@/context/UserContext";
 import { toast } from "react-toastify";
+import { useUserLocation } from "@/context/UserLocationContext";
 
 interface FoundItemFormProps {
     item?: PlainItem;
@@ -20,6 +21,7 @@ interface FoundItemFormProps {
 export default function FoundItemForm({ item }: FoundItemFormProps) {
     const router = useRouter();
     const { user } = useUser();
+    const { currPositionFetched } = useUserLocation();
     const userId = user?._id;
 
     const gtCampus = { lat: 33.778, lng: -84.398 };
@@ -27,43 +29,14 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
     const [category, setCategory] = useState<keyof typeof categories | "">(
         item?.category ?? "",
     );
-    const [currPositionFetched, setCurrPositionFetched] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
     }>(item?.locationPin ?? gtCampus);
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    }>(gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(
         item ? !!item.personFound : !!userId,
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        if (!item && !currPositionFetched && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setSelectedLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                    setCurrentPosition({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                    setCurrPositionFetched(true);
-                },
-                (error) => {
-                    console.error("Error getting current location:", error);
-                    setCurrPositionFetched(true);
-                },
-            );
-        } else {
-            setCurrPositionFetched(true);
-        }
-    }, [item, currPositionFetched]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -176,7 +149,9 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
                     router.push("/dashboard");
                 }
             } else {
-                toast.error(item ? "Error updating item" : "Error logging item");
+                toast.error(
+                    item ? "Error updating item" : "Error logging item",
+                );
             }
         } catch (err) {
             console.error(err);
@@ -246,7 +221,6 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
                                     width="100%"
                                     selectedLocation={selectedLocation}
                                     setSelectedLocation={setSelectedLocation}
-                                    currentPosition={currentPosition}
                                     category={category}
                                 />
                             ) : (

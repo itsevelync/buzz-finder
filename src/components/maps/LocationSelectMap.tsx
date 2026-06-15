@@ -10,13 +10,13 @@ import { Dispatch, SetStateAction } from "react";
 import { MdMyLocation } from "react-icons/md";
 import { categories } from "@/constants/Categories";
 import StaticCategoryMarker from "./StaticCategoryMarker";
+import { useUserLocation } from "@/context/UserLocationContext";
 
 interface LocationSelectMapProps {
     height: number | string;
     width: number | string;
     selectedLocation: { lat: number; lng: number };
     setSelectedLocation: Dispatch<SetStateAction<{ lat: number; lng: number }>>;
-    currentPosition: { lat: number; lng: number };
     category?: keyof typeof categories | "";
 }
 
@@ -49,22 +49,20 @@ export default function LocationSelectMap(props: LocationSelectMapProps) {
                     </div>
 
                     {/* Button to center on current position */}
-                    <CenterButton currentPosition={props.currentPosition} />
+                    <CenterButton />
                 </Map>
             </div>
         </APIProvider>
     );
 }
 
-function CenterButton({
-    currentPosition,
-}: {
-    currentPosition: { lat: number; lng: number };
-}) {
+function CenterButton() {
+    const { currentPosition } = useUserLocation();
     const map = useMap();
 
     function handleCenterClick() {
         if (!map) return;
+        if (!currentPosition) return;
         map.panTo(currentPosition);
 
         if (map.getZoom() !== 18) {

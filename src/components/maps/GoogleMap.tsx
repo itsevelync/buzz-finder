@@ -24,6 +24,7 @@ import { useSelectedPin } from "@/context/PinContext";
 import SmallAdvancedMarker from "./SmallAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
 import { MarkerClusterer, Renderer } from "@googlemaps/markerclusterer";
+import { useUserLocation } from "@/context/UserLocationContext";
 
 const gtCampus = { lat: 33.7765, lng: -84.398 };
 
@@ -39,18 +40,9 @@ export default function GoogleMap(props: {
     height: string | number;
     width: string | number;
     items: PlainItem[];
-    currentPosition: {
-        lat: number;
-        lng: number;
-    } | null;
-    setCurrentPosition: Dispatch<
-        SetStateAction<{
-            lat: number;
-            lng: number;
-        } | null>
-    >;
     setHeight: Dispatch<SetStateAction<number>>;
 }) {
+    const { currentPosition } = useUserLocation();
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
 
@@ -106,27 +98,6 @@ export default function GoogleMap(props: {
         }
     }, [selectedItem, setLocation]);
 
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(
-                (position) => {
-                    props.setCurrentPosition({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    });
-                },
-                (error) => {
-                    console.error("Error getting current location", error);
-
-                    // fallback
-                    props.setCurrentPosition(gtCampus);
-                },
-            );
-        } else {
-            props.setCurrentPosition(gtCampus);
-        }
-    }, [props]);
-
     // TODO: ADD FILTERS FOR ITEM PROPERTIES
 
     //scrolls the item list to the item with the given itemId
@@ -141,7 +112,7 @@ export default function GoogleMap(props: {
         }
     }, [selectedId]);
 
-    if (!props.currentPosition) {
+    if (!currentPosition) {
         return (
             <div className="w-full h-full flex items-center justify-center">
                 Loading map...
@@ -157,7 +128,7 @@ export default function GoogleMap(props: {
                     onClick={() => props.setHeight(85)} // Sidebar mobile height
                 >
                     <Map
-                        defaultCenter={props.currentPosition}
+                        defaultCenter={currentPosition}
                         defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
@@ -194,8 +165,8 @@ export default function GoogleMap(props: {
                             </div>
                         </MapControl>
 
-                        {props.currentPosition != gtCampus && (
-                            <AdvancedMarker position={props.currentPosition}>
+                        {currentPosition != gtCampus && (
+                            <AdvancedMarker position={currentPosition}>
                                 <div className="w-3.5 h-3.5 rounded-full outline-5 outline-blue-400/30 bg-blue-500 border-2 border-white"></div>
                             </AdvancedMarker>
                         )}
@@ -217,9 +188,7 @@ export default function GoogleMap(props: {
                         ))}
 
                         <MapMarkerClusterer markers={clusterableMarkers} />
-                        <CurrentLocationButton
-                            currentPosition={props.currentPosition}
-                        />
+                        <CurrentLocationButton />
                     </Map>
                 </div>
             </APIProvider>
@@ -298,15 +267,14 @@ function MapMarkerClusterer({
     return null;
 }
 
-function CurrentLocationButton({
-    currentPosition,
-}: {
-    currentPosition: { lat: number; lng: number };
-}) {
+function CurrentLocationButton() {
+    const { currentPosition } = useUserLocation();
     const map = useMap();
 
     function handleCenterClick() {
         if (!map) return;
+        if (!currentPosition) return;
+
         map.panTo(currentPosition);
 
         if (map.getZoom() !== 16) {

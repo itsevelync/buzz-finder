@@ -11,12 +11,6 @@ import { useIsMobile } from "@/hooks/IsMobile";
 interface ItemSidebarProps {
     items: PlainItem[];
     setFilteredItems: (items: PlainItem[]) => void;
-
-    currentPosition: {
-        lat: number;
-        lng: number;
-    } | null;
-
     height: number;
     setHeight: Dispatch<SetStateAction<number>>;
 }
@@ -24,7 +18,6 @@ interface ItemSidebarProps {
 export default function ItemSidebar({
     items,
     setFilteredItems,
-    currentPosition,
     height,
     setHeight,
 }: ItemSidebarProps) {
@@ -202,7 +195,6 @@ export default function ItemSidebar({
                         width={width}
                         displayItems={displayItems}
                         setDisplayItems={setDisplayItems}
-                        currentPosition={currentPosition}
                     />
 
                     {/* Grid of item cards */}
@@ -292,7 +284,6 @@ export default function ItemSidebar({
                     width={window.innerWidth}
                     displayItems={displayItems}
                     setDisplayItems={setDisplayItems}
-                    currentPosition={currentPosition}
                 />
             </div>
 

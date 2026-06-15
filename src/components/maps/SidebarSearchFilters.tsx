@@ -13,6 +13,7 @@ import {
 } from "react";
 import { categories } from "@/constants/Categories";
 import { statuses, STATUS_KEYS, StatusFilter } from "@/constants/Statuses";
+import { useUserLocation } from "@/context/UserLocationContext";
 
 type DateSort = "newest" | "oldest";
 type DateRange = "all" | "24h" | "7d" | "30d";
@@ -23,10 +24,6 @@ interface SidebarSearchFiltersProps {
     width: number;
     displayItems: PlainItem[];
     setDisplayItems: Dispatch<SetStateAction<PlainItem[]>>;
-    currentPosition: {
-        lat: number;
-        lng: number;
-    } | null;
 }
 
 export default function SidebarSearchFilters({
@@ -35,8 +32,8 @@ export default function SidebarSearchFilters({
     width,
     displayItems,
     setDisplayItems,
-    currentPosition,
 }: SidebarSearchFiltersProps) {
+    const { currentPosition } = useUserLocation();
     const [dateSort, setDateSort] = useState<DateSort>("newest");
     const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
     const [dateRange, setDateRange] = useState<DateRange>("all");
@@ -86,7 +83,7 @@ export default function SidebarSearchFilters({
             range: DateRange,
             status: StatusFilter,
             distance: number | "all",
-            userPos: { lat: number; lng: number } | null,
+            userPos: { lat: number; lng: number } | undefined,
         ) => {
             let result = [...source];
 
