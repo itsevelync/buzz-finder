@@ -123,7 +123,7 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
         openModal(
             <ConfirmationModal
                 title="Delete Note"
-                 icon={LuTriangleAlert}
+                icon={LuTriangleAlert}
                 body="Are you sure you want to delete this item note?"
                 onConfirm={() => _onDelete(noteId)}
                 loading={loading}
@@ -160,15 +160,12 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
 
     const onReply = async (parentId: string, content: string) => {
         try {
-            const body: Partial<ItemNote> = {
+            const body = {
                 lostItemId: itemNotes[0].lostItemId,
                 parentId,
                 note: content,
+                user: !anonymizeReply && user ? user : undefined,
             };
-
-            if (!anonymizeReply && user) {
-                body.user = user;
-            }
 
             const response = await fetch("/api/item-notes", {
                 method: "POST",

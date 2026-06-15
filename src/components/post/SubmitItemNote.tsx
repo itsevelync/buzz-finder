@@ -14,7 +14,7 @@ export default function SubmitItemNote({
     lost_item,
     getItemNotes,
 }: SubmitItemNoteProps) {
-    const {user} = useUser();
+    const { user } = useUser();
     const [note, setNote] = useState("");
     const [anonymize, setAnonymize] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -23,14 +23,11 @@ export default function SubmitItemNote({
         setSubmitting(true);
 
         try {
-            const body : Partial<ItemNote> = {
+            const body = {
                 note: note,
                 lostItemId: lost_item._id,
+                user: !anonymize && user ? user : undefined,
             };
-
-            if (!anonymize && user) {
-                body.user = user;
-            }
 
             const res = await fetch("/api/item-notes", {
                 method: "POST",
