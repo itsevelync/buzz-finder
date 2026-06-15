@@ -1,7 +1,6 @@
 "use client";
 
 import { useUser } from "@/context/UserContext";
-import { ItemNote } from "@/model/ItemNote";
 import { LostItemPost } from "@/model/LostItemPost";
 import { useState } from "react";
 import { toast } from "react-toastify";
