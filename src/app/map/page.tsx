@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import MapClient from "./MapClient";
 import { dbConnect } from "@/lib/mongo";
-import { getAllItems } from "@/actions/ItemFilter";
+import { getActiveItems } from "@/actions/ItemFilter";
 
 export const metadata: Metadata = {
     title: "Map - BuzzFinder",
@@ -19,9 +19,9 @@ export default async function Map({
 }) {
     searchParams = await searchParams;
     const itemId = (searchParams.itemId as string) ?? null;
-    
+
     await dbConnect();
-    const items = await getAllItems();
+    const items = await getActiveItems();
 
     return <MapClient itemId={itemId} items={items} />;
 }

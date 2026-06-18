@@ -27,7 +27,7 @@ interface LostItemPostFormProps {
 export default function LostItemPostForm({ item }: LostItemPostFormProps) {
     const router = useRouter();
     const { user } = useUser();
-    const { currPositionFetched } = useUserLocation();
+    const { currentPosition, currPositionFetched } = useUserLocation();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,7 +46,7 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
-    }>(item?.locationPin ?? gtCampus);
+    }>(item?.locationPin ?? currentPosition ?? gtCampus);
 
     // Media State
     const [file, setFile] = useState<File | null>(null);
@@ -411,7 +411,7 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
                             {isSubmitting
                                 ? item
                                     ? "Updating..."
-                                    : "Uploading Report Content..."
+                                    : "Reporting..."
                                 : item
                                   ? "Update Lost Item"
                                   : "Report Lost Item"}

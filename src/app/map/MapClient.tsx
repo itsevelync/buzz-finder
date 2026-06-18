@@ -20,7 +20,7 @@ export default function MapClient({
     const [height, setHeight] = useState(85);
 
     return (
-        <div className="w-full h-full flex relative">
+        <div className="w-full h-full flex relative overflow-hidden">
             <LocationProvider>
                 <SelectedPinProvider defaultSelectedId={itemId}>
                     <ItemSidebar

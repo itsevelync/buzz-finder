@@ -59,7 +59,7 @@ const ItemSchema = new Schema(
         status: {
             type: String,
             required: true,
-            enum: ['unclaimed', 'claimed', 'gone'],
+            enum: ['unclaimed', 'claimed', 'gone', 'archived'],
             default: 'unclaimed',
             trim: true
         },

@@ -21,7 +21,7 @@ interface FoundItemFormProps {
 export default function FoundItemForm({ item }: FoundItemFormProps) {
     const router = useRouter();
     const { user } = useUser();
-    const { currPositionFetched } = useUserLocation();
+    const { currentPosition, currPositionFetched } = useUserLocation();
     const userId = user?._id;
 
     const gtCampus = { lat: 33.778, lng: -84.398 };
@@ -32,7 +32,7 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
     const [selectedLocation, setSelectedLocation] = useState<{
         lat: number;
         lng: number;
-    }>(item?.locationPin ?? gtCampus);
+    }>(item?.locationPin ?? currentPosition ?? gtCampus);
     const [useAccountInfo, setUseAccountInfo] = useState(
         item ? !!item.personFound : !!userId,
     );

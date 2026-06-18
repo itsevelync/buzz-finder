@@ -134,6 +134,7 @@ export default function GoogleMap(props: {
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
                         mapId="TEMP_MAP_ID?"
                         mapTypeControl={false}
+                        clickableIcons={false}
                     >
                         <MapPanController />
 

@@ -43,6 +43,7 @@ export default function LostItemCard({
               month: "short",
               day: "numeric",
               year: "numeric",
+              timeZone: "UTC",
           })
         : null;
 
