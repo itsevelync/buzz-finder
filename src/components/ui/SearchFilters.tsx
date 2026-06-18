@@ -411,7 +411,7 @@ export default function SearchFilters<T extends FilterableItem>({
                                     onClick={() => setDistanceFilter("all")}
                                     className="px-2.5 py-1 rounded-full bg-gray-100 hover:bg-gray-200 text-xs text-gray-600 transition"
                                 >
-                                    Under {distanceFilter}km ×
+                                    Within {distanceFilter}km ×
                                 </button>
                             )}
                             <button
