@@ -200,7 +200,7 @@ export default function SearchFilters<T extends FilterableItem>({
 
     return (
         <>
-            <div className="p-4">
+            <div className="p-4 pb-5 sm:pb-4">
                 <div
                     className={`flex items-center gap-2 ${isCompact ? "flex-col" : "flex-row"}`}
                 >
@@ -235,7 +235,7 @@ export default function SearchFilters<T extends FilterableItem>({
 
             <div className="relative w-full">
                 {showFilters && (
-                    <div className="absolute w-full top-0 bg-white p-4 space-y-4 border-t border-gray-100 max-h-[calc(100vh-200px)] overflow-y-auto subtle-scrollbar shadow-sm z-10">
+                    <div className="absolute w-full top-0 bg-white p-4 space-y-4 border-t border-gray-100 max-h-[calc(100vh-249px)] overflow-y-auto subtle-scrollbar shadow-sm z-10">
                         {/* ================= SHARED FILTER UI CONTROLS ================= */}
                         <FilterSection label="Categories">
                             <button

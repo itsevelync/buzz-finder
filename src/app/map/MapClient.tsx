@@ -17,12 +17,13 @@ export default function MapClient({
     const [filteredItems, setFilteredItems] = useState<PlainItem[]>(items);
 
     // Sidebar mobile height
-    const [height, setHeight] = useState(85);
+    const [height, setHeight] = useState(93);
 
     return (
-        <div className="w-full h-full flex relative overflow-hidden">
+        
             <LocationProvider>
                 <SelectedPinProvider defaultSelectedId={itemId}>
+                    <div className="w-full h-full flex relative overflow-hidden">
                     <ItemSidebar
                         items={items}
                         setFilteredItems={setFilteredItems}
@@ -35,8 +36,8 @@ export default function MapClient({
                         items={filteredItems}
                         setHeight={setHeight}
                     />
+                    </div>
                 </SelectedPinProvider>
             </LocationProvider>
-        </div>
     );
 }

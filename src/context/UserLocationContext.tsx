@@ -47,7 +47,7 @@ export function UserLocationProvider({
                 setCurrPositionFetched(true);
             },
             (error) => {
-                console.error("Error getting location", error);
+                console.log("Error getting location", error);
                 setCurrentPosition(gtCampus);
                 setCurrPositionFetched(true);
             },
