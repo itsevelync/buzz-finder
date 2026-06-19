@@ -102,6 +102,8 @@ export default function GoogleMap(props: {
 
     //scrolls the item list to the item with the given itemId
     function scrollToItem(itemId: string) {
+        if (window.innerWidth < 640) return;
+
         const itemElement = document.getElementById(itemId);
         itemElement?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -125,7 +127,7 @@ export default function GoogleMap(props: {
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                 <div
                     style={{ height: props.height, width: props.width }}
-                    onClick={() => props.setHeight(85)} // Sidebar mobile height
+                    onClick={() => props.setHeight(93)} // Sidebar mobile height
                 >
                     <Map
                         defaultCenter={currentPosition}

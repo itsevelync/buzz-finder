@@ -35,7 +35,7 @@ export function ItemNoteCard({
     const { user } = useUser();
     const currentUserId = user?._id;
 
-    const isOwner = note.user?._id?.toString() === currentUserId;
+    const isOwner = currentUserId && note.user?._id?.toString() === currentUserId;
 
     const hasLiked = note.likes.some(
         (like) => like.toString() === currentUserId,
@@ -77,12 +77,12 @@ export function ItemNoteCard({
                                 className="rounded-full object-cover"
                             />
                         )}
-                        <div className="flex-1">
-                            <div className="flex items-center justify-between mb-2">
+                        <div className="flex-1 truncate">
+                            <div className="flex flex-col gap-1 sm:items-center sm:justify-between mb-2 sm:flex-row sm:gap-2">
                                 {note.user ? (
                                     <Link
                                         href={`/user/${note.user.username}`}
-                                        className="space-x-2"
+                                        className="space-x-2 whitespace-nowrap"
                                     >
                                         <span className="font-medium">
                                             {note.user?.name ?? "Anonymous"}

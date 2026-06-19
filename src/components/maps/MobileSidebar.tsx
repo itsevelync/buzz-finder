@@ -33,7 +33,7 @@ export default function MobileSidebar({
     const velocity = useRef(0);
     const [vh, setVh] = useState(0);
     const SNAP = {
-        COLLAPSED: 85,
+        COLLAPSED: 93,
         FULL: vh - 162,
     };
     const didDrag = useRef(false);
@@ -122,7 +122,7 @@ export default function MobileSidebar({
     return (
         <div
             ref={sheetRef}
-            className="fixed bottom-14 left-0 right-0 z-50 flex flex-col bg-white border-t border-gray-300 rounded-t-2xl shadow-xl"
+            className="absolute bottom-0 left-0 right-0 z-50 flex flex-col bg-white border-t border-gray-300 rounded-t-2xl shadow-xl"
             style={{
                 height,
                 touchAction: "none",
@@ -143,7 +143,9 @@ export default function MobileSidebar({
                     setHeight(SNAP.FULL);
                 }}
             >
-                <div className="shadow top-0 sticky bg-white z-10">
+                <div
+                    className={`shadow top-0 sticky bg-white z-10 ${height === SNAP.FULL ? "pointer-events-auto" : "pointer-events-none"}`}
+                >
                     {/* Header (filters/search) */}
                     <SearchFilters<PlainItem>
                         items={items}

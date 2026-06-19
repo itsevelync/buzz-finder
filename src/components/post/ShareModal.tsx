@@ -8,16 +8,44 @@ export default function ShareModal() {
     const { closeModal } = useModal();
     const [copied, setCopied] = useState(false);
 
+    const copyText = async (text: string) => {
+        // Modern API
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+
+        // Legacy fallback
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+
+        const success = document.execCommand("copy");
+
+        document.body.removeChild(textarea);
+
+        return success;
+    };
+
     const handleCopy = async () => {
         try {
-            await navigator.clipboard.writeText(window.location.href);
-            setCopied(true);
+            const success = await copyText(window.location.href);
 
-            setTimeout(() => {
-                setCopied(false);
-            }, 2000);
+            if (success) {
+                setCopied(true);
+
+                setTimeout(() => {
+                    setCopied(false);
+                }, 2000);
+            }
         } catch (err) {
-            console.error("Failed to copy URL:", err);
+            console.error(err);
         }
     };
 
