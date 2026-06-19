@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, PointerEvent } from "react";
 import { FaSlidersH } from "react-icons/fa";
 import SearchBar from "../ui/SearchBar";
 import { categories } from "@/constants/Categories";
@@ -37,6 +37,9 @@ interface SearchFiltersProps<T> {
     searchPlaceholder?: string;
     isLostItemPost?: boolean;
     isMap?: boolean;
+    mobileSidebarHandleSheetDragStart?: (e: PointerEvent<HTMLDivElement>) => void;
+    mobileSidebarHeight?: number;
+    mobileSidebarSnapFULL?: number;
 }
 
 const calculateDistance = (
@@ -70,6 +73,9 @@ export default function SearchFilters<T extends FilterableItem>({
     searchPlaceholder = "Search items",
     isLostItemPost = false,
     isMap = false,
+    mobileSidebarHandleSheetDragStart,
+    mobileSidebarHeight,
+    mobileSidebarSnapFULL
 }: SearchFiltersProps<T>) {
     const { currentPosition } = useUserLocation();
 
@@ -200,36 +206,47 @@ export default function SearchFilters<T extends FilterableItem>({
 
     return (
         <>
-            <div className="p-4 pb-5 sm:pb-4">
+            <div
+                onPointerDown={mobileSidebarHandleSheetDragStart}
+                className="p-4 pb-5 sm:pb-4"
+            >
                 <div
-                    className={`flex items-center gap-2 ${isCompact ? "flex-col" : "flex-row"}`}
+                    className={
+                        mobileSidebarHeight && mobileSidebarHeight === mobileSidebarSnapFULL
+                            ? "pointer-events-auto"
+                            : "pointer-events-none"
+                    }
                 >
-                    <div className="w-full">
-                        <SearchBar<T>
-                            placeholder={searchPlaceholder}
-                            items={items}
-                            setFilteredItems={setSearchedItems}
-                            searchableFields={searchableFields}
-                        />
-                    </div>
-
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`flex items-center justify-center gap-2 h-10 px-3 border rounded-lg transition text-sm font-medium ${
-                            showFilters || activeFiltersCount > 0
-                                ? "bg-gray-800 text-white border-gray-800"
-                                : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
-                        } ${isCompact ? "w-full" : ""}`}
+                    <div
+                        className={`flex items-center gap-2 ${isCompact ? "flex-col" : "flex-row"}`}
                     >
-                        <FaSlidersH />
-                        {activeFiltersCount > 0 && (
-                            <span
-                                className={`flex items-center justify-center text-[10px] font-bold w-4 h-4 rounded-full ${showFilters ? "bg-white text-gray-800" : "bg-gray-800 text-white"}`}
-                            >
-                                {activeFiltersCount}
-                            </span>
-                        )}
-                    </button>
+                        <div className="w-full">
+                            <SearchBar<T>
+                                placeholder={searchPlaceholder}
+                                items={items}
+                                setFilteredItems={setSearchedItems}
+                                searchableFields={searchableFields}
+                            />
+                        </div>
+
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`flex items-center justify-center gap-2 h-10 px-3 border rounded-lg transition text-sm font-medium ${
+                                showFilters || activeFiltersCount > 0
+                                    ? "bg-gray-800 text-white border-gray-800"
+                                    : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                            } ${isCompact ? "w-full" : ""}`}
+                        >
+                            <FaSlidersH />
+                            {activeFiltersCount > 0 && (
+                                <span
+                                    className={`flex items-center justify-center text-[10px] font-bold w-4 h-4 rounded-full ${showFilters ? "bg-white text-gray-800" : "bg-gray-800 text-white"}`}
+                                >
+                                    {activeFiltersCount}
+                                </span>
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
 
