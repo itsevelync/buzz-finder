@@ -7,11 +7,7 @@ import { usePagination } from "@/hooks/usePagination";
 
 const ITEMS_PER_PAGE = 12;
 
-export default function ItemList({
-    items,
-}: {
-    items: PlainItem[] | undefined;
-}) {
+export default function ItemList({ items }: { items: PlainItem[] }) {
     const {
         currentPage,
         totalPages,

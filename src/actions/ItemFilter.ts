@@ -1,15 +1,13 @@
-//basically gets rid of all archived items (manually archived, or older than 3 weeks)
 import { PlainItem } from "@/model/Item";
 
-//for general use (getting all items, even archived ones) but idk how often we'll use it
-//might not even need this as a function
+// Fetches all items
 export async function getAllItems(): Promise<PlainItem[]> {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/item`);
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/items`);
     if (!res.ok) throw new Error(`Failed to fetch items: ${res.status}`);
     return res.json();
 }
 
-//for server-side filtering (ex. map page)
+// Fetches only items that are unclaimed and unarchived (< 3 weeks old)
 export async function getActiveItems(): Promise<PlainItem[]> {
     const items = await getAllItems();
     const threeWeeksAgo = new Date();
@@ -22,13 +20,22 @@ export async function getActiveItems(): Promise<PlainItem[]> {
     );
 }
 
-//for client-side filtering (ex. dashboard)
-export function filterActiveItems(items: PlainItem[]): PlainItem[] {
+// Marks items older than 3 weeks as archived
+export function archiveOldItems(items: PlainItem[]): PlainItem[] {
     const threeWeeksAgo = new Date();
     threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
-    return items.filter(
-        (item) =>
+
+    return items.map((item) => {
+        if (
             item.status === "unclaimed" &&
-            new Date(item.lostDate as string | Date) >= threeWeeksAgo
-    );
+            new Date(item.lostDate as string | Date) < threeWeeksAgo
+        ) {
+            return {
+                ...item,
+                status: "archived",
+            };
+        }
+
+        return item;
+    });
 }

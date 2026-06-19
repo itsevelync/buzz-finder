@@ -24,7 +24,7 @@ interface ItemPageProps {
 async function getItem(id: string) {
     try {
         await dbConnect();
-        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/item/${id}`, {
+        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/items/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -48,7 +48,7 @@ async function getItem(id: string) {
 async function getPersonFound(id: string) {
     try {
         await dbConnect();
-        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/user/${id}`, {
+        const res = await fetch(`${process.env.NEXTAUTH_URL}/api/users/${id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -118,7 +118,7 @@ export default async function ItemPage({ params }: ItemPageProps) {
                 {isOwner && (
                     <EditDeleteBtns
                         editURL={`/item/${item._id}/edit`}
-                        deleteAPIRoute={`/api/item/${item._id}`}
+                        deleteAPIRoute={`/api/items/${item._id}`}
                     />
                 )}
             </div>

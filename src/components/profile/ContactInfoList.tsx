@@ -25,13 +25,13 @@ export function ContactInfoList({ user }: ContactInfoListProps) {
             >
                 <LuUser className="text-buzz-blue" /> {user.username}
             </Link>
-            <Link
+            {user.email && <Link
                 href={`mailto:${user.email}`}
                 target="_blank"
                 className="flex gap-2 items-center"
             >
                 <LuMail className="text-buzz-blue" /> {user.email}
-            </Link>
+            </Link>}
             {user.phoneNum && (
                 <Link
                     href={`tel:+${user.phoneNum}`}

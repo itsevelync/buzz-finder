@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaMapPin } from "react-icons/fa";
 import { MdMyLocation } from "react-icons/md";
+import { statuses } from "@/constants/Statuses";
 
 interface FoundItemCardProps {
     item: PlainItem;
@@ -22,6 +23,9 @@ export default function FoundItemCard({
 
     const category = categories[item.category];
     const CategoryIcon = category.icon;
+
+    const status = statuses[item.status];
+    const StatusIcon = status.icon;
 
     return (
         <div
@@ -69,11 +73,20 @@ export default function FoundItemCard({
                 </div>
 
                 {includeMapLink ? (
-                    <a href={"/map?itemId=" + item._id}>
-                        <button className="bg-buzz-gold text-white rounded-full px-2 py-1 hover:bg-buzz-gold/80 flex items-center gap-2 w-full justify-center">
-                            <FaMapPin /> Locate on Map
+                    item.status !== "unclaimed" ? (
+                        <button
+                            disabled
+                            className="border border-dashed border-foreground/20 text-foreground/50 rounded-full px-2 py-1 flex items-center gap-2 w-full justify-center"
+                        >
+                            <StatusIcon /> Item {status.label.toLowerCase()}
                         </button>
-                    </a>
+                    ) : (
+                        <a href={`/map?itemId=${item._id}`}>
+                            <button className="bg-buzz-gold text-white rounded-full px-2 py-1 hover:bg-buzz-gold/80 flex items-center gap-2 w-full justify-center">
+                                <FaMapPin /> Locate on Map
+                            </button>
+                        </a>
+                    )
                 ) : (
                     <div className="flex gap-2">
                         <Link
@@ -84,9 +97,9 @@ export default function FoundItemCard({
                                 <CategoryIcon /> Go To Item Page
                             </button>
                         </Link>
-                            <button className="border border-buzz-blue bg-background text-xl rounded-full p-2 gap-2 hover:brightness-95">
-                                <MdMyLocation />
-                            </button>
+                        <button className="border border-buzz-blue bg-background text-xl rounded-full p-2 gap-2 hover:brightness-95">
+                            <MdMyLocation />
+                        </button>
                     </div>
                 )}
             </div>

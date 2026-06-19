@@ -43,11 +43,12 @@ export default function LostItemCard({
               month: "short",
               day: "numeric",
               year: "numeric",
+              timeZone: "UTC",
           })
         : null;
 
-    const contact =
-        lostItemPost.user?.email ?? lostItemPost.contactInfo?.details ?? "N/A";
+    // const contact =
+    //     lostItemPost.user?.email ?? lostItemPost.contactInfo?.details ?? "N/A";
 
     return (
         <Link
@@ -57,16 +58,22 @@ export default function LostItemCard({
             <div className="relative w-full flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
                 {/* FOUND BADGE */}
                 {lostItemPost.isFound && (
-                    <div className={`absolute top-2 right-2 ${columns <= 2 ? "lg:top-4 lg:right-4" : ""} z-1 flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full text-xs font-medium`}>
+                    <div
+                        className={`absolute top-2 right-2 ${columns <= 2 ? "lg:top-4 lg:right-4" : ""} z-1 flex items-center gap-1 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-1 rounded-full text-xs font-medium`}
+                    >
                         <LuBadgeCheck className="text-sm" />
                         Found
                     </div>
                 )}
 
-                <div className={`flex flex-1 flex-col ${columns <= 2 ? "lg:flex-row-reverse lg:gap-6" : ""}`}>
+                <div
+                    className={`flex flex-1 flex-col ${columns <= 2 ? "lg:flex-row-reverse lg:gap-6" : ""}`}
+                >
                     {/* IMAGE */}
                     {lostItemPost.image?.url && (
-                        <div className={`${columns <= 2 ? `${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} lg:w-28 lg:h-28 lg:rounded-b-lg` : ""} relative w-full h-35 rounded-t-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}>
+                        <div
+                            className={`${columns <= 2 ? `${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} lg:w-28 lg:h-28 lg:rounded-b-lg` : ""} relative w-full h-35 rounded-t-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}
+                        >
                             <Image
                                 src={lostItemPost.image.url}
                                 alt={lostItemPost.name ?? "Lost item"}
@@ -135,10 +142,10 @@ export default function LostItemCard({
                         </div>
 
                         {/* CONTACT */}
-                        <div className="mt-auto pb-4 px-4 text-sm text-gray-400 border-t border-gray-100 pt-3">
+                        {/* <div className="mt-auto pb-4 px-4 text-sm text-gray-400 border-t border-gray-100 pt-3">
                             Contact:{" "}
                             <span className="text-gray-600">{contact}</span>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

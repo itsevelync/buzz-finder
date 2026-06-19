@@ -8,7 +8,9 @@ import Link from "next/link";
 import Image from "next/image";
 import {
     Dispatch,
+    useCallback,
     SetStateAction,
+    UIEvent,
     useEffect,
     useMemo,
     useRef,
@@ -16,6 +18,8 @@ import {
 } from "react";
 import { pusherClient } from "@/lib/pusherClient";
 import { markAsRead } from "@/actions/Chat";
+
+const MESSAGE_PAGE_SIZE = 10;
 
 type ChatWindowProps = {
     conversationItems: ConversationSummary[];
@@ -28,7 +32,31 @@ type ChatWindowProps = {
     setPendingConversation: Dispatch<
         SetStateAction<ConversationSummary | null>
     >;
+    messageCache: Record<string, ChatMessageSummary[]>;
+    setMessageCache: Dispatch<
+        SetStateAction<Record<string, ChatMessageSummary[]>>
+    >;
 };
+
+function dedupeAndSortMessages(messages: ChatMessageSummary[]) {
+    const messagesById = new Map<string, ChatMessageSummary>();
+
+    for (const message of messages) {
+        messagesById.set(message._id, message);
+    }
+
+    return Array.from(messagesById.values()).sort((left, right) => {
+        const timeDifference =
+            new Date(left.createdAt).getTime() -
+            new Date(right.createdAt).getTime();
+
+        if (timeDifference !== 0) {
+            return timeDifference;
+        }
+
+        return left._id.localeCompare(right._id);
+    });
+}
 
 export default function ChatWindow({
     conversationItems,
@@ -39,12 +67,18 @@ export default function ChatWindow({
     setConversationList,
     pendingConversation,
     setPendingConversation,
+    messageCache,
+    setMessageCache,
 }: ChatWindowProps) {
     const [messages, setMessages] = useState<ChatMessageSummary[]>([]);
     const [draftMessage, setDraftMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+    const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
+    const [hasMoreOlderMessages, setHasMoreOlderMessages] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const messagesScrollContainerRef = useRef<HTMLDivElement | null>(null);
+    const scrollBehaviorRef = useRef<"auto" | "smooth" | null>(null);
 
     const messageGroups = useMemo(() => {
         const groups: { time: string; items: ChatMessageSummary[] }[] = [];
@@ -72,28 +106,134 @@ export default function ChatWindow({
         return groups;
     }, [messages]);
 
-    const loadMessages = async (conversationId: string) => {
-        if (conversationId.startsWith("pending-")) {
-            setMessages([]);
-            return;
-        }
+    const updateCachedMessages = useCallback(
+        (conversationId: string, nextMessages: ChatMessageSummary[]) => {
+            setMessageCache((current) => ({
+                ...current,
+                [conversationId]: dedupeAndSortMessages(nextMessages),
+            }));
+        },
+        [setMessageCache],
+    );
 
-        setIsLoadingMessages(true);
+    const fetchMessagePage = useCallback(
+        async (
+            conversationId: string,
+            options?: { before?: string; limit?: number },
+        ) => {
+            const searchParams = new URLSearchParams();
+            searchParams.set(
+                "limit",
+                String(options?.limit ?? MESSAGE_PAGE_SIZE),
+            );
 
-        try {
-            const response = await fetch(`/api/messages/${conversationId}`);
+            if (options?.before) {
+                searchParams.set("before", options.before);
+            }
+
+            const response = await fetch(
+                `/api/messages/${conversationId}?${searchParams.toString()}`,
+            );
 
             if (!response.ok) {
                 throw new Error("Failed to fetch messages");
             }
 
-            const data = (await response.json()) as ChatMessageSummary[];
-            setMessages(data);
+            return (await response.json()) as ChatMessageSummary[];
+        },
+        [],
+    );
+
+    const loadMessages = useCallback(
+        async (conversationId: string) => {
+            if (conversationId.startsWith("pending-")) {
+                setMessages([]);
+                setHasMoreOlderMessages(false);
+                return;
+            }
+
+            setIsLoadingMessages(true);
+
+            try {
+                const cachedMessages = messageCache[conversationId];
+
+                if (cachedMessages) {
+                    setMessages(cachedMessages);
+                    setHasMoreOlderMessages(
+                        cachedMessages.length >= MESSAGE_PAGE_SIZE,
+                    );
+                    scrollBehaviorRef.current = "auto";
+                    return;
+                }
+
+                const data = await fetchMessagePage(conversationId);
+                setMessages(data);
+                setHasMoreOlderMessages(data.length >= MESSAGE_PAGE_SIZE);
+                updateCachedMessages(conversationId, data);
+                scrollBehaviorRef.current = "smooth";
+            } catch (error) {
+                console.error(error);
+                setMessages([]);
+                setHasMoreOlderMessages(false);
+            } finally {
+                setIsLoadingMessages(false);
+            }
+        },
+        [fetchMessagePage, messageCache, updateCachedMessages],
+    );
+
+    const loadOlderMessages = async () => {
+        if (
+            !activeConversationId ||
+            activeConversationId.startsWith("pending-") ||
+            isLoadingMessages ||
+            isLoadingOlderMessages ||
+            !hasMoreOlderMessages ||
+            messages.length === 0
+        ) {
+            return;
+        }
+
+        const oldestMessage = messages[0];
+        const scrollContainer = messagesScrollContainerRef.current;
+        const previousScrollHeight = scrollContainer?.scrollHeight ?? 0;
+        const previousScrollTop = scrollContainer?.scrollTop ?? 0;
+
+        setIsLoadingOlderMessages(true);
+
+        try {
+            const olderMessages = await fetchMessagePage(activeConversationId, {
+                before: oldestMessage.createdAt,
+            });
+
+            if (olderMessages.length === 0) {
+                setHasMoreOlderMessages(false);
+                return;
+            }
+
+            setMessages((current) =>
+                dedupeAndSortMessages([...olderMessages, ...current]),
+            );
+
+            if (olderMessages.length < MESSAGE_PAGE_SIZE) {
+                setHasMoreOlderMessages(false);
+            }
+
+            scrollBehaviorRef.current = null;
+
+            requestAnimationFrame(() => {
+                if (!scrollContainer) {
+                    return;
+                }
+
+                const nextScrollHeight = scrollContainer.scrollHeight;
+                scrollContainer.scrollTop =
+                    nextScrollHeight - previousScrollHeight + previousScrollTop;
+            });
         } catch (error) {
             console.error(error);
-            setMessages([]);
         } finally {
-            setIsLoadingMessages(false);
+            setIsLoadingOlderMessages(false);
         }
     };
 
@@ -105,18 +245,11 @@ export default function ChatWindow({
         );
 
         const handleNewMessage = (message: ChatMessageSummary) => {
-            setMessages((current) => {
-                if (
-                    current.some(
-                        (existingMessage) =>
-                            existingMessage._id === message._id,
-                    )
-                ) {
-                    return current;
-                }
+            scrollBehaviorRef.current = "smooth";
 
-                return [...current, message];
-            });
+            setMessages((current) =>
+                dedupeAndSortMessages([...current, message]),
+            );
 
             if (
                 message.conversationId === activeConversationId &&
@@ -156,14 +289,31 @@ export default function ChatWindow({
     useEffect(() => {
         if (!activeConversationId) {
             setMessages([]);
+            setHasMoreOlderMessages(true);
             return;
         }
 
         void loadMessages(activeConversationId);
-    }, [activeConversationId]);
+    }, [activeConversationId, loadMessages]);
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        // If no scroll was requested, don't do anything
+        if (!scrollBehaviorRef.current) return;
+
+        const currentBehavior = scrollBehaviorRef.current;
+
+        const timer = setTimeout(() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({
+                    behavior: currentBehavior,
+                });
+
+                // Clear the request so it doesn't fire aggressively on unrelated re-renders
+                scrollBehaviorRef.current = null;
+            }
+        }, 50);
+
+        return () => clearTimeout(timer);
     }, [messages]);
 
     const upsertConversation = (nextConversation: ConversationSummary) => {
@@ -178,6 +328,12 @@ export default function ChatWindow({
                     new Date(left.lastMessageAt).getTime(),
             );
         });
+    };
+
+    const handleMessageScroll = (event: UIEvent<HTMLDivElement>) => {
+        if (event.currentTarget.scrollTop <= 80) {
+            void loadOlderMessages();
+        }
     };
 
     const activeConversation = useMemo(() => {
@@ -331,23 +487,16 @@ export default function ChatWindow({
                         {activePartner ? (
                             <Link href={`user/${activePartner.username}`}>
                                 <div className="flex items-center gap-3">
-                                    <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-buzz-blue/10 text-buzz-blue">
-                                        {activePartner.image ? (
-                                            <Image
-                                                src={activePartner.image}
-                                                alt={activePartner.name}
-                                                width={50}
-                                                height={50}
-                                                className="h-full w-full rounded-full object-cover"
-                                            />
-                                        ) : (
-                                            <span className="text-sm font-semibold">
-                                                {activePartner.name
-                                                    ?.slice(0, 1)
-                                                    .toUpperCase() ?? "B"}
-                                            </span>
-                                        )}
-                                    </div>
+                                    <Image
+                                        src={
+                                            activePartner.image ||
+                                            "/default-icon.svg"
+                                        }
+                                        alt={activePartner.name}
+                                        width={50}
+                                        height={50}
+                                        className="h-12 w-12 rounded-full object-cover"
+                                    />
 
                                     <div>
                                         <h2 className="text-xl font-semibold text-buzz-blue">
@@ -368,13 +517,25 @@ export default function ChatWindow({
                         )}
                     </header>
 
-                    <div className="flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(248,250,252,0.98))] px-4 py-5 md:px-6">
+                    <div
+                        ref={messagesScrollContainerRef}
+                        onScroll={handleMessageScroll}
+                        className="flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.9),rgba(248,250,252,0.98))] px-4 py-5 md:px-6"
+                    >
                         <div className="space-y-3">
                             {isLoadingMessages && (
                                 <div className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-500">
                                     Loading messages...
                                 </div>
                             )}
+
+                            {!isLoadingMessages &&
+                                isLoadingOlderMessages &&
+                                messages.length > 0 && (
+                                    <div className="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-500">
+                                        Loading older messages...
+                                    </div>
+                                )}
 
                             {!isLoadingMessages && messages.length === 0 && (
                                 <div className="mx-auto mt-16 max-w-md text-center text-sm text-slate-500">
@@ -408,7 +569,7 @@ export default function ChatWindow({
                                                         className={`flex flex-col w-full ${isMine ? "items-end" : "items-start"}`}
                                                     >
                                                         <div
-                                                            className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm md:max-w-[68%] ${
+                                                            className={`max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed md:max-w-[68%] ${
                                                                 isMine
                                                                     ? "rounded-br-xs bg-buzz-blue text-white"
                                                                     : "rounded-bl-xs border border-slate-200 bg-white text-slate-800"
@@ -463,7 +624,7 @@ export default function ChatWindow({
                             }
                             rows={4}
                             disabled={!activeConversationId || isSending}
-                            className="relative w-full resize-none text-sm text-slate-700 placeholder:text-slate-400 disabled:cursor-not-allowed"
+                            className="relative w-full border rounded border-foreground/20 p-2 resize-none text-sm text-slate-700 placeholder:text-slate-400 disabled:cursor-not-allowed"
                         />
                         <button
                             type="submit"

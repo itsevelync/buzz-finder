@@ -18,6 +18,7 @@ type ChatNewConversationSearchProps = {
         SetStateAction<ConversationSummary | null>
     >;
     setActiveConversationId: Dispatch<SetStateAction<string | null>>;
+    setIsSearching: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function ChatNewConversationSearch({
@@ -27,10 +28,12 @@ export default function ChatNewConversationSearch({
     currentUser,
     setPendingConversation,
     setActiveConversationId,
+    setIsSearching,
 }: ChatNewConversationSearchProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUserIndex, setSelectedUserIndex] = useState(0);
     const searchOptionRefs = useRef<(HTMLButtonElement | null)[]>([]);
+    const searchContainerRef = useRef<HTMLDivElement | null>(null);
 
     const sortedUsers = useMemo(
         () =>
@@ -107,6 +110,7 @@ export default function ChatNewConversationSearch({
 
     const selectSearchUser = (userId: string) => {
         void startConversation(userId);
+        setIsSearching(false);
         setSearchTerm("");
         setSelectedUserIndex(0);
     };
@@ -137,12 +141,30 @@ export default function ChatNewConversationSearch({
         setActiveConversationId(pendingId);
     };
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                searchContainerRef.current &&
+                !searchContainerRef.current.contains(event.target as Node)
+            ) {
+                setSearchTerm("");
+                setSelectedUserIndex(0);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
     return (
         <>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
                 New conversation
             </p>
-            <div className="relative mt-2">
+            <div ref={searchContainerRef} className="relative mt-2">
                 <input
                     name="search-users"
                     type="search"
@@ -214,23 +236,16 @@ export default function ChatNewConversationSearch({
                                                 : "border-transparent bg-slate-50 hover:border-buzz-gold/40 hover:bg-white"
                                         }`}
                                     >
-                                        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-buzz-blue/10 text-sm font-semibold text-buzz-blue">
-                                            {user.image ? (
-                                                <Image
-                                                    src={user.image}
-                                                    alt={user.name}
-                                                    width={50}
-                                                    height={50}
-                                                    className="h-full w-full rounded-full object-cover"
-                                                />
-                                            ) : (
-                                                <span>
-                                                    {user.name
-                                                        .slice(0, 1)
-                                                        .toUpperCase()}
-                                                </span>
-                                            )}
-                                        </div>
+                                        <Image
+                                            src={
+                                                user.image ||
+                                                "/default-icon.svg"
+                                            }
+                                            alt={user.name}
+                                            width={50}
+                                            height={50}
+                                            className="h-11 w-11 rounded-full object-cover"
+                                        />
 
                                         <div className="min-w-0 flex-1">
                                             <p className="truncate font-semibold text-slate-800">

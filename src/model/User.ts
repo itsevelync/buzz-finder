@@ -22,6 +22,10 @@ const UserSchema = new Schema(
             unique: true,
             match: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
         },
+        hideEmail: {
+            type: Boolean,
+            default: false,
+        },
         username: {
             required: true,
             type: String,
@@ -56,8 +60,12 @@ const UserSchema = new Schema(
     { timestamps: true }
 );
 
-export type User = InferSchemaType<typeof UserSchema> & {
+type BaseUser = InferSchemaType<typeof UserSchema>;
+
+export type User = Omit<BaseUser, "email" | "hideEmail"> & {
     _id: string;
+    email?: string;
+    hideEmail?: boolean;
 };
 
 export default mongoose.models?.User ??

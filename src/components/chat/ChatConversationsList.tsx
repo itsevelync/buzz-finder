@@ -86,23 +86,18 @@ export default function ChatConversationsList({
                             }`}
                         >
                             {/* Avatar Section */}
-                            <div className="relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-buzz-gold/15 text-sm font-semibold text-buzz-blue">
-                                {conversation.partner?.image ? (
-                                    <Image
-                                        src={conversation.partner.image}
-                                        alt={conversation.partner.name}
-                                        width={50}
-                                        height={50}
-                                        className="h-full w-full rounded-full object-cover"
-                                    />
-                                ) : (
-                                    <span>
-                                        {conversation.partner?.name
-                                            ?.slice(0, 1)
-                                            ?.toUpperCase() ?? "?"}
-                                    </span>
-                                )}
-                            </div>
+                            <Image
+                                src={
+                                    conversation.partner?.image ||
+                                    "/default-icon.svg"
+                                }
+                                alt={
+                                    conversation.partner?.name || "Unknown user"
+                                }
+                                width={50}
+                                height={50}
+                                className="h-11 w-11 rounded-full object-cover"
+                            />
 
                             {/* Content Section */}
                             <div className="min-w-0 flex-1">

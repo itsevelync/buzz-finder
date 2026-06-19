@@ -6,11 +6,9 @@ import LostFoundSelector from "./LostFoundSelector";
 import { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 import ItemList from "./ItemList";
-import SearchBar from "../ui/SearchBar";
 import PostList from "./PostList";
-import Link from "next/link";
-import { FaPlus } from "react-icons/fa";
-import { filterActiveItems } from "@/actions/ItemFilter";
+import SearchFilters from "../ui/SearchFilters";
+import { archiveOldItems } from "@/actions/ItemFilter";
 
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
@@ -23,8 +21,11 @@ export default function LostFoundDashboardContainer() {
     const [items, setItems] = useState<PlainItem[]>([]);
     const [lostItemPosts, setLostItemPosts] = useState<LostItemPost[]>([]);
 
-    const [filteredItems, setFilteredItems] = useState<PlainItem[]>([]);
-    const [filteredPosts, setFilteredPosts] = useState<LostItemPost[]>([]);
+    const [searchedPosts, setSearchedPosts] = useState<LostItemPost[]>([]);
+    const [displayPosts, setDisplayPosts] = useState<LostItemPost[]>([]);
+
+    const [searchedItems, setSearchedItems] = useState<PlainItem[]>([]);
+    const [displayItems, setDisplayItems] = useState<PlainItem[]>([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -35,8 +36,8 @@ export default function LostFoundDashboardContainer() {
                 setLoading(true);
 
                 const [itemsRes, postsRes] = await Promise.all([
-                    fetch("/api/item"),
-                    fetch("/api/lost-item-post"),
+                    fetch("/api/items"),
+                    fetch("/api/lost-item-posts"),
                 ]);
 
                 if (!itemsRes.ok || !postsRes.ok) {
@@ -48,11 +49,17 @@ export default function LostFoundDashboardContainer() {
                     postsRes.json(),
                 ]);
 
-                setItems(itemsData);
-                setLostItemPosts(postsData);
+                const items = archiveOldItems(itemsData);
+                const posts = postsData;
 
-                setFilteredItems(filterActiveItems(itemsData));
-                setFilteredPosts(postsData);
+                setItems(items);
+                setLostItemPosts(posts);
+
+                setSearchedPosts(posts);
+                setDisplayPosts(posts);
+
+                setSearchedItems(items);
+                setDisplayItems(items);
             } catch (err) {
                 console.error(err);
                 setError(true);
@@ -76,58 +83,46 @@ export default function LostFoundDashboardContainer() {
     return (
         <div>
             <div className="flex flex-col justify-start align-middle w-full">
+                <LostFoundSelector
+                    lostItemsSelected={lostItemsSelected}
+                    setLostItemsSelected={setLostItemsSelected}
+                />
                 <div className="sticky top-0 z-10 bg-white">
-                    <LostFoundSelector
-                        lostItemsSelected={lostItemsSelected}
-                        setLostItemsSelected={setLostItemsSelected}
-                    />
-
                     {lostItemsSelected ? (
-                        <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg sticky top-0">
-                            <SearchBar<LostItemPost>
-                                placeholder="Search by name or description"
+                        <div className="bg-white shadow-md rounded-lg w-full">
+                            <SearchFilters<LostItemPost>
                                 items={lostItemPosts}
-                                setFilteredItems={setFilteredPosts}
+                                searchedItems={searchedPosts}
+                                setSearchedItems={setSearchedPosts}
+                                setFilteredItems={setDisplayPosts}
+                                displayItems={displayPosts}
+                                setDisplayItems={setDisplayPosts}
                                 searchableFields={[
                                     "name",
                                     "description",
-                                    "lostDate",
-                                    "category",
+                                    "locationDescription",
                                 ]}
+                                searchPlaceholder="Search lost items"
+                                isLostItemPost
                             />
-
-                            <Link
-                                className="hidden sm:block"
-                                href="/report-item?type=lost"
-                            >
-                                <button className="px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
-                                    <FaPlus /> Post
-                                </button>
-                            </Link>
                         </div>
                     ) : (
-                        <div className="flex gap-2 p-4 bg-white shadow-md rounded-lg">
-                            <SearchBar<PlainItem>
-                                placeholder="Search by name, description, or location"
-                                items={filterActiveItems(items)}
-                                setFilteredItems={setFilteredItems}
+                        <div className="bg-white shadow-md rounded-lg w-full">
+                            <SearchFilters<PlainItem>
+                                items={items}
+                                searchedItems={searchedItems}
+                                setSearchedItems={setSearchedItems}
+                                setFilteredItems={setDisplayItems}
+                                displayItems={displayItems}
+                                setDisplayItems={setDisplayItems}
                                 searchableFields={[
                                     "name",
                                     "description",
                                     "retrievalDescription",
-                                    "category",
                                     "locationDescription",
                                 ]}
+                                searchPlaceholder="Search found items"
                             />
-
-                            <Link
-                                className="hidden sm:block"
-                                href="/report-item?type=found"
-                            >
-                                <button className="whitespace-nowrap px-6 py-2 bg-buzz-gold rounded-full text-white flex items-center gap-2">
-                                    <FaPlus /> New Item
-                                </button>
-                            </Link>
                         </div>
                     )}
                 </div>
@@ -138,9 +133,9 @@ export default function LostFoundDashboardContainer() {
                     ) : error ? (
                         <div className="p-5">Error loading items</div>
                     ) : lostItemsSelected ? (
-                        <PostList lostItemPosts={filteredPosts} columns={2} />
+                        <PostList lostItemPosts={displayPosts} columns={2} />
                     ) : (
-                        <ItemList items={filteredItems} />
+                        <ItemList items={displayItems} />
                     )}
                 </div>
             </div>

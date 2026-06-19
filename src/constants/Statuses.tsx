@@ -1,12 +1,21 @@
+import { LuBox, LuHand, LuScanSearch, LuSearchX } from "react-icons/lu";
+
 export const statuses = {
     unclaimed: {
         label: "Unclaimed",
+        icon: LuScanSearch,
     },
     claimed: {
         label: "Claimed",
+        icon: LuHand,
     },
     gone: {
         label: "No Longer There",
+        icon: LuSearchX,
+    },
+    archived: {
+        label: "Archived",
+        icon: LuBox,
     },
 };
 

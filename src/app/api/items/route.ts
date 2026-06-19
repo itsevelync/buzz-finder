@@ -11,7 +11,7 @@ import mongoose, { Types } from "mongoose";
  * 
  */
 export async function GET(req: NextRequest) {
-    console.log("GET request received at /api/item");
+    console.log("GET request received at /api/items");
     // Searching for specific item by id
     const id = req.nextUrl.searchParams.get("_id");
     const personFound = req.nextUrl.searchParams.get("personFound");
@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
         return new Response(JSON.stringify(newItem), { status: 201 });
     } catch (e: unknown) {
         if (e instanceof Error) {
-            console.error("POST /api/item error:", e);
+            console.error("POST /api/items error:", e);
             return new Response(JSON.stringify({ error: e.message }), { status: 500 });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/item." }), { status: 500 })
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/items." }), { status: 500 })
 
     }
 }
@@ -75,7 +75,7 @@ export async function PUT(req: NextRequest) {
         if (e instanceof Error) {
             return new Response(JSON.stringify({ error: e.message }), { status: 500 });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at PUT /api/item." }), { status: 500 })
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at PUT /api/items." }), { status: 500 })
     }
 }
 
@@ -95,7 +95,7 @@ export async function DELETE(req: NextRequest) {
         if (e instanceof Error) {
             return new Response(JSON.stringify({ error: e.message }), { status: 500 });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at DELETE /api/item." }), { status: 500 })
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at DELETE /api/items." }), { status: 500 })
     }
 }
 
@@ -120,6 +120,6 @@ export async function PATCH(req: NextRequest) {
         if (e instanceof Error) {
             return new Response(JSON.stringify({ error: e.message }), { status: 500 });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at PATCH /api/item." }), { status: 500 })
+        return new Response(JSON.stringify({ error: "An unexpected error occurred at PATCH /api/items." }), { status: 500 })
     }
 }

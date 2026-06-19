@@ -1,13 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef, TouchEvent } from "react";
+import {
+    useEffect,
+    useMemo,
+    useState,
+    useRef,
+    TouchEvent,
+    useCallback,
+} from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { pusherClient } from "@/lib/pusherClient";
-import { ChatUserSummary, ConversationSummary } from "@/lib/chat";
+import {
+    ChatMessageSummary,
+    ChatUserSummary,
+    ConversationSummary,
+} from "@/lib/chat";
 import ChatWindow from "./ChatWindow";
 import ChatConversationsList from "./ChatConversationsList";
 import ChatNewConversationSearch from "./ChatNewConversationSearch";
 import { LuSquarePen, LuX } from "react-icons/lu";
+
+const MESSAGE_PAGE_SIZE = 10;
 
 type ChatPageClientProps = {
     currentUser: ChatUserSummary;
@@ -30,7 +43,12 @@ export default function ChatPageClient({
         string | null
     >(initialConversationId);
     const [conversationList, setConversationList] = useState(conversations);
+    const [messageCache, setMessageCache] = useState<
+        Record<string, ChatMessageSummary[]>
+    >({});
     const [isSearching, setIsSearching] = useState(false);
+    const activeConversationIdRef = useRef<string | null>(activeConversationId);
+    const messageCacheRef = useRef(messageCache);
 
     const [pendingConversation, setPendingConversation] =
         useState<ConversationSummary | null>(() => {
@@ -75,17 +93,73 @@ export default function ChatPageClient({
         [conversationList, pendingConversation],
     );
 
-    const refreshConversations = async () => {
+    useEffect(() => {
+        activeConversationIdRef.current = activeConversationId;
+    }, [activeConversationId]);
+
+    useEffect(() => {
+        messageCacheRef.current = messageCache;
+    }, [messageCache]);
+
+    const fetchMessagePreview = useCallback(async (conversationId: string) => {
+        if (conversationId.startsWith("pending-")) {
+            return;
+        }
+
+        if (
+            conversationId === activeConversationIdRef.current &&
+            (messageCacheRef.current[conversationId]?.length ?? 0) >
+                MESSAGE_PAGE_SIZE
+        ) {
+            return;
+        }
+
+        const response = await fetch(
+            `/api/messages/${conversationId}?limit=${MESSAGE_PAGE_SIZE}`,
+        );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const messages = (await response.json()) as ChatMessageSummary[];
+
+        setMessageCache((current) => ({
+            ...current,
+            [conversationId]: messages,
+        }));
+    }, []);
+
+    const refreshConversations = useCallback(async () => {
         const response = await fetch("/api/conversations");
         if (!response.ok) return;
         const data = (await response.json()) as ConversationSummary[];
         setConversationList(data);
-    };
+    }, []);
+
+    useEffect(() => {
+        const conversationIds = conversationList
+            .map((conversation) => conversation._id)
+            .filter((conversationId) => !conversationId.startsWith("pending-"));
+
+        void Promise.all(
+            conversationIds.map((conversationId) =>
+                fetchMessagePreview(conversationId),
+            ),
+        );
+    }, [conversationList, fetchMessagePreview]);
 
     useEffect(() => {
         const inboxChannel = pusherClient.subscribe(`inbox-${currentUser._id}`);
-        const handleInboxUpdate = () => {
+        const handleInboxUpdate = (payload?: { conversationId?: string }) => {
             void refreshConversations();
+
+            if (
+                payload?.conversationId &&
+                payload.conversationId !== activeConversationId
+            ) {
+                void fetchMessagePreview(payload.conversationId);
+            }
         };
 
         inboxChannel.bind("conversation-updated", handleInboxUpdate);
@@ -94,7 +168,12 @@ export default function ChatPageClient({
             inboxChannel.unbind("conversation-updated", handleInboxUpdate);
             pusherClient.unsubscribe(`inbox-${currentUser._id}`);
         };
-    }, [currentUser._id]);
+    }, [
+        activeConversationId,
+        currentUser._id,
+        fetchMessagePreview,
+        refreshConversations,
+    ]);
 
     useEffect(() => {
         const currentIdInUrl = searchParams.get("id");
@@ -183,6 +262,7 @@ export default function ChatPageClient({
                                 setActiveConversationId={
                                     setActiveConversationId
                                 }
+                                setIsSearching={setIsSearching}
                             />
                         </div>
                     )}
@@ -217,6 +297,8 @@ export default function ChatPageClient({
                     setConversationList={setConversationList}
                     pendingConversation={pendingConversation}
                     setPendingConversation={setPendingConversation}
+                    messageCache={messageCache}
+                    setMessageCache={setMessageCache}
                 />
             </div>
         </div>

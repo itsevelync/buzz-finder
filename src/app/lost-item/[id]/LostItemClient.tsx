@@ -55,6 +55,7 @@ export default function LostItemClient({
 
     const formattedLostDate = displayDate.toLocaleDateString(undefined, {
         dateStyle: "long",
+        timeZone: "UTC",
     });
 
     const isOwner =
@@ -62,7 +63,9 @@ export default function LostItemClient({
 
     async function getItemNotes(itemId: string) {
         try {
-            const res = await fetch(`/api/lost-item-post/${itemId}/item-note`);
+            const res = await fetch(
+                `/api/lost-item-posts/${itemId}/item-notes`,
+            );
 
             if (!res.ok) {
                 console.error(
@@ -203,7 +206,7 @@ export default function LostItemClient({
                         <div className="border-t border-gray-100 flex justify-center">
                             <EditDeleteBtns
                                 editURL={`/lost-item/${lost_item._id}/edit`}
-                                deleteAPIRoute={`/api/lost-item-post/${lost_item._id}`}
+                                deleteAPIRoute={`/api/lost-item-posts/${lost_item._id}`}
                                 redirect="/dashboard?tab=lost"
                             />
                         </div>
@@ -260,7 +263,10 @@ export default function LostItemClient({
                     </div>
 
                     {/* Item Notes */}
-                    <ItemNotes itemNotes={itemNotes} setItemNotes={setItemNotes} />
+                    <ItemNotes
+                        itemNotes={itemNotes}
+                        setItemNotes={setItemNotes}
+                    />
                 </div>
             </div>
         </div>

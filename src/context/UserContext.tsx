@@ -18,7 +18,7 @@ type UserContextUser = Pick<
     User,
     "_id" | "name" | "username" | "email" | "image"
 > &
-    Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram" | "linkedIn">>;
+    Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram" | "linkedIn" | "hideEmail">>;
 
 interface UserContextValue {
     user: UserContextUser | null;
@@ -41,7 +41,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
         const fetchUser = async (userId: string) => {
             try {
-                const res = await fetch(`/api/user/${userId}`, {
+                const res = await fetch(`/api/users/${userId}`, {
                     signal: controller.signal,
                 });
                 if (res.ok) {

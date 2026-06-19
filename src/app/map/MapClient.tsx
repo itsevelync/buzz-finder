@@ -6,7 +6,6 @@ import type { PlainItem } from "@/model/Item";
 import { useState } from "react";
 import { LocationProvider } from "@/context/LocationContext";
 import { SelectedPinProvider } from "@/context/PinContext";
-import { useIsMobile } from "@/hooks/IsMobile";
 
 export default function MapClient({
     itemId,
@@ -16,30 +15,25 @@ export default function MapClient({
     items: PlainItem[];
 }) {
     const [filteredItems, setFilteredItems] = useState<PlainItem[]>(items);
-    const isMobile = useIsMobile(600);
 
-    const [currentPosition, setCurrentPosition] = useState<{
-        lat: number;
-        lng: number;
-    } | null>(null);
+    // Sidebar mobile height
+    const [height, setHeight] = useState(85);
 
     return (
-        <div className="w-full h-full flex">
+        <div className="w-full h-full flex relative overflow-hidden">
             <LocationProvider>
                 <SelectedPinProvider defaultSelectedId={itemId}>
-                    {!isMobile && (
-                        <ItemSidebar
-                            items={items}
-                            setFilteredItems={setFilteredItems}
-                            currentPosition={currentPosition}
-                        />
-                    )}
+                    <ItemSidebar
+                        items={items}
+                        setFilteredItems={setFilteredItems}
+                        height={height}
+                        setHeight={setHeight}
+                    />
                     <GoogleMap
                         width="100%"
                         height="100%"
                         items={filteredItems}
-                        currentPosition={currentPosition}
-                        setCurrentPosition={setCurrentPosition}
+                        setHeight={setHeight}
                     />
                 </SelectedPinProvider>
             </LocationProvider>

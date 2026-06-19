@@ -6,7 +6,6 @@ export function useIsMobile(maxWidth = 600) {
 
     useEffect(() => {
         const handleResize = () => {
-            console.log("Setting Inner Width: ", window.innerWidth);
             setIsMobile(window.innerWidth < maxWidth);
         };
 

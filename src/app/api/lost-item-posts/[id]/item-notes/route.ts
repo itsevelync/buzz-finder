@@ -11,12 +11,24 @@ export async function GET(
 
         const { id } = await params;
 
-        const notes = await ItemNoteModel.find({
+        let notes = await ItemNoteModel.find({
             lostItemId: id,
         })
             .populate("user")
             .sort({ createdAt: 1 })
             .lean<ItemNote[]>();
+
+        notes = notes.map(note => {
+            if (note.user) {
+                if (note.user.hideEmail) {
+                    delete note.user.email;
+                }
+
+                delete note.user.hideEmail;
+            }
+
+            return note;
+        });
 
         const noteMap = new Map();
 
@@ -49,10 +61,7 @@ export async function GET(
         return Response.json(rootNotes);
     } catch (e: unknown) {
         if (e instanceof Error) {
-            console.error(
-                "GET /api/item-note error:",
-                e,
-            );
+            console.error("GET /api/item-notes error:", e);
 
             return Response.json(
                 { error: e.message },
@@ -61,10 +70,7 @@ export async function GET(
         }
 
         return Response.json(
-            {
-                error:
-                    "An unexpected error occurred at GET /api/item-note.",
-            },
+            { error: "An unexpected error occurred at GET /api/item-notes." },
             { status: 500 },
         );
     }
