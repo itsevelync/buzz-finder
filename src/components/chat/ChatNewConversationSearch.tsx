@@ -17,7 +17,7 @@ type ChatNewConversationSearchProps = {
     setPendingConversation: Dispatch<
         SetStateAction<ConversationSummary | null>
     >;
-    setActiveConversationId: Dispatch<SetStateAction<string | null>>;
+    setActiveConversationId: (id: string | null) => void;
     setIsSearching: Dispatch<SetStateAction<boolean>>;
 };
 

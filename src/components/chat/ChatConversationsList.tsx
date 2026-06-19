@@ -1,5 +1,4 @@
 import { ChatMessageSummary, ConversationSummary } from "@/lib/chat";
-import { Dispatch, SetStateAction } from "react";
 import Image from "next/image";
 import { useUser } from "@/context/UserContext";
 import { markAsRead } from "@/actions/Chat";
@@ -7,16 +6,12 @@ import { markAsRead } from "@/actions/Chat";
 type ChatConversationsListProps = {
     conversationItems: ConversationSummary[];
     activeConversationId: string | null;
-    setPendingConversation: Dispatch<
-        SetStateAction<ConversationSummary | null>
-    >;
-    setActiveConversationId: (value: SetStateAction<string | null>) => void;
+    setActiveConversationId: (id: string | null) => void;
 };
 
 export default function ChatConversationsList({
     conversationItems,
     activeConversationId,
-    setPendingConversation,
     setActiveConversationId,
 }: ChatConversationsListProps) {
     const { user } = useUser();
@@ -72,13 +67,11 @@ export default function ChatConversationsList({
                         <button
                             key={conversation._id}
                             type="button"
-                            onClick={() => {
-                                if (!conversation._id.startsWith("pending-")) {
-                                    setPendingConversation(null);
-                                }
-                                setActiveConversationId(conversation._id);
-                                markAsRead(conversation._id);
-                            }}
+onClick={() => {
+            // Let the context handle clearing pending state and routing cleanly
+            setActiveConversationId(conversation._id);
+            markAsRead(conversation._id);
+        }}
                             className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
                                 isActive
                                     ? "border-buzz-blue bg-buzz-blue text-white shadow shadow-buzz-blue/20"
