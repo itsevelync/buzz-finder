@@ -130,7 +130,15 @@ export default function GoogleMap(props: {
                     onClick={() => props.setHeight(93)} // Sidebar mobile height
                 >
                     <Map
-                        defaultCenter={currentPosition}
+                        defaultCenter={
+                            selectedItem?.locationPin
+                                ? {
+                                      lat:
+                                          selectedItem.locationPin.lat + 0.002,
+                                      lng: selectedItem.locationPin.lng,
+                                  }
+                                : currentPosition
+                        }
                         defaultZoom={16}
                         style={{ height: props.height, width: props.width }}
                         // TODO: Figure out what TEMP_MAP_ID actually needs to be
@@ -272,12 +280,14 @@ function MapMarkerClusterer({
 
 function CurrentLocationButton() {
     const { currentPosition } = useUserLocation();
+    const { setSelectedId } = useSelectedPin();
     const map = useMap();
 
     function handleCenterClick() {
         if (!map) return;
         if (!currentPosition) return;
 
+        setSelectedId(null);
         map.panTo(currentPosition);
 
         if (map.getZoom() !== 16) {

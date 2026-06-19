@@ -132,7 +132,7 @@ export default function MobileSidebar({
             {/* Drag handle */}
             <div
                 onPointerDown={handleSheetDragStart}
-                className="h-3 flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0"
+                className="py-6 -my-4 h-3 flex items-center justify-center cursor-grab active:cursor-grabbing shrink-0"
             >
                 <div className="w-10 h-1.5 bg-gray-300 rounded-full" />
             </div>
@@ -143,9 +143,7 @@ export default function MobileSidebar({
                     setHeight(SNAP.FULL);
                 }}
             >
-                <div
-                    className={`shadow top-0 sticky bg-white z-10 ${height === SNAP.FULL ? "pointer-events-auto" : "pointer-events-none"}`}
-                >
+                <div className="shadow top-0 sticky bg-white z-10">
                     {/* Header (filters/search) */}
                     <SearchFilters<PlainItem>
                         items={items}
@@ -162,6 +160,9 @@ export default function MobileSidebar({
                         ]}
                         width={window.innerWidth}
                         isMap
+                        mobileSidebarHandleSheetDragStart={handleSheetDragStart}
+                        mobileSidebarHeight={height}
+                        mobileSidebarSnapFULL={SNAP.FULL}
                     />
                 </div>
             </div>

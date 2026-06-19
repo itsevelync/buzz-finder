@@ -15,7 +15,7 @@ export default function UserInfo({ user }: { user: User | undefined }) {
                 alt="User avatar"
                 width={24}
                 height={24}
-                className="h-5 sm:h-6 rounded-full"
+                className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
             />
             <p className="text-xs text-gray-600 font-medium">
                 Posted by{" "}

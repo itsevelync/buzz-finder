@@ -127,7 +127,7 @@ export default function LostItemClient({
                 <p className="text-gray-500 mb-2">{`Posted on ${formattedCreatedDate}`}</p>
 
                 <div className="flex flex-col items-center sm:flex-row gap-3 w-full">
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3 items-center my-1">
                         <p
                             style={{
                                 color: category.color,
