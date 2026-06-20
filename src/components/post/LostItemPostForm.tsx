@@ -14,24 +14,27 @@ import {
     LuMapPin,
 } from "react-icons/lu";
 import { useUser } from "@/context/UserContext";
-import { LostItemPost } from "@/model/LostItemPost";
 import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useUserLocation } from "@/context/UserLocationContext";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface LostItemPostFormProps {
-    item?: LostItemPost;
+    id?: string;
 }
 
-export default function LostItemPostForm({ item }: LostItemPostFormProps) {
+export default function LostItemPostForm({ id }: LostItemPostFormProps) {
     const router = useRouter();
     const { user } = useUser();
+    const { lostItemPosts, refresh, loading } = usePostAndItem();
     const { currentPosition, currPositionFetched } = useUserLocation();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const item = lostItemPosts.find((i) => i._id.toString() === id);
     const userId = user?._id;
+
     const [useAccountInfo, setUseAccountInfo] = useState(
         item ? !!item.user : !!userId,
     );
@@ -169,7 +172,7 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
                     setFile(null);
                     router.push("/dashboard?tab=lost");
                 }
-                router.refresh();
+                refresh();
             } else {
                 const errData = await res.json();
                 toast.error(
@@ -184,6 +187,10 @@ export default function LostItemPostForm({ item }: LostItemPostFormProps) {
         } finally {
             setIsSubmitting(false);
         }
+    }
+
+    if (loading || !lostItemPosts?.length) {
+        return <div>Loading...</div>;
     }
 
     return (

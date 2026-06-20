@@ -4,7 +4,6 @@ import LocationSelectMap from "@/components/maps/LocationSelectMap";
 import ImageUploader from "@/components/report-item/ImageUploader";
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { PlainItem } from "@/model/Item";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
@@ -13,15 +12,19 @@ import { FaChevronLeft } from "react-icons/fa";
 import { useUser } from "@/context/UserContext";
 import { toast } from "react-toastify";
 import { useUserLocation } from "@/context/UserLocationContext";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface FoundItemFormProps {
-    item?: PlainItem;
+    id?: string;
 }
 
-export default function FoundItemForm({ item }: FoundItemFormProps) {
+export default function FoundItemForm({ id }: FoundItemFormProps) {
     const router = useRouter();
     const { user } = useUser();
+    const { items, refresh } = usePostAndItem();
     const { currentPosition, currPositionFetched } = useUserLocation();
+
+    const item = items.find((i) => i._id.toString() === id);
     const userId = user?._id;
 
     const gtCampus = { lat: 33.778, lng: -84.398 };
@@ -84,7 +87,7 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
         console.log("Uploaded image:", uploadedImage);
 
         const form = e.target as HTMLFormElement;
-        const body: Partial<PlainItem> = {
+        const body = {
             name: (form.elements.namedItem("name") as HTMLInputElement).value,
             description: (
                 form.elements.namedItem("description") as HTMLInputElement
@@ -108,25 +111,23 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
                     "locationDescription",
                 ) as HTMLInputElement
             ).value,
+            image: uploadedImage ?? undefined,
+            personFound: useAccountInfo && userId ? userId : undefined,
+            contactInfo: !(useAccountInfo && userId)
+                ? {
+                      name: (
+                          form.elements.namedItem(
+                              "contactName",
+                          ) as HTMLInputElement
+                      ).value,
+                      details: (
+                          form.elements.namedItem(
+                              "contactDetails",
+                          ) as HTMLInputElement
+                      ).value,
+                  }
+                : undefined,
         };
-        if (uploadedImage) {
-            body.image = uploadedImage;
-        }
-
-        if (useAccountInfo && userId) {
-            body["personFound"] = userId;
-        } else {
-            body["contactInfo"] = {
-                name: (
-                    form.elements.namedItem("contactName") as HTMLInputElement
-                ).value,
-                details: (
-                    form.elements.namedItem(
-                        "contactDetails",
-                    ) as HTMLInputElement
-                ).value,
-            };
-        }
 
         try {
             const res = await fetch(
@@ -148,6 +149,7 @@ export default function FoundItemForm({ item }: FoundItemFormProps) {
                     toast.success("Item logged successfully");
                     router.push("/dashboard");
                 }
+                refresh();
             } else {
                 toast.error(
                     item ? "Error updating item" : "Error logging item",

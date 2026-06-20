@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { dbConnect } from "@/lib/mongo";
 import ItemNoteSchema from "@/model/ItemNote";
-import ItemNote from "@/model/ItemNote";
 
 /**
  * Creates a new item note in the database matching the body of the request.

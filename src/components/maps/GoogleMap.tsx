@@ -25,6 +25,9 @@ import SmallAdvancedMarker from "./SmallAdvancedMarker";
 import { MdMyLocation } from "react-icons/md";
 import { MarkerClusterer, Renderer } from "@googlemaps/markerclusterer";
 import { useUserLocation } from "@/context/UserLocationContext";
+import { LuRefreshCcw } from "react-icons/lu";
+import { usePostAndItem } from "@/context/PostAndItemContext";
+import { toast } from "react-toastify";
 
 const gtCampus = { lat: 33.7765, lng: -84.398 };
 
@@ -41,10 +44,16 @@ export default function GoogleMap(props: {
     width: string | number;
     items: PlainItem[];
     setHeight: Dispatch<SetStateAction<number>>;
+    SNAP: { COLLAPSED: number; FULL: number };
 }) {
+    const { refresh } = usePostAndItem();
     const { currentPosition } = useUserLocation();
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
+
+    useEffect(() => {
+        console.log("items changed", props.items);
+    }, [props.items]);
 
     const selectedItem: PlainItem | undefined = props.items.find(
         (item) => item._id.toString() === selectedId,
@@ -127,14 +136,13 @@ export default function GoogleMap(props: {
             <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
                 <div
                     style={{ height: props.height, width: props.width }}
-                    onClick={() => props.setHeight(93)} // Sidebar mobile height
+                    onClick={() => props.setHeight(props.SNAP.COLLAPSED)} // Sidebar mobile height
                 >
                     <Map
                         defaultCenter={
                             selectedItem?.locationPin
                                 ? {
-                                      lat:
-                                          selectedItem.locationPin.lat + 0.002,
+                                      lat: selectedItem.locationPin.lat + 0.002,
                                       lng: selectedItem.locationPin.lng,
                                   }
                                 : currentPosition
@@ -174,6 +182,18 @@ export default function GoogleMap(props: {
                                     Images
                                 </button>
                             </div>
+                        </MapControl>
+
+                        <MapControl position={ControlPosition.TOP_LEFT}>
+                            <button
+                                className="ml-3 mt-3 text-2xl p-2 bg-background rounded shadow text-buzz-blue hover:brightness-95"
+                                onClick={async () => {
+                                    await refresh();
+                                    toast.success("Refreshed map items!");
+                                }}
+                            >
+                                <LuRefreshCcw />
+                            </button>
                         </MapControl>
 
                         {currentPosition != gtCampus && (

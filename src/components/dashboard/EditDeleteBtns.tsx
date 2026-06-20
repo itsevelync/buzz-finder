@@ -7,6 +7,7 @@ import { LuPencil, LuTrash, LuTriangleAlert } from "react-icons/lu";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import { useState } from "react";
 import { useModal } from "@/context/ModalContext";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface EditDeleteBtnsProps {
     editURL: string;
@@ -19,6 +20,7 @@ export default function EditDeleteBtns({
     deleteAPIRoute,
     redirect = "/dashboard",
 }: EditDeleteBtnsProps) {
+    const { refresh } = usePostAndItem();
     const router = useRouter();
     const { openModal } = useModal();
     const [confirming, setConfirming] = useState(false);
@@ -37,6 +39,7 @@ export default function EditDeleteBtns({
             }
 
             toast.success("Item deleted successfully.");
+            refresh();
             router.push(redirect);
         } catch (error) {
             console.log(error);

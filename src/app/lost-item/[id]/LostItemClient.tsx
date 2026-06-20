@@ -1,6 +1,5 @@
 "use client";
 
-import { LostItemPost } from "@/model/LostItemPost";
 import Link from "next/link";
 import { categories } from "@/constants/Categories";
 import Image from "next/image";
@@ -25,18 +24,75 @@ import ItemNotes from "@/components/post/ItemNotes";
 import { useEffect, useState } from "react";
 import ShareModal from "@/components/post/ShareModal";
 import { useModal } from "@/context/ModalContext";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface LostItemClientProps {
-    lost_item: LostItemPost;
+    id: string;
     session: Session | null;
 }
 
-export default function LostItemClient({
-    lost_item,
-    session,
-}: LostItemClientProps) {
+export default function LostItemClient({ id, session }: LostItemClientProps) {
     const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
     const { openModal } = useModal();
+    const { lostItemPosts } = usePostAndItem();
+
+    const lost_item = lostItemPosts.find((i) => i._id.toString() === id);
+
+    async function getItemNotes(itemId: string) {
+        try {
+            const res = await fetch(
+                `/api/lost-item-posts/${itemId}/item-notes`,
+            );
+
+            if (!res.ok) {
+                console.error(
+                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
+                );
+            }
+
+            const data = await res.json();
+            setItemNotes(data);
+        } catch (error) {
+            console.error("Error fetching item:", error);
+        }
+    }
+
+    useEffect(() => {
+        getItemNotes(id.toString());
+    }, [id]);
+
+    function openShareModal() {
+        openModal(<ShareModal />);
+    }
+
+    function openResolveItemModal() {
+        openModal(
+            <ResolveItemModal
+                itemId={String(id)}
+                itemName={lost_item?.name ?? "this item"}
+            />,
+        );
+    }
+
+    if (!lost_item) {
+        return (
+            <div className="p-8 text-center max-w-xl m-auto h-full justify-center flex flex-col">
+                <h2 className="text-2xl font-bold text-foreground">
+                    Item Not Found
+                </h2>
+                <p className="text-foreground/80 mt-2">
+                    The item post you are looking for may have been deleted or
+                    resolved.
+                </p>
+                <Link
+                    href="/dashboard?tab=lost"
+                    className="mt-4 inline-block text-buzz-blue hover:underline"
+                >
+                    Return to dashboard
+                </Link>
+            </div>
+        );
+    }
 
     const category = categories[lost_item.category] || {
         label: "Unknown",
@@ -60,42 +116,6 @@ export default function LostItemClient({
 
     const isOwner =
         session?.user?._id && session?.user?._id === lost_item.user?._id;
-
-    async function getItemNotes(itemId: string) {
-        try {
-            const res = await fetch(
-                `/api/lost-item-posts/${itemId}/item-notes`,
-            );
-
-            if (!res.ok) {
-                console.error(
-                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
-                );
-            }
-
-            const data = await res.json();
-            setItemNotes(data);
-        } catch (error) {
-            console.error("Error fetching item:", error);
-        }
-    }
-
-    useEffect(() => {
-        getItemNotes(lost_item._id.toString());
-    }, [lost_item._id]);
-
-    function openShareModal() {
-        openModal(<ShareModal />);
-    }
-
-    function openResolveItemModal() {
-        openModal(
-            <ResolveItemModal
-                itemId={String(lost_item._id)}
-                itemName={lost_item.name ?? "this item"}
-            />,
-        );
-    }
 
     return (
         <div className="p-4 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">

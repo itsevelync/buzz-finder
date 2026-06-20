@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { FaHandPaper } from "react-icons/fa";
 import { statuses, ItemStatus } from "@/constants/Statuses";
 import { toast } from "react-toastify";
 import { useModal } from "@/context/ModalContext";
 import { LuMapPinCheckInside, LuSearchX } from "react-icons/lu";
 import ConfirmationModal from "../ui/ConfirmationModal";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface ItemStatusActionsProps {
     itemId: string;
@@ -20,7 +20,7 @@ export default function ItemStatusActions({
 }: ItemStatusActionsProps) {
     const { openModal, closeModal } = useModal();
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
+    const { refresh } = usePostAndItem();
 
     const handleUpdateStatus = async (
         newStatus: ItemStatus,
@@ -38,7 +38,7 @@ export default function ItemStatusActions({
 
             if (res.ok) {
                 closeModal();
-                router.refresh();
+                refresh();
 
                 if (!undoAction) {
                     toast.success(

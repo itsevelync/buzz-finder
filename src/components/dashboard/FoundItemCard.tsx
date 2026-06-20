@@ -59,11 +59,7 @@ export default function FoundItemCard({
                     >
                         {category.label ?? "N/A"}
                     </p>
-                    {item.retrievalDescription ? (
-                        <p>{item.retrievalDescription}</p>
-                    ) : item.locationDescription ? (
-                        <p>{item.locationDescription}</p>
-                    ) : item.description ? (
+                    {item.description ? (
                         <p>{item.description}</p>
                     ) : (
                         <p className="text-sm italic opacity-70">
