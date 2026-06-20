@@ -34,11 +34,8 @@ export default function PostOwnerContactInfo({
             const data = await response.json();
 
             let chatId = data.conversationId;
-            if (chatId) {
-                console.log("Found existing chat:", chatId);
-            } else {
+            if (!chatId) {
                 chatId = "pending-" + lost_item.user._id;
-                console.log("No chat exists yet between these two users.");
             }
             router.push("/chat?id=" + chatId);
         } catch {

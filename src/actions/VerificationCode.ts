@@ -3,9 +3,9 @@
 import VerificationCode, { IVerificationCode } from "@/model/VerificationCode";
 import { randomInt } from "node:crypto";
 import { dbConnect } from "@/lib/mongo";
-import { timingSafeEqual } from "node:crypto";
 import { SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo";
 import User from "@/model/User";
+import bcrypt from "bcryptjs";
 
 // Sends an email verification code to the user's email.
 export async function sendVerificationCode(email: string, name: string) {
@@ -62,16 +62,22 @@ export async function generateVerificationCode(email: string): Promise<IVerifica
         // Delete any existing verification codes for this user
         await VerificationCode.deleteMany({ email: email });
 
+        // Hash the code before storing
+        const hashedCode = await bcrypt.hash(code, 10);
+
         const verificationCode = new VerificationCode({
-            email: email,
-            code,
+            email,
+            code: hashedCode,
             // Code expires in 10 minutes
             expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
         await verificationCode.save();
 
-        return verificationCode;
+        return {
+            ...verificationCode.toObject(),
+            code,
+        } as IVerificationCode;
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error("Error generating verification code:", e);
@@ -89,23 +95,17 @@ export async function compareVerificationCode(email: string, code: string): Prom
         const codeDocument = await VerificationCode.findOne({ email: email }, {}, { sort: { createdAt: -1 } });
 
         if (!codeDocument) {
-            return { error: "No verification code found. Please request a new one." };
+            return { error: "No verification code found. Please refresh and try creating an account again." };
         }
 
         if (codeDocument.expiresAt < new Date()) {
-            return { error: "This verification code has expired. Please request a new one." };
+            return { error: "This verification code has expired. Please refresh and try creating an account again." };
         }
 
-        const a = Buffer.from(codeDocument.code, "utf-8");
-        const b = Buffer.from(code, "utf-8");
-
-        if (a.length !== b.length) {
-            // To maintain constant timing, perform a dummy operation
-            timingSafeEqual(a, Buffer.alloc(a.length));
-            return { error: "Invalid verification code." };
-        }
-
-        const codesMatch = timingSafeEqual(a, b);
+        const codesMatch = await bcrypt.compare(
+            code,
+            codeDocument.code
+        );
 
         if (codesMatch) {
             return { success: true };

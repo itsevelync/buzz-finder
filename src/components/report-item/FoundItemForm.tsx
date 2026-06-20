@@ -74,7 +74,7 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
 
             return image;
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -82,10 +82,8 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
-        console.log("Submitting form");
+        
         const uploadedImage = file ? await uploadImage() : item?.image;
-        console.log("Uploaded image:", uploadedImage);
-
         const form = e.target as HTMLFormElement;
         const body = {
             name: (form.elements.namedItem("name") as HTMLInputElement).value,

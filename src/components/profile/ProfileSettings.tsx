@@ -263,7 +263,6 @@ export default function ProfileSettings() {
             }
 
             const updatedUser = { ...user, ...values };
-            console.log(updatedUser);
             setUser(updatedUser);
 
             toast.success("Profile updated successfully");

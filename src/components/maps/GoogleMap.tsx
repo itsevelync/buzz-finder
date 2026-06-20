@@ -51,10 +51,6 @@ export default function GoogleMap(props: {
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
 
-    useEffect(() => {
-        console.log("items changed", props.items);
-    }, [props.items]);
-
     const selectedItem: PlainItem | undefined = props.items.find(
         (item) => item._id.toString() === selectedId,
     );

@@ -32,7 +32,6 @@ export default function UpdateProfileForm() {
         };
 
         const result = await updateUser(userID.toString(), values);
-        console.log(result);
 
         if (result.error) {
             setError(result.error);

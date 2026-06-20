@@ -28,7 +28,6 @@ export default function DeleteProfileModal() {
         };
 
         const result = await deleteUser(userID, values);
-        console.log(result);
 
         if (result.error) {
             setError(result.error);
@@ -55,7 +54,7 @@ export default function DeleteProfileModal() {
                 </button>
             </div>
             <p className="opacity-70 mb-4">
-                Permanently delete your BuzzFinder account? This action cannot
+                You are about to permanently delete your BuzzFinder account. This action cannot
                 be undone.
             </p>
 

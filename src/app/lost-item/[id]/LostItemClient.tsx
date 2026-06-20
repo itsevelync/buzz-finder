@@ -74,6 +74,10 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
         );
     }
 
+    if (!lostItemPosts.length) {
+        return <div>Loading...</div>;
+    }
+
     if (!lost_item) {
         return (
             <div className="p-8 text-center max-w-xl m-auto h-full justify-center flex flex-col">

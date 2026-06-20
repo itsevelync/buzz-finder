@@ -12,8 +12,6 @@ export async function markAsRead(conversationId: string) {
         );
 
         if (!res.ok) throw new Error("Failed to update read receipt");
-
-        console.log("Chat marked as read successfully!");
     } catch (err) {
         console.error(err);
     }

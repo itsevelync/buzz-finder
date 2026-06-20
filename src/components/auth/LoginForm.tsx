@@ -17,7 +17,6 @@ export default function LoginForm() {
         const formData = new FormData(event.currentTarget);
 
         const result = await doCredentialLogin(formData);
-        console.log(result);
 
         if (result.error) {
             setError(result.error);
