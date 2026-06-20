@@ -20,6 +20,7 @@ interface FormInputProps {
     disabled?: boolean;
     minLength?: number;
     maxLength?: number;
+    autoComplete?: string;
 }
 
 export default function FormInput({
@@ -40,6 +41,7 @@ export default function FormInput({
     defaultValue,
     value,
     onInputChange,
+    autoComplete,
 }: FormInputProps) {
     return (
         <div className={`${className} form-input`}>
@@ -89,6 +91,7 @@ export default function FormInput({
                     pattern={pattern}
                     required={required}
                     disabled={disabled}
+                    autoComplete={autoComplete}
                     {...(onInputChange
                         ? { value, onChange: onInputChange }
                         : { defaultValue })}

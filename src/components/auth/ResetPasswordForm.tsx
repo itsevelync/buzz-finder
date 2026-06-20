@@ -86,7 +86,7 @@ export default function ResetPasswordForm() {
     }
 
     async function handlePasswordChange(
-        event: React.FormEvent<HTMLFormElement>
+        event: React.SubmitEvent<HTMLFormElement>
     ) {
         event.preventDefault();
         setIsSubmitting(true);

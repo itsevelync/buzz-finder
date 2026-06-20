@@ -36,7 +36,9 @@ interface UserDeleteData {
 export async function createUser(user: NewUser) {
     try {
         await dbConnect();
-        await User.create(user);
+        const createdUser = await User.create(user);
+
+        return createdUser;
     } catch (e: unknown) {
         if (e instanceof Error) {
             throw new Error(`Error creating user: ${e.message}`);

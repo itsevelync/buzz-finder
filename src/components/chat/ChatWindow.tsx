@@ -511,7 +511,7 @@ export default function ChatWindow({
                         ) : (
                             <div>
                                 <h2 className="text-xl font-semibold text-buzz-blue">
-                                    Unknown User
+                                    Deleted User
                                 </h2>
                             </div>
                         )}
