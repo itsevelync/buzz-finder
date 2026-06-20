@@ -272,7 +272,6 @@ export default function ChatPageClient({
                     key={conversationItems.length}
                     conversationItems={conversationItems}
                     activeConversationId={activeConversationId}
-                    setPendingConversation={setPendingConversation}
                     setActiveConversationId={setActiveConversationId}
                 />
             </aside>

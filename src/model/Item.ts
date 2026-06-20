@@ -1,6 +1,7 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
 import { ObjectId } from "mongodb";
 import { CATEGORY_KEYS } from "@/constants/Categories";
+import { User } from "./User";
 
 const ItemSchema = new Schema(
     {
@@ -73,7 +74,7 @@ type Item = InferSchemaType<typeof ItemSchema> & {
 
 export type PlainItem = Omit<Item, "_id" | "personFound"> & {
     _id: string;
-    personFound?: string;
+    personFound?: User;
 };
 
 export type { Item };

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useModal } from "@/context/ModalContext";
 import ConfirmationModal from "../ui/ConfirmationModal";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface ResolveModalProps {
     itemId: string;
@@ -17,7 +17,7 @@ export default function ResolveItemModal({
 }: ResolveModalProps) {
     const { closeModal } = useModal();
     const [isUpdating, setIsUpdating] = useState(false);
-    const router = useRouter();
+    const { refresh } = usePostAndItem();
 
     async function handleConfirmResolve() {
         setIsUpdating(true);
@@ -30,7 +30,7 @@ export default function ResolveItemModal({
 
             if (res.ok) {
                 closeModal();
-                router.refresh();
+                refresh();
             } else {
                 toast.error("Could not update item status. Please try again.");
             }

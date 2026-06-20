@@ -25,7 +25,7 @@ type ChatWindowProps = {
     conversationItems: ConversationSummary[];
     currentUser: ChatUserSummary;
     activeConversationId: string | null;
-    setActiveConversationId: (value: SetStateAction<string | null>) => void;
+    setActiveConversationId: (id: string | null) => void;
     refreshConversations: () => Promise<void>;
     setConversationList: Dispatch<SetStateAction<ConversationSummary[]>>;
     pendingConversation: ConversationSummary | null;
@@ -485,7 +485,7 @@ export default function ChatWindow({
                             <LuChevronLeft size={24} />
                         </button>
                         {activePartner ? (
-                            <Link href={`user/${activePartner.username}`}>
+                            <Link href={`/user/${activePartner.username}`}>
                                 <div className="flex items-center gap-3">
                                     <Image
                                         src={

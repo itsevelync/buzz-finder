@@ -1,18 +1,17 @@
 import { auth } from "@/auth";
-import ChatPageClient from "@/components/chat/ChatPageClient";
 import { dbConnect } from "@/lib/mongo";
 import {
-    ChatMessageSummary,
-    ChatUserSummary,
-    ConversationSummary,
-    toChatMessageSummary,
     toChatUserSummary,
+    toChatMessageSummary,
+    ChatMessageSummary,
 } from "@/lib/chat";
 import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import User, { User as UserType } from "@/model/User";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import { ChatProvider } from "@/context/ChatContext";
+import ChatSidebarShell from "@/components/chat/ChatSidebarShell";
 
 export const metadata: Metadata = {
     title: "Messages - BuzzFinder",
@@ -27,19 +26,17 @@ interface LeanMessage {
     updatedAt: string | Date;
 }
 
-export default async function ChatPage({
-    searchParams,
+export default async function MessagesLayout({
+    children,
 }: {
-    searchParams: Promise<{ id?: string }>;
+    children: React.ReactNode;
 }) {
     const session = await auth();
-
     if (!session?.user?._id) {
         redirect("/login");
     }
 
     await dbConnect();
-    const resolvedSearchParams = await searchParams;
 
     const currentUser = toChatUserSummary({
         _id: session.user._id,
@@ -52,28 +49,27 @@ export default async function ChatPage({
         UserType,
         "_id" | "name" | "username" | "image"
     >;
-
     const users = await User.find({ _id: { $ne: currentUser._id } })
         .select("name username image")
         .sort({ name: 1 })
         .lean<UserSearchResult[]>();
 
     const conversationDocs = await Conversation.find({
-        "participants.userId": currentUser._id.toString(), // Dot notation + string ID
+        "participants.userId": currentUser._id.toString(),
     })
         .sort({ lastMessageAt: -1 })
         .lean<ConversationType[]>();
 
-    const conversationIds = conversationDocs.map((conversation) =>
-        conversation._id.toString(),
-    );
+    const conversationIds = conversationDocs.map((c) => c._id.toString());
 
+    // 1. Bring back the server-side query for last messages across all rooms
     const lastMessages = conversationIds.length
         ? await Message.find({ conversationId: { $in: conversationIds } })
               .sort({ createdAt: -1 })
               .lean<LeanMessage[]>()
         : [];
 
+    // 2. Map the latest messages by their conversation ID
     const latestMessageByConversation = new Map<string, ChatMessageSummary>();
     for (const message of lastMessages) {
         const summarizedMessage = toChatMessageSummary(message);
@@ -87,48 +83,39 @@ export default async function ChatPage({
         }
     }
 
-    const usersById = new Map<string, ChatUserSummary>();
-    for (const user of users) {
-        const summary = toChatUserSummary(user);
-        usersById.set(summary._id, summary);
-    }
+    const mappedUsers = users.map((u) => toChatUserSummary(u));
 
-    const conversations: ConversationSummary[] = conversationDocs.map(
-        (conversation) => {
-            const conversationId = conversation._id.toString();
+    // 3. Construct the initial conversations array containing the message previews
+    const mappedConversations = conversationDocs.map((conv) => {
+        const convId = conv._id.toString();
+        const partnerId = conv.participants.find(
+            (p) => p.userId !== currentUser._id,
+        )?.userId;
+        const targetPartner =
+            mappedUsers.find((u) => u._id === partnerId) ?? null;
 
-            const partnerId = conversation.participants.find(
-                (p) => p.userId !== currentUser._id,
-            )?.userId;
-
-            return {
-                _id: conversationId,
-                participants: conversation.participants.map((p) => ({
-                    userId: p.userId.toString(),
-                    lastReadAt: new Date(p.lastReadAt).toISOString(),
-                })),
-                lastMessageAt: new Date(
-                    conversation.lastMessageAt,
-                ).toISOString(),
-                partner: partnerId ? (usersById.get(partnerId) ?? null) : null,
-                lastMessage:
-                    latestMessageByConversation.get(conversationId) ?? null,
-            };
-        },
-    );
-
-    const validId =
-        conversations.some((item) => item._id === resolvedSearchParams.id) ||
-        users.some((user) => "pending-" + user._id === resolvedSearchParams.id);
-
-    const initialConversationId = validId ? resolvedSearchParams.id : null;
+        return {
+            _id: convId,
+            participants: conv.participants.map((p) => ({
+                userId: p.userId.toString(),
+                lastReadAt: new Date(p.lastReadAt).toISOString(),
+            })),
+            lastMessageAt: new Date(conv.lastMessageAt).toISOString(),
+            partner: targetPartner,
+            lastMessage: latestMessageByConversation.get(convId) ?? null, // Populated here!
+        };
+    });
 
     return (
-        <ChatPageClient
+        <ChatProvider
             currentUser={currentUser}
-            users={users.map((user) => toChatUserSummary(user))}
-            conversations={conversations}
-            initialConversationId={initialConversationId ?? null}
-        />
+            users={mappedUsers}
+            initialConversations={mappedConversations}
+        >
+            <div className="flex h-full w-full overflow-hidden relative">
+                <ChatSidebarShell />
+                {children}
+            </div>
+        </ChatProvider>
     );
 }

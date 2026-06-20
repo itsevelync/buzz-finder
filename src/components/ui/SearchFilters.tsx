@@ -37,7 +37,9 @@ interface SearchFiltersProps<T> {
     searchPlaceholder?: string;
     isLostItemPost?: boolean;
     isMap?: boolean;
-    mobileSidebarHandleSheetDragStart?: (e: PointerEvent<HTMLDivElement>) => void;
+    mobileSidebarHandleSheetDragStart?: (
+        e: PointerEvent<HTMLDivElement>,
+    ) => void;
     mobileSidebarHeight?: number;
     mobileSidebarSnapFULL?: number;
 }
@@ -75,7 +77,7 @@ export default function SearchFilters<T extends FilterableItem>({
     isMap = false,
     mobileSidebarHandleSheetDragStart,
     mobileSidebarHeight,
-    mobileSidebarSnapFULL
+    mobileSidebarSnapFULL,
 }: SearchFiltersProps<T>) {
     const { currentPosition } = useUserLocation();
 
@@ -212,7 +214,7 @@ export default function SearchFilters<T extends FilterableItem>({
             >
                 <div
                     className={
-                        mobileSidebarHeight && mobileSidebarHeight === mobileSidebarSnapFULL
+                        mobileSidebarHeight === mobileSidebarSnapFULL
                             ? "pointer-events-auto"
                             : "pointer-events-none"
                     }
@@ -230,7 +232,7 @@ export default function SearchFilters<T extends FilterableItem>({
                         </div>
 
                         <button
-                            onClick={() => setShowFilters(!showFilters)}
+                            onClick={() => {setShowFilters(!showFilters)}}
                             className={`flex items-center justify-center gap-2 h-10 px-3 border rounded-lg transition text-sm font-medium ${
                                 showFilters || activeFiltersCount > 0
                                     ? "bg-gray-800 text-white border-gray-800"

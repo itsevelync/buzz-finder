@@ -1,7 +1,7 @@
 "use client";
 
 import { PlainItem } from "@/model/Item";
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState, Dispatch, SetStateAction, useEffect } from "react";
 import { useIsMobile } from "@/hooks/IsMobile";
 import DesktopSidebar from "./DesktopSidebar";
 import MobileSidebar from "./MobileSidebar";
@@ -11,6 +11,7 @@ interface ItemSidebarProps {
     setFilteredItems: Dispatch<SetStateAction<PlainItem[]>>;
     height: number;
     setHeight: Dispatch<SetStateAction<number>>;
+    SNAP: { COLLAPSED: number; FULL: number };
 }
 
 export default function ItemSidebar({
@@ -18,11 +19,17 @@ export default function ItemSidebar({
     setFilteredItems,
     height,
     setHeight,
+    SNAP,
 }: ItemSidebarProps) {
     const isMobile = useIsMobile(640);
 
     const [searchedItems, setSearchedItems] = useState<PlainItem[]>(items);
     const [displayItems, setDisplayItems] = useState<PlainItem[]>(items);
+
+    useEffect(() => {
+        setSearchedItems(items);
+        setDisplayItems(items);
+    }, [items]);
 
     if (!isMobile) {
         return (
@@ -47,6 +54,7 @@ export default function ItemSidebar({
             setDisplayItems={setDisplayItems}
             height={height}
             setHeight={setHeight}
+            SNAP={SNAP}
         />
     );
 }

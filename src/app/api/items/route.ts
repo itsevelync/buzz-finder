@@ -4,33 +4,39 @@ import ItemSchema from "@/model/Item";
 
 import { dbConnect } from "@/lib/mongo";
 import mongoose, { Types } from "mongoose";
+import { sanitizeUser } from "@/lib/userUtils";
 
 /**
- * If an "id" query parameter is provided, returns the item with that ID.
- * Otherwise returns all items in the database.
- * 
+ * If a "personFound" query parameter is provided, return items found by that user.
+ * Otherwise, return all items that aren't deleted.
  */
 export async function GET(req: NextRequest) {
-    console.log("GET request received at /api/items");
-    // Searching for specific item by id
-    const id = req.nextUrl.searchParams.get("_id");
     const personFound = req.nextUrl.searchParams.get("personFound");
 
-    if (id) {
-        if (!mongoose.Types.ObjectId.isValid(id)) return new Response(JSON.stringify({ error: "Invalid ID." }), { status: 400 });
-        const item = await ItemSchema.findById(id);
-        return new Response(JSON.stringify(item), { status: 200 });
-    } else {
-        const query: { personFound?: string; deletedAt: null } = {
-            deletedAt: null,
-        };
-        if (personFound) {
-            query.personFound = personFound;
-        }
-        const items = await ItemSchema.find(query).sort({ lostDate: -1 });
-        return new Response(JSON.stringify(items), { status: 200 });
+    const query: { personFound?: string; deletedAt: null } = {
+        deletedAt: null,
+    };
+
+    if (personFound) {
+        query.personFound = personFound;
     }
+
+    const items = await ItemSchema.find(query)
+        .populate("personFound", "-password")
+        .sort({ lostDate: -1 })
+        .lean();
+
+    const sanitizedItems = items.map((item) => {
+        item.personFound = sanitizeUser(item.personFound);
+
+        return item;
+    });
+
+    return new Response(JSON.stringify(sanitizedItems), {
+        status: 200,
+    });
 }
+
 /**
  * Creates a new item in the database matching the body of the request.
  */

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { PlainItem } from "@/model/Item";
 import { useSelectedPin } from "@/context/PinContext";
 import SearchFilters from "../ui/SearchFilters";
@@ -13,6 +13,7 @@ interface MobileSidebarProps {
     setDisplayItems: Dispatch<SetStateAction<PlainItem[]>>;
     height: number;
     setHeight: Dispatch<SetStateAction<number>>;
+    SNAP: { COLLAPSED: number; FULL: number };
 }
 
 export default function MobileSidebar({
@@ -24,6 +25,7 @@ export default function MobileSidebar({
     setDisplayItems,
     height,
     setHeight,
+    SNAP,
 }: MobileSidebarProps) {
     const { setSelectedId } = useSelectedPin();
 
@@ -31,19 +33,16 @@ export default function MobileSidebar({
     const lastY = useRef(0);
     const lastTime = useRef(0);
     const velocity = useRef(0);
-    const [vh, setVh] = useState(0);
-    const SNAP = {
-        COLLAPSED: 93,
-        FULL: vh - 162,
-    };
+
     const didDrag = useRef(false);
     const sheetRef = useRef<HTMLDivElement | null>(null);
 
-    useEffect(() => {
-        setVh(window.innerHeight);
-    }, []);
-
     function handleSheetDragStart(e: React.PointerEvent<HTMLDivElement>) {
+        const target = e.target as HTMLElement;
+
+        if (target.closest("button") && height === SNAP.FULL) {
+            return;
+        }
         const el = sheetRef.current;
         if (!el) return;
 

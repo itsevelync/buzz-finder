@@ -8,7 +8,9 @@ import { LostItemPost } from "@/model/LostItemPost";
 import ItemList from "./ItemList";
 import PostList from "./PostList";
 import SearchFilters from "../ui/SearchFilters";
-import { archiveOldItems } from "@/actions/ItemFilter";
+import { usePostAndItem } from "@/context/PostAndItemContext";
+import PullToRefreshIndicator from "../ui/PullToRefreshIndicator";
+import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
@@ -18,58 +20,28 @@ export default function LostFoundDashboardContainer() {
         searchParams.get("tab") === "lost",
     );
 
-    const [items, setItems] = useState<PlainItem[]>([]);
-    const [lostItemPosts, setLostItemPosts] = useState<LostItemPost[]>([]);
-
     const [searchedPosts, setSearchedPosts] = useState<LostItemPost[]>([]);
     const [displayPosts, setDisplayPosts] = useState<LostItemPost[]>([]);
 
     const [searchedItems, setSearchedItems] = useState<PlainItem[]>([]);
     const [displayItems, setDisplayItems] = useState<PlainItem[]>([]);
 
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const { items, lostItemPosts, loading, error, refresh } = usePostAndItem();
+
+    // Pull-to-refresh
+    const { pullDistance } = usePullToRefresh({
+        onRefresh: refresh,
+    });
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                setLoading(true);
+        setSearchedItems(items);
+        setDisplayItems(items);
+    }, [items]);
 
-                const [itemsRes, postsRes] = await Promise.all([
-                    fetch("/api/items"),
-                    fetch("/api/lost-item-posts"),
-                ]);
-
-                if (!itemsRes.ok || !postsRes.ok) {
-                    throw new Error("Failed to fetch data");
-                }
-
-                const [itemsData, postsData] = await Promise.all([
-                    itemsRes.json(),
-                    postsRes.json(),
-                ]);
-
-                const items = archiveOldItems(itemsData);
-                const posts = postsData;
-
-                setItems(items);
-                setLostItemPosts(posts);
-
-                setSearchedPosts(posts);
-                setDisplayPosts(posts);
-
-                setSearchedItems(items);
-                setDisplayItems(items);
-            } catch (err) {
-                console.error(err);
-                setError(true);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        fetchData();
-    }, []);
+    useEffect(() => {
+        setSearchedPosts(lostItemPosts);
+        setDisplayPosts(lostItemPosts);
+    }, [lostItemPosts]);
 
     useEffect(() => {
         const currentTab = searchParams.get("tab");
@@ -81,15 +53,20 @@ export default function LostFoundDashboardContainer() {
     }, [lostItemsSelected, router, searchParams]);
 
     return (
-        <div>
-            <div className="flex flex-col justify-start align-middle w-full">
+        <>
+            {/* Pull-to-refresh */}
+            <PullToRefreshIndicator pullDistance={pullDistance} />
+
+            <div className="flex flex-col w-full">
                 <LostFoundSelector
                     lostItemsSelected={lostItemsSelected}
                     setLostItemsSelected={setLostItemsSelected}
                 />
+
+                {/* Filters */}
                 <div className="sticky top-0 z-10 bg-white">
-                    {lostItemsSelected ? (
-                        <div className="bg-white shadow-md rounded-lg w-full">
+                    <div className="bg-white shadow-md rounded-lg w-full">
+                        {lostItemsSelected ? (
                             <SearchFilters<LostItemPost>
                                 items={lostItemPosts}
                                 searchedItems={searchedPosts}
@@ -105,9 +82,7 @@ export default function LostFoundDashboardContainer() {
                                 searchPlaceholder="Search lost items"
                                 isLostItemPost
                             />
-                        </div>
-                    ) : (
-                        <div className="bg-white shadow-md rounded-lg w-full">
+                        ) : (
                             <SearchFilters<PlainItem>
                                 items={items}
                                 searchedItems={searchedItems}
@@ -123,10 +98,11 @@ export default function LostFoundDashboardContainer() {
                                 ]}
                                 searchPlaceholder="Search found items"
                             />
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
 
+                {/* Feed */}
                 <div>
                     {loading ? (
                         <div className="p-5">Loading...</div>
@@ -139,6 +115,6 @@ export default function LostFoundDashboardContainer() {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 }
