@@ -22,7 +22,7 @@ export default function EditDeleteBtns({
 }: EditDeleteBtnsProps) {
     const { refresh } = usePostAndItem();
     const router = useRouter();
-    const { openModal } = useModal();
+    const { openModal, closeModal } = useModal();
     const [confirming, setConfirming] = useState(false);
 
     async function handleDelete() {
@@ -39,6 +39,7 @@ export default function EditDeleteBtns({
             }
 
             toast.success("Item deleted successfully.");
+            closeModal();
             refresh();
             router.push(redirect);
         } catch (error) {
