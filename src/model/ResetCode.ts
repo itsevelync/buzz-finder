@@ -1,6 +1,12 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
-const ResetCodeSchema = new Schema(
+export interface IResetCode {
+    userId: Schema.Types.ObjectId;
+    code: string;
+    expiresAt: Date;
+}
+
+const ResetCodeSchema = new Schema<IResetCode>(
     {
         userId: {
             type: Schema.Types.ObjectId,
@@ -10,29 +16,14 @@ const ResetCodeSchema = new Schema(
         code: {
             type: String,
             required: true,
-            validate: {
-                validator: function (v: string) {
-                    return /^\d{6}$/.test(v); // Must be exactly 6 digits
-                },
-                message: (props: mongoose.ValidatorProps) => `${props.value} is not a valid 6-digit reset code`,
-            },
         },
-    },
-    { timestamps: true }
-);
+        expiresAt: {
+            type: Date,
+            required: true,
+            index: { expires: "0s" }, // This makes Mongoose automatically delete documents when expiresAt is reached
+        },
+    }, { timestamps: true });
 
-// TTL index: expires 900 seconds (15 minutes) after last code change
-ResetCodeSchema.index({ updatedAt: 1 }, { expireAfterSeconds: 900 });
+const ResetCode = models.ResetCode || model<IResetCode>("ResetCode", ResetCodeSchema);
 
-// Only update `updatedAt` if `code` changes
-ResetCodeSchema.pre("save", function (next) {
-    if (this.isModified("code")) {
-        this.updatedAt = new Date();
-    } else {
-        this.updatedAt = this.get("updatedAt", null);
-    }
-    next();
-});
-
-export default mongoose.models?.ResetCode ??
-    mongoose.model("ResetCode", ResetCodeSchema);
+export default ResetCode;

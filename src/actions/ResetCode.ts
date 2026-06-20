@@ -5,8 +5,8 @@ import ResetCode from "@/model/ResetCode";
 import { randomInt } from "node:crypto";
 import { dbConnect } from "@/lib/mongo";
 import { getUserByEmail } from "@/actions/User";
-import { timingSafeEqual } from "node:crypto";
 import { SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo";
+import bcrypt from "bcryptjs";
 
 
 // Sends a password reset code to the user's email.
@@ -67,16 +67,22 @@ export async function generateResetCode(userId: string): Promise<ResetCodeDocume
         // Delete any existing reset codes for this user
         await ResetCode.deleteMany({ userId: new Types.ObjectId(userId) });
 
+        // Hash the code before storing
+        const hashedCode = await bcrypt.hash(code, 10);
+
         const resetCode = new ResetCode({
             userId: new Types.ObjectId(userId),
-            code,
+            code: hashedCode,
             // Code expires in 10 minutes
             expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
         await resetCode.save();
 
-        return resetCode;
+        return {
+            ...resetCode.toObject(),
+            code,
+        }
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error("Error generating reset code:", e);
@@ -106,16 +112,10 @@ export async function compareResetCode(email: string, resetCode: string): Promis
             return { error: "This verification code has expired. Please request a new one." };
         }
 
-        const a = Buffer.from(codeDocument.code, "utf-8");
-        const b = Buffer.from(resetCode, "utf-8");
-
-        if (a.length !== b.length) {
-            // To maintain constant timing, perform a dummy operation
-            timingSafeEqual(a, Buffer.alloc(a.length));
-            return { error: "Invalid verification code." };
-        }
-
-        const codesMatch = timingSafeEqual(a, b);
+        const codesMatch = await bcrypt.compare(
+            resetCode,
+            codeDocument.code
+        );
 
         if (codesMatch) {
             return { success: true };

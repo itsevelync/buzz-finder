@@ -32,7 +32,9 @@ export default function ResetPasswordForm() {
     };
 
     const handleFormChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >,
     ) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({
@@ -72,7 +74,7 @@ export default function ResetPasswordForm() {
                 // Set a success message for the user. We don't redirect immediately to
                 // give the user a moment to read the confirmation.
                 setSuccessMessage(
-                    "If an account exists for that email address, you will receive a password reset link shortly."
+                    "If an account exists for that email address, you will receive a password reset link shortly.",
                 );
             }
         } catch {
@@ -86,27 +88,26 @@ export default function ResetPasswordForm() {
     }
 
     async function handlePasswordChange(
-        event: React.SubmitEvent<HTMLFormElement>
+        event: React.FormEvent<HTMLFormElement>,
     ) {
         event.preventDefault();
         setIsSubmitting(true);
 
         if (formData.newPassword !== formData.confirmNewPassword) {
             setError({ message: "Passwords do not match." });
-
             setIsSubmitting(false);
             return;
         }
 
-        // Call the server action to compare the codes
+        // Pass both the new password AND the reset code to the action payload
         const response = await updateUserFromEmail(formData.email, {
             password: formData.newPassword,
+            resetCode: formData.resetCode, // <-- Critical addition here
         });
 
         if (response.success) {
-            // Code is valid, redirect the user to the password reset page
             toast.success(
-                "Password updated successfully. Redirecting you to login page."
+                "Password updated successfully. Redirecting you to login page.",
             );
             router.push("/login");
         } else if (response.error) {
@@ -124,13 +125,13 @@ export default function ResetPasswordForm() {
         // Call the server action to compare the codes
         const response = await compareResetCode(
             formData.email,
-            formData.resetCode
+            formData.resetCode,
         );
 
         if (response.success) {
             // Code is valid, redirect the user to the password reset page
             toast.success(
-                "Code verified successfully. You can now set a new password."
+                "Code verified successfully. You can now set a new password.",
             );
             setVerified(true);
         } else if (response.error) {
@@ -181,7 +182,8 @@ export default function ResetPasswordForm() {
                 )}
                 <div>
                     Please enter the verification code we sent to{" "}
-                    {formData.email}. Be sure to check your spam or promotions folder, or wait a few minutes for it to arrive.
+                    {formData.email}. Be sure to check your spam or promotions
+                    folder, or wait a few minutes for it to arrive.
                 </div>
                 <form className="form" onSubmit={handleCodeSubmit}>
                     <div>
