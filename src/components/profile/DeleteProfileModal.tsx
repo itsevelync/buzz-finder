@@ -8,6 +8,7 @@ import FormInput from "../ui/FormInput";
 import { useUser } from "@/context/UserContext";
 import { useModal } from "@/context/ModalContext";
 import { LuTriangleAlert, LuX } from "react-icons/lu";
+import { toast } from "react-toastify";
 
 export default function DeleteProfileModal() {
     const { closeModal } = useModal();
@@ -34,6 +35,8 @@ export default function DeleteProfileModal() {
             return;
         }
         await update(values);
+        toast.success("Profile deleted successfully.");
+        closeModal();
         setUser(null);
         router.push("/dashboard");
     }

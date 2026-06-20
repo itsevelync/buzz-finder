@@ -85,7 +85,7 @@ onClick={() => {
                                     "/default-icon.svg"
                                 }
                                 alt={
-                                    conversation.partner?.name || "Unknown user"
+                                    conversation.partner?.name || "Deleted user"
                                 }
                                 width={50}
                                 height={50}
@@ -99,7 +99,7 @@ onClick={() => {
                                         className={`truncate ${isUnread ? "font-bold text-slate-900" : "font-semibold"}`}
                                     >
                                         {conversation.partner?.name ??
-                                            "Unknown user"}
+                                            "Deleted user"}
                                     </p>
 
                                     <div className="flex items-center gap-2">
