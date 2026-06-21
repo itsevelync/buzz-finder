@@ -3,7 +3,7 @@ import MapClient from "./MapClient";
 
 export const metadata: Metadata = {
     title: "Map - BuzzFinder",
-    description: "An interactive map displaying lost items",
+    description: "An interactive map displaying lost items.",
 };
 
 interface SearchParams {

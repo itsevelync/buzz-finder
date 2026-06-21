@@ -5,16 +5,20 @@ import Divider from "../ui/Divider";
 import SocialLogins from "./SocialLogins";
 
 import { useRouter } from "next/navigation";
-import { signupUser } from "@/actions/User";
+import { signupUser, doCredentialLogin } from "@/actions/User";
 import {
     sendVerificationCode,
     compareVerificationCode,
 } from "@/actions/VerificationCode";
 import FormInput from "../ui/FormInput";
 import { toast } from "react-toastify";
+import { useModal } from "@/context/ModalContext";
+import WelcomeModal from "./WelcomeModal";
 
 export default function SignUpForm() {
     const router = useRouter();
+    const { openModal } = useModal();
+
     const [error, setError] = useState("");
     const [isVerifying, setIsVerifying] = useState(false);
     const [verificationEmail, setVerificationEmail] = useState("");
@@ -63,10 +67,24 @@ export default function SignUpForm() {
             if (signUpResponse?.error) {
                 setError(signUpResponse.error);
             } else if (signUpResponse?.success) {
-                toast.success(
-                    "Account created successfully. Redirecting you to the login page.",
-                );
-                router.push("/login");
+                const loginFormData = new FormData();
+                loginFormData.append("email", verificationEmail);
+                loginFormData.append("password", password);
+
+                const loginResponse = await doCredentialLogin(loginFormData);
+
+                if (loginResponse?.error) {
+                    toast.success(
+                        "Account created successfully. Redirecting you to the login page.",
+                    );
+                    router.push("/login");
+                    return;
+                }
+
+                toast.success("Account created successfully.");
+
+                openModal(<WelcomeModal />, { maxWidth: "2xl" });
+                router.push("/");
             }
         }
     }

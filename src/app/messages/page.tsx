@@ -1,4 +1,4 @@
-export default function MessagesIndexPage() {
+export default function MessagesPage() {
     return (
         <div className="hidden md:flex h-full flex-1 flex-col items-center justify-center bg-slate-50 text-center">
             <div className="max-w-md">

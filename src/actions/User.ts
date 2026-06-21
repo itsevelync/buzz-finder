@@ -1,4 +1,4 @@
-'use server'
+"use server";
 
 import User, { User as UserType } from "@/model/User";
 import { dbConnect } from "@/lib/mongo";
@@ -7,6 +7,8 @@ import { signIn, signOut } from "@/auth";
 import bcrypt from "bcryptjs";
 import { CredentialsSignin } from "next-auth";
 import { MongoServerError } from "mongodb";
+import { auth } from "@/auth";
+import { compareResetCode } from "@/actions/ResetCode";
 
 interface NewUser {
     name: string;
@@ -27,6 +29,7 @@ export interface UserUpdateData {
     discord?: string;
     linkedIn?: string;
     hideEmail?: boolean;
+    resetCode?: string;
 }
 
 interface UserDeleteData {
@@ -62,10 +65,7 @@ export async function getUserByEmail(email: string) {
 }
 
 // Finds a user by their username.
-export async function getUserByUsername(
-    username: string,
-    viewerId?: string
-) {
+export async function getUserByUsername(username: string, viewerId?: string) {
     await dbConnect();
 
     const userDoc = await User.findOne({ username })
@@ -74,9 +74,7 @@ export async function getUserByUsername(
 
     if (!userDoc) return null;
 
-    const isOwner =
-        viewerId &&
-        userDoc._id.toString() === viewerId;
+    const isOwner = viewerId && userDoc._id.toString() === viewerId;
 
     if (userDoc.hideEmail && !isOwner) {
         delete userDoc.email;
@@ -88,8 +86,10 @@ export async function getUserByUsername(
     };
 }
 
-export async function updateUser(userId: string, userData: UserUpdateData & { currentPassword?: string }) {
-    // Check if the userId is a valid ObjectId before updating
+export async function updateUser(
+    userId: string,
+    userData: UserUpdateData & { currentPassword?: string; resetCode?: string },
+) {
     if (!Types.ObjectId.isValid(userId)) {
         return { error: "Invalid user ID." };
     }
@@ -102,18 +102,60 @@ export async function updateUser(userId: string, userData: UserUpdateData & { cu
             return { error: "User not found." };
         }
 
-        const { currentPassword, ...updateFields } = userData;
+        const session = await auth();
+        const sessionUserId = session?.user?._id;
+
+        const { currentPassword, resetCode, ...updateFields } = userData;
         const dataToUpdate = { ...updateFields };
 
+        // Condition 1: User is updating their own profile via an active session
+        const isAuthenticatedOwner = sessionUserId && sessionUserId === userId;
+
+        // Condition 2: User is unauthenticated but passed a valid reset code
+        let isResetCodeValid = false;
+        if (!isAuthenticatedOwner && resetCode) {
+            // Check if the provided code matches the one stored in the DB for this user's email
+            const verificationResult = await compareResetCode(
+                user.email,
+                resetCode,
+            );
+            if (verificationResult.success) {
+                isResetCodeValid = true;
+            }
+        }
+
+        // If they fail both checks, deny the request
+        if (!isAuthenticatedOwner && !isResetCodeValid) {
+            return {
+                error: "Unauthorized. You must be logged in or provide a valid verification code.",
+            };
+        }
+
         if (dataToUpdate.password) {
-            if (currentPassword) {
-                const isMatch = await bcrypt.compare(currentPassword, user.password);
+            // Check if the user already has a password set in the database
+            const hasExistingPassword = !!user.password;
+
+            // Only enforce checking the old password if they are logged in normally AND they actually have a password to check
+            if (isAuthenticatedOwner && hasExistingPassword) {
+                if (!currentPassword) {
+                    return { error: "Current password is required to change your password." };
+                }
+
+                const isMatch = await bcrypt.compare(
+                    currentPassword,
+                    user.password,
+                );
 
                 if (!isMatch) {
                     return { error: "Current password is incorrect." };
                 }
             }
-            dataToUpdate.password = await bcrypt.hash(dataToUpdate.password, 10);
+
+            // Hash and save the new password
+            dataToUpdate.password = await bcrypt.hash(
+                dataToUpdate.password,
+                10,
+            );
         }
 
         const updatedUser = await User.findByIdAndUpdate(userId, dataToUpdate, {
@@ -125,18 +167,30 @@ export async function updateUser(userId: string, userData: UserUpdateData & { cu
             return { error: "User not found." };
         }
 
+        // If a reset code was successfully used, delete it so it can't be reused immediately
+        if (isResetCodeValid) {
+            const ResetCodeModel = (await import("@/model/ResetCode")).default;
+            await ResetCodeModel.deleteMany({ userId: user._id });
+        }
+
         return { success: "User updated successfully." };
     } catch (err: unknown) {
         const mongoErr = err as MongoServerError;
 
-        if (mongoErr.codeName === "DuplicateKey" && mongoErr.keyPattern.username === 1) {
-            return { error: "This username is already taken." }
+        if (
+            mongoErr.codeName === "DuplicateKey" &&
+            mongoErr.keyPattern.username === 1
+        ) {
+            return { error: "This username is already taken." };
         }
         return { error: "Unable to update user, please try again." };
     }
 }
 
-export async function deleteUser(userId: string, userData: UserDeleteData): Promise<{ success?: string; error?: string }> {
+export async function deleteUser(
+    userId: string,
+    userData: UserDeleteData,
+): Promise<{ success?: string; error?: string }> {
     // Check if the userId is a valid ObjectId before updating
     if (!Types.ObjectId.isValid(userId)) {
         return { error: "Invalid user ID." };
@@ -164,9 +218,12 @@ export async function deleteUser(userId: string, userData: UserDeleteData): Prom
     }
 }
 
-export async function updateUserFromEmail(email: string, userData: UserUpdateData) {
+export async function updateUserFromEmail(
+    email: string,
+    userData: UserUpdateData,
+) {
     const user = await getUserByEmail(email);
-    return await updateUser(user._id.toString(), userData)
+    return await updateUser(user._id.toString(), userData);
 }
 
 // USER AUTHENTICATION
@@ -225,17 +282,17 @@ export async function doCredentialLogin(formData: FormData) {
 }
 
 export async function signupUser(formData: FormData) {
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     if (!name || !email || !password) {
-        return { error: 'All fields are required.' };
+        return { error: "All fields are required." };
     }
 
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
-        return { error: 'Email already in use.' };
+        return { error: "Email already in use." };
     }
 
     const username = await generateUsername(email);
@@ -247,13 +304,15 @@ export async function signupUser(formData: FormData) {
         return { success: true };
     } catch (error) {
         console.error(error);
-        return { error: 'Failed to create account. Please try again in a few moments.' };
+        return {
+            error: "Failed to create account. Please try again in a few moments.",
+        };
     }
 }
 
 export async function generateUsername(email: string) {
     // Auto-generate username from email
-    let username = email.split('@')[0].replace(/[^a-zA-Z0-9._-]/g, '');
+    let username = email.split("@")[0].replace(/[^a-zA-Z0-9._-]/g, "");
 
     // Ensure username is unique, append a number if needed
     const baseUsername = username;

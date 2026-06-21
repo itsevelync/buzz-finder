@@ -15,6 +15,8 @@ import ChatSidebarShell from "@/components/chat/ChatSidebarShell";
 
 export const metadata: Metadata = {
     title: "Messages - BuzzFinder",
+    description:
+        "Chat in real-time with other BuzzFinder users to safely arrange inquiries, verifications, and drop-offs.",
 };
 
 interface LeanMessage {

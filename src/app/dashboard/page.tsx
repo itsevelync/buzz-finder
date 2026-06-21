@@ -1,9 +1,11 @@
-import { Suspense } from 'react';
+import { Suspense } from "react";
 import LostFoundDashboardContainer from "@/components/dashboard/LostFoundDashboardContainer";
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Dashboard - BuzzFinder",
+    description:
+        "Search and filter reported lost and found items.",
 };
 
 export default async function Home() {

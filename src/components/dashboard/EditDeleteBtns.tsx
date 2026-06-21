@@ -43,7 +43,7 @@ export default function EditDeleteBtns({
             refresh();
             router.push(redirect);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             toast.error("Error deleting item. Please try again");
         } finally {
             setConfirming(false);

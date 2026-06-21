@@ -1,20 +1,23 @@
-'use server'
+"use server";
 
 import { Types } from "mongoose";
 import ResetCode from "@/model/ResetCode";
 import { randomInt } from "node:crypto";
 import { dbConnect } from "@/lib/mongo";
 import { getUserByEmail } from "@/actions/User";
-import { timingSafeEqual } from "node:crypto";
-import { SendSmtpEmail, TransactionalEmailsApi, TransactionalEmailsApiApiKeys } from "@getbrevo/brevo";
-
+import {
+    SendSmtpEmail,
+    TransactionalEmailsApi,
+    TransactionalEmailsApiApiKeys,
+} from "@getbrevo/brevo";
+import bcrypt from "bcryptjs";
 
 // Sends a password reset code to the user's email.
 export async function sendResetCode(email: string) {
     try {
         if (!process.env.BREVO_API_KEY) {
             return {
-                error: "Missing API key in .env file."
+                error: "Missing API key in .env file.",
             };
         }
         const user = await getUserByEmail(email);
@@ -23,16 +26,19 @@ export async function sendResetCode(email: string) {
             return {
                 error: "There are no accounts associated with that email. Please ",
                 linkText: "create an account",
-                linkHref: "/sign-up"
+                linkHref: "/sign-up",
             };
         }
 
         const resetCode = await generateResetCode(user._id.toString());
 
-        const apiInstance = new TransactionalEmailsApi()
-        apiInstance.setApiKey(TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY)
+        const apiInstance = new TransactionalEmailsApi();
+        apiInstance.setApiKey(
+            TransactionalEmailsApiApiKeys.apiKey,
+            process.env.BREVO_API_KEY,
+        );
 
-        const sendSmtpEmail = new SendSmtpEmail()
+        const sendSmtpEmail = new SendSmtpEmail();
 
         sendSmtpEmail.subject = "BuzzFinder Password Reset Code";
         sendSmtpEmail.templateId = 1;
@@ -41,13 +47,17 @@ export async function sendResetCode(email: string) {
 
         await apiInstance.sendTransacEmail(sendSmtpEmail);
 
-        return { success: "If an account exists for that email address, you will receive a password reset link shortly." }
-
+        return {
+            success:
+                "If an account exists for that email address, you will receive a password reset link shortly.",
+        };
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error("Error sending reset code:", e);
         }
-        return { error: "An unexpected error occurred. Please try again in a few moments." };
+        return {
+            error: "An unexpected error occurred. Please try again in a few moments.",
+        };
     }
 }
 
@@ -57,7 +67,9 @@ interface ResetCodeDocument extends Document {
 }
 
 // Generates a new cryptographically secure 6-digit reset code and saves it to the database.
-export async function generateResetCode(userId: string): Promise<ResetCodeDocument> {
+export async function generateResetCode(
+    userId: string,
+): Promise<ResetCodeDocument> {
     try {
         await dbConnect();
 
@@ -67,16 +79,22 @@ export async function generateResetCode(userId: string): Promise<ResetCodeDocume
         // Delete any existing reset codes for this user
         await ResetCode.deleteMany({ userId: new Types.ObjectId(userId) });
 
+        // Hash the code before storing
+        const hashedCode = await bcrypt.hash(code, 10);
+
         const resetCode = new ResetCode({
             userId: new Types.ObjectId(userId),
-            code,
+            code: hashedCode,
             // Code expires in 10 minutes
             expiresAt: new Date(Date.now() + 10 * 60 * 1000),
         });
 
         await resetCode.save();
 
-        return resetCode;
+        return {
+            ...resetCode.toObject(),
+            code,
+        };
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error("Error generating reset code:", e);
@@ -87,7 +105,10 @@ export async function generateResetCode(userId: string): Promise<ResetCodeDocume
 }
 
 // Checks if reset code is correct
-export async function compareResetCode(email: string, resetCode: string): Promise<{ success?: boolean; error?: string }> {
+export async function compareResetCode(
+    email: string,
+    resetCode: string,
+): Promise<{ success?: boolean; error?: string }> {
     try {
         await dbConnect();
 
@@ -96,33 +117,31 @@ export async function compareResetCode(email: string, resetCode: string): Promis
             return { error: "Invalid email or verification code." };
         }
 
-        const codeDocument = await ResetCode.findOne({ userId: user._id }, {}, { sort: { createdAt: -1 } });
+        const codeDocument = await ResetCode.findOne(
+            { userId: user._id },
+            {},
+            { sort: { createdAt: -1 } },
+        );
 
         if (!codeDocument) {
-            return { error: "No verification code found. Please request a new one." };
+            return {
+                error: "No verification code found. Please request a new one.",
+            };
         }
 
         if (codeDocument.expiresAt < new Date()) {
-            return { error: "This verification code has expired. Please request a new one." };
+            return {
+                error: "This verification code has expired. Please request a new one.",
+            };
         }
 
-        const a = Buffer.from(codeDocument.code, "utf-8");
-        const b = Buffer.from(resetCode, "utf-8");
-
-        if (a.length !== b.length) {
-            // To maintain constant timing, perform a dummy operation
-            timingSafeEqual(a, Buffer.alloc(a.length));
-            return { error: "Invalid verification code." };
-        }
-
-        const codesMatch = timingSafeEqual(a, b);
+        const codesMatch = await bcrypt.compare(resetCode, codeDocument.code);
 
         if (codesMatch) {
             return { success: true };
         } else {
             return { error: "Invalid verification code." };
         }
-
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error("Error comparing reset codes:", e);
