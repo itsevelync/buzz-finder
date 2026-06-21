@@ -11,6 +11,8 @@ import { ModalProvider } from "@/context/ModalContext";
 import Modal from "@/components/ui/Modal";
 import { UserLocationProvider } from "@/context/UserLocationContext";
 import { PostAndItemProvider } from "@/context/PostAndItemContext";
+import { InstallProvider } from "@/context/InstallContext";
+import InstallPromptManager from "@/components/push/InstallPromptManager";
 
 export const viewport: Viewport = {
     initialScale: 1,
@@ -39,31 +41,34 @@ export default async function RootLayout({
         <html lang="en">
             <body className={`${monaSans.variable} antialiased`}>
                 <NextAuthProvider>
-                    <PostAndItemProvider>
-                        <UserLocationProvider>
-                            <ModalProvider>
-                                <div className="h-full w-full flex flex-col">
-                                    <div className="top-0 w-full md:hidden z-100">
-                                        <TopBar />
+                    <InstallProvider>
+                        <PostAndItemProvider>
+                            <UserLocationProvider>
+                                <ModalProvider>
+                                    <InstallPromptManager />
+                                    <div className="h-full w-full flex flex-col">
+                                        <div className="top-0 w-full md:hidden z-100">
+                                            <TopBar />
+                                        </div>
+                                        <div className="hidden md:flex flex-row z-100">
+                                            <Navbar />
+                                        </div>
+                                        <div
+                                            id="children-outer-container"
+                                            className="md:pl-15 md:py-0 w-full grow overflow-y-auto"
+                                        >
+                                            {children}
+                                            <ToastContainer />
+                                        </div>
+                                        <div className="bottom-0 w-full md:hidden z-100">
+                                            <BottomBar />
+                                        </div>
                                     </div>
-                                    <div className="hidden md:flex flex-row z-100">
-                                        <Navbar />
-                                    </div>
-                                    <div
-                                        id="children-outer-container"
-                                        className="md:pl-15 md:py-0 w-full grow overflow-y-auto"
-                                    >
-                                        {children}
-                                        <ToastContainer />
-                                    </div>
-                                    <div className="bottom-0 w-full md:hidden z-100">
-                                        <BottomBar />
-                                    </div>
-                                </div>
-                                <Modal />
-                            </ModalProvider>
-                        </UserLocationProvider>
-                    </PostAndItemProvider>
+                                    <Modal />
+                                </ModalProvider>
+                            </UserLocationProvider>
+                        </PostAndItemProvider>
+                    </InstallProvider>
                 </NextAuthProvider>
             </body>
         </html>
