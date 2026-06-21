@@ -6,6 +6,7 @@ import ProfileSettings from "@/components/profile/ProfileSettings";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useUser } from "@/context/UserContext";
 import SecuritySettings from "@/components/profile/SecuritySettings";
+import NotificationSettings from "@/components/profile/NotificationSettings";
 
 interface SettingsClientProps {
     initialTab: string;
@@ -78,13 +79,13 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
 
                     <div className="p-6">
                         {/* GENERAL */}
+                        {/* GENERAL */}
                         {activeTab === "general" && (
                             <div className="space-y-8">
                                 <section>
                                     <h2 className="mb-4 text-lg font-semibold">
                                         General Preferences
                                     </h2>
-
                                     <div className="grid gap-6 md:grid-cols-1">
                                         <div>
                                             <label className="mb-2 block text-sm font-medium">
@@ -142,41 +143,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
                                     </div>
                                 </section>
 
-                                {user && (
-                                    <section>
-                                        <h2 className="mb-4 text-lg font-semibold">
-                                            Notifications
-                                        </h2>
-
-                                        <div className="space-y-4">
-                                            <div className="flex items-center justify-between rounded-xl border border-neutral-200 p-4 opacity-70">
-                                                <div className="w-3/4">
-                                                    <span className="font-medium">
-                                                        Marketing Updates
-                                                    </span>
-
-                                                    <p className="text-sm text-neutral-500">
-                                                        Receive occasional
-                                                        emails from the
-                                                        BuzzFinder team with
-                                                        site updates and other
-                                                        fun things.
-                                                    </p>
-
-                                                    <p className="mt-1 text-xs text-buzz-gold italic">
-                                                        Coming soon!
-                                                    </p>
-                                                </div>
-                                                <input
-                                                    disabled
-                                                    type="checkbox"
-                                                    defaultChecked
-                                                    className="h-5 w-5 accent-buzz-gold cursor-pointer"
-                                                />
-                                            </div>
-                                        </div>
-                                    </section>
-                                )}
+                                {user && <NotificationSettings user={user} />}
                             </div>
                         )}
 

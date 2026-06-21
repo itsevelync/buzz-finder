@@ -269,6 +269,54 @@ export default function ChatWindow({
         };
     }, [activeConversationId, refreshConversations]);
 
+    // Subscribes to the active conversation's presence channel when the tab is in focus,
+    // automatically unsubscribes when the tab is hidden or minimized.
+    useEffect(() => {
+        if (!activeConversationId) return;
+
+        const channelName = `presence-conversation-${activeConversationId}`;
+        let isSubscribed = false;
+
+        const subscribeChannel = () => {
+            if (!isSubscribed) {
+                pusherClient.subscribe(channelName);
+                isSubscribed = true;
+            }
+        };
+
+        const unsubscribeChannel = () => {
+            if (isSubscribed) {
+                pusherClient.unsubscribe(channelName);
+                isSubscribed = false;
+            }
+        };
+
+        // 1. Handle visibility change events
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                unsubscribeChannel();
+            } else {
+                subscribeChannel();
+            }
+        };
+
+        // 2. Initial subscription if the tab is currently visible
+        if (!document.hidden) {
+            subscribeChannel();
+        }
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // 3. Clean up everything when the component unmounts or activeConversationId changes
+        return () => {
+            document.removeEventListener(
+                "visibilitychange",
+                handleVisibilityChange,
+            );
+            unsubscribeChannel();
+        };
+    }, [activeConversationId]);
+
     useEffect(() => {
         if (!activeConversationId) return;
 

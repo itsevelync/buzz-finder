@@ -12,7 +12,7 @@ import Modal from "@/components/ui/Modal";
 import { UserLocationProvider } from "@/context/UserLocationContext";
 import { PostAndItemProvider } from "@/context/PostAndItemContext";
 import { InstallProvider } from "@/context/InstallContext";
-import InstallPromptManager from "@/components/push/InstallPromptManager";
+import PWAPromptManager from "@/components/pwa/PWAPromptManager";
 
 export const viewport: Viewport = {
     initialScale: 1,
@@ -45,7 +45,7 @@ export default async function RootLayout({
                         <PostAndItemProvider>
                             <UserLocationProvider>
                                 <ModalProvider>
-                                    <InstallPromptManager />
+                                    <PWAPromptManager />
                                     <div className="h-full w-full flex flex-col">
                                         <div className="top-0 w-full md:hidden z-100">
                                             <TopBar />
