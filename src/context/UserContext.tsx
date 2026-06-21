@@ -18,8 +18,18 @@ type UserContextUser = Pick<
     User,
     "_id" | "name" | "username" | "email" | "image"
 > &
-    Partial<Pick<User, "phoneNum" | "description" | "discord" | "instagram" | "linkedIn" | "hideEmail">>;
-
+    Partial<
+        Pick<
+            User,
+            | "phoneNum"
+            | "description"
+            | "discord"
+            | "instagram"
+            | "linkedIn"
+            | "hideEmail"
+            | "hasPassword"
+        >
+    >;
 interface UserContextValue {
     user: UserContextUser | null;
     setUser: Dispatch<SetStateAction<UserContextUser | null>>;
@@ -67,10 +77,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         };
     }, [session?.user?._id, status]);
 
-    const value = useMemo(
-        () => ({ user, setUser }),
-        [user],
-    );
+    const value = useMemo(() => ({ user, setUser }), [user]);
 
     return (
         <UserContext.Provider value={value}>{children}</UserContext.Provider>

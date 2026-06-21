@@ -19,7 +19,7 @@ export default function SecuritySettings() {
         <div className="space-y-8">
             <UpdateProfileForm />
 
-            <section className="rounded-xl border border-red-200 bg-red-50 p-5">
+            <section className="rounded-lg border border-red-200 bg-red-50 p-5">
                 <h2 className="text-lg font-semibold text-red-600">
                     Danger Zone
                 </h2>

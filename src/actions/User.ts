@@ -132,8 +132,15 @@ export async function updateUser(
         }
 
         if (dataToUpdate.password) {
-            // Only enforce checking the old password if they are logged in normally (not resetting it)
-            if (isAuthenticatedOwner && currentPassword) {
+            // Check if the user already has a password set in the database
+            const hasExistingPassword = !!user.password;
+
+            // Only enforce checking the old password if they are logged in normally AND they actually have a password to check
+            if (isAuthenticatedOwner && hasExistingPassword) {
+                if (!currentPassword) {
+                    return { error: "Current password is required to change your password." };
+                }
+
                 const isMatch = await bcrypt.compare(
                     currentPassword,
                     user.password,
@@ -143,6 +150,8 @@ export async function updateUser(
                     return { error: "Current password is incorrect." };
                 }
             }
+
+            // Hash and save the new password
             dataToUpdate.password = await bcrypt.hash(
                 dataToUpdate.password,
                 10,

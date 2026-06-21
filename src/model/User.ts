@@ -66,6 +66,7 @@ export type User = Omit<BaseUser, "email" | "hideEmail"> & {
     _id: string;
     email?: string;
     hideEmail?: boolean;
+    hasPassword?: boolean;
 };
 
 export default mongoose.models?.User ??

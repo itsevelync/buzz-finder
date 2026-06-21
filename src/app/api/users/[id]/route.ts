@@ -17,16 +17,27 @@ export async function GET(
 
         const { id } = await params;
         const session = await auth();
-
         const viewerId = session?.user?._id;
 
-        let user: UserType | undefined | null = await User.findById(id).select("-password").lean<UserType>();
+        // Fetch the full document including password to evaluate its existence
+        const rawUser = await User.findById(id).lean<UserType>();
 
-        user = sanitizeUser(user, viewerId);
-
-        if (!user) {
+        if (!rawUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
+
+        // Determine if they have a password before stripping it out
+        const hasPassword = !!rawUser.password;
+
+        // Construct the client-safe object without exposing the hash
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { password, ...userWithoutPassword } = rawUser;
+        let user: UserType | undefined | null = {
+            ...userWithoutPassword,
+            hasPassword,
+        };
+
+        user = sanitizeUser(user, viewerId);
 
         return NextResponse.json(user, { status: 200 });
     } catch (error) {
