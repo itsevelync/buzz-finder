@@ -55,12 +55,21 @@ const UserSchema = new Schema(
             required: false,
             type: String,
             trim: true,
-        }
+        },
+        notificationPreferences: {
+            pushEnabled: { type: Boolean },
+
+            // notification types
+            messages: { type: Boolean },
+            newItemNotes: { type: Boolean },
+            itemStatusUpdates: { type: Boolean },
+        },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 type BaseUser = InferSchemaType<typeof UserSchema>;
+export type NotificationPreferences = BaseUser["notificationPreferences"];
 
 export type User = Omit<BaseUser, "email" | "hideEmail"> & {
     _id: string;
@@ -69,5 +78,4 @@ export type User = Omit<BaseUser, "email" | "hideEmail"> & {
     hasPassword?: boolean;
 };
 
-export default mongoose.models?.User ??
-    mongoose.model("User", UserSchema);
+export default mongoose.models?.User ?? mongoose.model("User", UserSchema);

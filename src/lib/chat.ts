@@ -1,3 +1,5 @@
+import { pusherServer } from "@/model/pusherServer";
+
 export type ChatUserSummary = {
     _id: string;
     name: string;
@@ -49,4 +51,28 @@ export function toChatMessageSummary(message: {
         conversationId: message.conversationId.toString(),
         createdAt: new Date(message.createdAt).toISOString(),
     };
+}
+
+type PresenceUser = {
+    id: string;
+    info?: {
+        name?: string;
+    };
+};
+
+type PusherPresenceResponse = {
+    users: PresenceUser[];
+};
+
+export async function isUserInConversation(conversationId: string, userId: string) {
+    const channel = `presence-conversation-${conversationId}`;
+
+    const res = await pusherServer.get({
+        path: `/channels/${channel}/users`,
+    });
+
+const data = (await res.json()) as PusherPresenceResponse;
+    const users = data.users || [];
+
+    return users.some((u) => u.id === userId);
 }

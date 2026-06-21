@@ -1,11 +1,12 @@
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
-import { toChatMessageSummary } from "@/lib/chat";
+import { isUserInConversation, toChatMessageSummary } from "@/lib/chat";
 import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
+import { sendPushToUsers } from "@/actions/Push";
 
 export async function POST(request: Request) {
     try {
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
             return new NextResponse("Conversation not found", { status: 404 });
         }
 
-        if (!conversation.participants.some((p: { userId: string; lastReadAt: Date | string }) => p.userId === userId)) {
+        if (!conversation.participants.some((p: { userId: string }) => p.userId.toString() === userId.toString())) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
 
         const messagePayload = toChatMessageSummary(newMessage.toObject());
 
+        // Trigger Pusher Events for real-time app layout updates
         await Promise.all([
             pusherServer.trigger(
                 `conversation-${conversationId}`,
@@ -58,7 +60,7 @@ export async function POST(request: Request) {
                 messagePayload,
             ),
 
-            ...conversation.participants.map((participant: { userId: string; lastReadAt: Date | string }) =>
+            ...conversation.participants.map((participant: { userId: string }) =>
                 pusherServer.trigger(
                     `inbox-${participant.userId.toString()}`,
                     "conversation-updated",
@@ -66,6 +68,45 @@ export async function POST(request: Request) {
                 )
             ),
         ]);
+
+        // --- WEB PUSH NOTIFICATION SYSTEM ---
+        // 1. Identify all other participants besides the current sender
+        const recipientIds = conversation.participants
+            .map((p: { userId: string }) => p.userId.toString())
+            .filter((id: string) => id !== userId.toString());
+
+        if (recipientIds.length > 0) {
+            // 2. Fire and forget the push notification safely so it doesn't slow down the HTTP response
+            let shouldSendPush = true;
+
+            for (const recipientId of recipientIds) {
+                const isActive = await isUserInConversation(
+                    conversationId,
+                    recipientId
+                );
+
+                if (isActive) {
+                    shouldSendPush = false;
+                    break;
+                }
+            }
+
+            if (shouldSendPush && recipientIds.length > 0) {
+                sendPushToUsers({
+                    userIds: recipientIds,
+                    title: session.user?.name || "New Message",
+                    body:
+                        text.trim().length > 60
+                            ? `${text.trim().substring(0, 60)}...`
+                            : text.trim(),
+                    url: `/messages/${conversationId}`,
+                    groupId: `conversation:${conversationId}`,
+                }).catch((err) =>
+                    console.error("Web Push Notification failed: ", err)
+                );
+            }
+        }
+        // ------------------------------------
 
         return NextResponse.json(messagePayload, { status: 201 });
     } catch (error) {

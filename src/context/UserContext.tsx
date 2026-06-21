@@ -28,6 +28,7 @@ type UserContextUser = Pick<
             | "linkedIn"
             | "hideEmail"
             | "hasPassword"
+            | "notificationPreferences"
         >
     >;
 interface UserContextValue {
