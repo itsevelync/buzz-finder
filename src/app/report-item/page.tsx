@@ -7,6 +7,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Report Item - BuzzFinder",
+    description:
+        "Quickly report a lost or found item. Add a detailed description, upload an image, select a category, and pin the exact location to help others find it.",
 };
 
 interface PageProps {

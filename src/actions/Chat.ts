@@ -4,15 +4,12 @@ export async function markAsRead(conversationId: string) {
     }
 
     try {
-        const res = await fetch(
-            `/api/conversations/${conversationId}/read`,
-            {
-                method: "POST",
-            },
-        );
+        const res = await fetch(`/api/conversations/${conversationId}/read`, {
+            method: "POST",
+        });
 
         if (!res.ok) throw new Error("Failed to update read receipt");
     } catch (err) {
         console.error(err);
     }
-};
+}

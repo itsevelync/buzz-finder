@@ -115,7 +115,10 @@ export async function updateUser(
         let isResetCodeValid = false;
         if (!isAuthenticatedOwner && resetCode) {
             // Check if the provided code matches the one stored in the DB for this user's email
-            const verificationResult = await compareResetCode(user.email, resetCode);
+            const verificationResult = await compareResetCode(
+                user.email,
+                resetCode,
+            );
             if (verificationResult.success) {
                 isResetCodeValid = true;
             }
@@ -123,7 +126,9 @@ export async function updateUser(
 
         // If they fail both checks, deny the request
         if (!isAuthenticatedOwner && !isResetCodeValid) {
-            return { error: "Unauthorized. You must be logged in or provide a valid verification code." };
+            return {
+                error: "Unauthorized. You must be logged in or provide a valid verification code.",
+            };
         }
 
         if (dataToUpdate.password) {

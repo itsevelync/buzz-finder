@@ -8,7 +8,7 @@ export function getActiveItems(items: PlainItem[]): PlainItem[] {
     return items.filter(
         (item) =>
             item.status === "unclaimed" &&
-            new Date(item.lostDate as string | Date) >= threeWeeksAgo
+            new Date(item.lostDate as string | Date) >= threeWeeksAgo,
     );
 }
 
