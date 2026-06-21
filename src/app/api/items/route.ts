@@ -11,6 +11,8 @@ import { sanitizeUser } from "@/lib/userUtils";
  * Otherwise, return all items that aren't deleted.
  */
 export async function GET(req: NextRequest) {
+    await dbConnect();
+
     const personFound = req.nextUrl.searchParams.get("personFound");
 
     const query: { personFound?: string; deletedAt: null } = {

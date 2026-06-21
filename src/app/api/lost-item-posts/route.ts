@@ -6,6 +6,8 @@ import { dbConnect } from "@/lib/mongo";
  * Returns all lost item posts in the database.
  */
 export async function GET(req: NextRequest) {
+    await dbConnect();
+
     const user = req.nextUrl.searchParams.get("user");
 
     const query: { user?: string; deletedAt: null } = {
