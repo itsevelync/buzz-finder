@@ -305,7 +305,7 @@ export default function NotificationSettings({
                                         <div className="flex items-start gap-2">
                                             <LuTriangleAlert className="text-destructive mt-0.5 shrink-0 text-base" />
                                             <div>
-                                                <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                                                <p className="font-semibold text-neutral-900">
                                                     Device permission missing
                                                 </p>
                                                 <p className="text-xs text-neutral-500 mt-0.5">
@@ -322,7 +322,7 @@ export default function NotificationSettings({
                                                 onClick={() =>
                                                     requestBrowserPushSubscription()
                                                 }
-                                                className="px-3 py-1.5 whitespace-nowrap rounded-md text-xs font-semibold bg-buzz-blue text-background hover:opacity-90 transition flex items-center gap-1 shadow-sm"
+                                                className="ml-auto px-3 py-1.5 whitespace-nowrap rounded-md text-xs font-semibold bg-buzz-blue text-background hover:opacity-90 transition flex items-center gap-1 shadow-sm"
                                             >
                                                 <LuBellRing className="text-sm" />
                                                 Grant Permission
@@ -335,11 +335,11 @@ export default function NotificationSettings({
                             {item.key === "pushEnabled" &&
                                 showDeviceMismatchWarning &&
                                 !showPermissionWarning && (
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 text-sm rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-800 dark:text-amber-200">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 text-sm rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-800">
                                         <div className="flex items-start gap-2">
                                             <LuTriangleAlert className="text-amber-500 mt-0.5 shrink-0 text-base" />
                                             <div>
-                                                <p className="font-semibold text-neutral-900 dark:text-neutral-100">
+                                                <p className="font-semibold text-neutral-900">
                                                     Device unlinked
                                                 </p>
                                                 <p className="text-xs text-neutral-500 mt-0.5">
@@ -355,7 +355,7 @@ export default function NotificationSettings({
                                             onClick={() =>
                                                 requestBrowserPushSubscription()
                                             }
-                                            className="px-3 py-1.5 whitespace-nowrap rounded-md text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 transition flex items-center gap-1 shadow-sm"
+                                            className="ml-auto px-3 py-1.5 whitespace-nowrap rounded-md text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 transition flex items-center gap-1 shadow-sm"
                                         >
                                             <LuRefreshCw className="text-xs" />
                                             Sync This Device
