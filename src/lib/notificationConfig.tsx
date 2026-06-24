@@ -9,6 +9,7 @@ import { ReactNode } from "react";
 
 interface ConfigItem {
     label: string;
+    type: string;
     getImage: (notification: NotificationItemPayload) => string;
     getLink: (resource: NotificationResource) => string;
     getMessage: (
@@ -21,6 +22,7 @@ interface ConfigItem {
 export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     ITEM_MATCH: {
         label: "Match Found",
+        type: "itemMatches",
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
         getLink: (r) => `/item/${r._id}`,
         getMessage: (_, __, detail) =>
@@ -28,6 +30,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     },
     ITEM_UPDATE: {
         label: "Status Update",
+        type: "itemStatusUpdates",
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
         getLink: (r) => `/item/${r._id}`,
         getMessage: (_, __, detail) => (
@@ -42,6 +45,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     },
     NEW_COMMENT: {
         label: "New Comment",
+        type: "newItemNotes",
         getImage: (n) =>
             n.resource.deletedAt || !n.actor?.image
                 ? "/default-icon.svg"
@@ -59,6 +63,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     },
     SYSTEM_ALERT: {
         label: "System Alert",
+        type: "systemAlert",
         getImage: () => "/buzzfinder-logo.png",
         getLink: () => "/",
         getMessage: (_, __, detail) => detail || "System update notice.",

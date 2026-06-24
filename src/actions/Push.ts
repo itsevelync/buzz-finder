@@ -95,6 +95,7 @@ export async function sendPushToUser({
     url,
     groupId,
     tag,
+    notificationType,
 }: {
     recipientId: string;
     title: string;
@@ -102,14 +103,15 @@ export async function sendPushToUser({
     url: string;
     tag?: string;
     groupId: string;
+    notificationType: string;
 }) {
-    // 1. Check if the recipient has notifications enabled for messages
+    // 1. Check if the recipient has notifications enabled for the notification type
     const recipient = await User.findById(recipientId).select("notificationPreferences");
     
     if (!recipient) return { success: false, error: "User not found" };
     
     const prefs = recipient.notificationPreferences;
-    if (!prefs?.pushEnabled || !prefs?.messages) {
+    if (!prefs?.pushEnabled || !prefs?.[notificationType]) {
         return { success: false, error: "User disabled message notifications" };
     }
 
@@ -142,6 +144,7 @@ export async function sendPushToUsers({
     url,
     groupId,
     tag,
+    notificationType,
 }: {
     userIds: string[];
     title: string;
@@ -149,14 +152,15 @@ export async function sendPushToUsers({
     url: string;
     tag?: string;
     groupId: string;
+    notificationType: string;
 }) {
     if (!userIds.length) return;
 
-    // 1. Filter target users who have notifications turned on for messages
+    // 1. Filter target users who have notifications turned on for the notification type
     const eligibleUsers = await User.find({
         _id: { $in: userIds },
         "notificationPreferences.pushEnabled": true,
-        "notificationPreferences.messages": true,
+        [`notificationPreferences.${notificationType}`]: true,
     }).select("_id");
 
     const recipientIds = eligibleUsers.map((u) => u._id.toString());

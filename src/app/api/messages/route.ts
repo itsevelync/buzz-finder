@@ -101,6 +101,7 @@ export async function POST(request: Request) {
                             : text.trim(),
                     url: `/messages/${conversationId}`,
                     groupId: `conversation:${conversationId}`,
+                    notificationType: "messages",
                 }).catch((err) =>
                     console.error("Web Push Notification failed: ", err)
                 );

@@ -71,13 +71,10 @@ export default function NotificationItem({
                     &middot; <span>{timeAgo}</span>
                 </div>
             </Link>
-            <div className="flex flex-col gap-2.5 items-end">
-                {!notification.isRead && (
-                    <div className="w-2 h-2 rounded-full bg-buzz-gold" />
-                )}
+            <div className="flex gap-3 items-center">
 
                 {/* Quick Context Action Controls */}
-                <div className="group-hover:flex items-center gap-1.5 hidden">
+                <div className="items-center gap-1.5 flex">
                     {!notification.isArchived && (
                         <button
                             onClick={(e) => {
@@ -119,6 +116,9 @@ export default function NotificationItem({
                         )}
                     </button>
                 </div>
+                {!notification.isRead && (
+                    <div className="w-2 h-2 rounded-full bg-buzz-gold" />
+                )}
             </div>
         </div>
     );

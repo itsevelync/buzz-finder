@@ -33,7 +33,7 @@ export default function NotificationsPage() {
                 {hasUnreadInCurrentView && (
                     <button
                         onClick={markAllRead}
-                        className="text-sm font-medium text-buzz-gold hover:opacity-80"
+                        className="border border-buzz-gold/30 rounded px-3 py-1 bg-buzz-gold/2 hover:bg-buzz-gold/5 text-sm font-medium text-buzz-gold hover:opacity-80"
                     >
                         Mark all as read{" "}
                         <LuCheckCheck className="ml-1 inline-flex align-middle" />
