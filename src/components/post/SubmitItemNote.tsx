@@ -24,7 +24,7 @@ export default function SubmitItemNote({
         try {
             const body = {
                 note: note,
-                lostItemId: lost_item._id,
+                itemId: lost_item._id,
                 user: !anonymize && user ? user : undefined,
             };
 

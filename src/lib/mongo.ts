@@ -1,4 +1,10 @@
 import mongoose from "mongoose";
+import "@/model/User";
+import "@/model/Item";
+import "@/model/LostItemPost";
+import "@/model/ItemNote";
+import "@/model/Message";
+import "@/model/Notification";
 
 export async function dbConnect() {
     try {
@@ -9,7 +15,9 @@ export async function dbConnect() {
         if (e instanceof Error) {
             throw new Error("Error: ", e);
         } else {
-            throw new Error("An unexpected error occurred connecting to MongoDB.");
+            throw new Error(
+                "An unexpected error occurred connecting to MongoDB.",
+            );
         }
     }
 }

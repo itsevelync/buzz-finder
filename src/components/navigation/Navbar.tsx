@@ -8,6 +8,7 @@ import Link from "next/link";
 import { navLinks } from "@/constants/NavLinks";
 
 import { useUser } from "../../context/UserContext";
+import NotificationBadge from "./NotificationBadge";
 
 export default function Navbar() {
     const { user } = useUser();
@@ -35,8 +36,6 @@ export default function Navbar() {
                         iconFill={link.iconFill}
                     />
                 ))}
-            </div>
-            <div className="flex flex-col items-center gap-[2vh]">
                 <div className="relative group">
                     <Link
                         href={
@@ -57,11 +56,15 @@ export default function Navbar() {
                         {user?.name ?? "Guest"}
                     </span>
                 </div>
+            </div>
+            <div className="flex flex-col items-center gap-[1.8vh]">
+                {user?._id && <NotificationBadge size="text-2xl" />}
                 <NavItem
                     name="Settings"
                     href="/settings"
                     icon={IoSettingsOutline}
                     iconFill={IoSettings}
+                    size="text-2xl"
                 />
             </div>
         </div>

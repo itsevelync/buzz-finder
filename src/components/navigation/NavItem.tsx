@@ -10,7 +10,7 @@ type NavItemProps = {
     direction?: "right" | "bottom" | "top" | "left";
 };
 
-export default function NavIcon({
+export default function NavItem({
     name,
     href,
     icon: Icon,

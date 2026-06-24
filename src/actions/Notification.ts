@@ -3,6 +3,11 @@
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import User from "@/model/User";
+import Notification, { NotificationType } from "@/model/Notification";
+import { pusherServer } from "@/model/pusherServer";
+import { PlainNotification } from "@/model/Notification";
+import { getTextFromNode, NOTIFICATION_CONFIG } from "@/lib/notificationConfig";
+import { sendPushToUser } from "./Push";
 
 export async function updateNotificationPreferences(preferences: {
     pushEnabled?: boolean;
@@ -30,4 +35,52 @@ export async function updateNotificationPreferences(preferences: {
     });
 
     return { success: true };
+}
+
+export async function sendNotification({
+    recipient,
+    actor,
+    resource,
+    resourceType,
+    notificationType,
+    body,
+}: Partial<PlainNotification>) {
+    const notification = await Notification.create({
+        recipient,
+        actor,
+        resource,
+        resourceType,
+        notificationType,
+        body,
+    });
+
+    const populated = await Notification.findById(notification._id)
+        .populate("actor", "name image")
+        .populate("resource", "name image text note itemId deletedAt");
+
+    await pusherServer.trigger(
+        `user-${populated.recipient}`,
+        "new-notification",
+        populated,
+    );
+
+    const config = NOTIFICATION_CONFIG[populated.notificationType as NotificationType];
+    const displayMessage = config.getMessage(
+        populated.actor?.name || "Someone",
+        populated.resource,
+        populated.body,
+    );
+    const targetLink = config.getLink(populated.resource);
+
+    sendPushToUser({
+        recipientId: populated.recipient,
+        title: config.label,
+        body: getTextFromNode(displayMessage),
+        url: targetLink,
+        groupId: `${populated.resourceType}:${populated.resource}`,
+    }).catch((err) =>
+        console.error("Web Push Notification failed: ", err)
+    );
+
+    return populated;
 }

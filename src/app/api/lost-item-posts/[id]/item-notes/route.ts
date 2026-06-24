@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 export async function GET(
     request: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: Promise<{ id: string }> },
 ) {
     try {
         await dbConnect();
@@ -12,13 +12,13 @@ export async function GET(
         const { id } = await params;
 
         let notes = await ItemNoteModel.find({
-            lostItemId: id,
+            itemId: id,
         })
             .populate("user")
             .sort({ createdAt: 1 })
             .lean<ItemNote[]>();
 
-        notes = notes.map(note => {
+        notes = notes.map((note) => {
             if (note.user) {
                 if (note.user.hideEmail) {
                     delete note.user.email;
@@ -43,9 +43,7 @@ export async function GET(
 
         noteMap.forEach((note) => {
             if (note.parentId) {
-                const parent = noteMap.get(
-                    note.parentId.toString(),
-                );
+                const parent = noteMap.get(note.parentId.toString());
 
                 if (parent) {
                     parent.replies.push(note);
@@ -63,10 +61,7 @@ export async function GET(
         if (e instanceof Error) {
             console.error("GET /api/item-notes error:", e);
 
-            return Response.json(
-                { error: e.message },
-                { status: 500 },
-            );
+            return Response.json({ error: e.message }, { status: 500 });
         }
 
         return Response.json(

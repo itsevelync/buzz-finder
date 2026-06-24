@@ -35,7 +35,8 @@ export function ItemNoteCard({
     const { user } = useUser();
     const currentUserId = user?._id;
 
-    const isOwner = currentUserId && note.user?._id?.toString() === currentUserId;
+    const isOwner =
+        currentUserId && note.user?._id?.toString() === currentUserId;
 
     const hasLiked = note.likes.some(
         (like) => like.toString() === currentUserId,
@@ -104,6 +105,9 @@ export function ItemNoteCard({
                                             dateStyle: "short",
                                             timeStyle: "short",
                                         },
+                                    )}{" "}
+                                    {note.createdAt !== note.updatedAt && (
+                                        <i className="pr-px">(Edited)</i>
                                     )}
                                 </span>
                             </div>

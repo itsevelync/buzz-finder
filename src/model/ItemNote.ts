@@ -9,7 +9,7 @@ const ItemNoteSchema = new Schema(
             type: String,
             trim: true,
         },
-        lostItemId: {
+        itemId: {
             required: true,
             type: Schema.Types.ObjectId,
             ref: "LostItemPost",
@@ -34,14 +34,14 @@ const ItemNoteSchema = new Schema(
             default: null,
         },
     },
-    { timestamps: true }
+    { timestamps: true },
 );
 
 type BaseItemNote = InferSchemaType<typeof ItemNoteSchema>;
 
 export type ItemNote = Omit<BaseItemNote, "user" | "parentId" | "likes"> & {
     _id: ObjectId;
-    user?:  User;
+    user?: User;
     parentId?: ObjectId | ItemNote | null | string;
     likes: (ObjectId | AuthUser | User)[];
 };

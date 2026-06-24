@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import ItemNote from "@/model/ItemNote";
+import Notification from "@/model/Notification";
+import { pusherServer } from "@/model/pusherServer";
 
 export async function PATCH(
     request: Request,
@@ -38,6 +40,16 @@ export async function PATCH(
         return Response.json({ error: "Not found" }, { status: 404 });
     }
 
+    const notification = await Notification.findOne({ resource: id })
+        .populate("actor", "name image")
+        .populate("resource", "name image text note itemId deletedAt");
+
+    await pusherServer.trigger(
+        `user-${notification.recipient}`,
+        "update-notification",
+        notification,
+    );
+
     return Response.json(updated);
 }
 
@@ -73,6 +85,16 @@ export async function DELETE(
     if (!deleted) {
         return Response.json({ error: "Not found" }, { status: 404 });
     }
+
+    const notification = await Notification.findOne({ resource: id })
+        .populate("actor", "name image")
+        .populate("resource", "name image text note itemId deletedAt");
+
+    await pusherServer.trigger(
+        `user-${notification.recipient}`,
+        "update-notification",
+        notification,
+    );
 
     return Response.json({
         success: true,
