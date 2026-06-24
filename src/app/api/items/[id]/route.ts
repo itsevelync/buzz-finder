@@ -64,14 +64,16 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         } else {
             const session = await auth();
 
-            await sendNotification({
-                recipient: updatedItem.personFound,
-                actor: session?.user?._id || undefined,
-                resource: id,
-                resourceType: "Item",
-                notificationType: "ITEM_UPDATE",
-                body: updatedItem.status,
-            });
+            if (updatedItem.personFound.toString() !== session?.user?._id) {
+                await sendNotification({
+                    recipient: updatedItem.personFound,
+                    actor: session?.user?._id || undefined,
+                    resource: id,
+                    resourceType: "Item",
+                    notificationType: "ITEM_UPDATE",
+                    body: updatedItem.status,
+                });
+            }
         }
 
         return new Response(JSON.stringify(updatedItem), { status: 200 });

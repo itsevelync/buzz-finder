@@ -15,10 +15,10 @@ export default function ReportTypeSelection() {
     return (
         <div className="min-h-full max-w-4xl mx-auto px-4 py-10 sm:px-8 sm:py-20 flex flex-col items-center justify-center gap-8">
             <div className="text-center max-w-xl px-4">
-                <h1 className="text-4xl font-bold text-buzz-blue">
+                <h1 className="text-3xl sm:text-4xl font-bold text-buzz-blue">
                     What would you like to report?
                 </h1>
-                <p className="text-foreground/70 mt-3 text-lg">
+                <p className="text-foreground/70 mt-3 sm:text-lg">
                     Select an option below.
                 </p>
             </div>
