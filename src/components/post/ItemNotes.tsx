@@ -161,7 +161,7 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
     const onReply = async (parentId: string, content: string) => {
         try {
             const body = {
-                lostItemId: itemNotes[0].lostItemId,
+                itemId: itemNotes[0].itemId,
                 parentId,
                 note: content,
                 user: !anonymizeReply && user ? user : undefined,

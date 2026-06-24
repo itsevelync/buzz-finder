@@ -3,7 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #262626;
-  --buzz-gold: #b9975b;
+  --buzz-gold: #b58e4f;
   --buzz-blue: #28334A;
 
   --font-mona-sans: "Mona Sans", sans-serif;
@@ -33,7 +33,6 @@
 } */
 
 html, body {
-  overflow: hidden;
   overscroll-behavior: none;
   touch-action: none;
   width: 100%;

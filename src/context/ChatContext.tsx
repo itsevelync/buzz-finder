@@ -194,7 +194,6 @@ export function ChatProvider({
     }, [conversationList, fetchMessagePreview]);
 
     useEffect(() => {
-        const inboxChannel = pusherClient.subscribe(`inbox-${currentUser._id}`);
         const handleInboxUpdate = (payload?: { conversationId?: string }) => {
             void refreshConversations();
             if (
@@ -205,6 +204,7 @@ export function ChatProvider({
             }
         };
 
+        const inboxChannel = pusherClient.subscribe(`inbox-${currentUser._id}`);
         inboxChannel.bind("conversation-updated", handleInboxUpdate);
         return () => {
             inboxChannel.unbind("conversation-updated", handleInboxUpdate);

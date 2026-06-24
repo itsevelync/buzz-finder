@@ -13,7 +13,7 @@ import {
 export const navLinks = [
   { name: "Map", href: "/map", icon: IoMapOutline, iconFill: IoMap },
   { name: "Dashboard", href: "/dashboard", icon: IoFileTrayFullOutline, iconFill: IoFileTrayFull },
+  { name: "Report Item", href: "/report-item", icon: IoAddCircleOutline, iconFill: IoAddCircle },
   { name: "Messages", href: "/messages", icon: IoChatboxEllipsesOutline, iconFill: IoChatboxEllipses },
   // { name: "BuzzBot", href: "/chatbot", icon: LuBeeOutline, iconFill: LuBeeFill },
-  { name: "Report Item", href: "/report-item", icon: IoAddCircleOutline, iconFill: IoAddCircle },
 ];
