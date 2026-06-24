@@ -62,7 +62,9 @@ const UserSchema = new Schema(
             // notification types
             messages: { type: Boolean },
             newItemNotes: { type: Boolean },
+            itemMatches: { type: Boolean },
             itemStatusUpdates: { type: Boolean },
+            systemAlerts: { type: Boolean },
         },
     },
     { timestamps: true },

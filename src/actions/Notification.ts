@@ -71,6 +71,7 @@ export async function sendNotification({
         populated.body,
     );
     const targetLink = config.getLink(populated.resource);
+    const type = config.type;
 
     sendPushToUser({
         recipientId: populated.recipient,
@@ -78,6 +79,7 @@ export async function sendNotification({
         body: getTextFromNode(displayMessage),
         url: targetLink,
         groupId: `${populated.resourceType}:${populated.resource}`,
+        notificationType: type,
     }).catch((err) =>
         console.error("Web Push Notification failed: ", err)
     );
