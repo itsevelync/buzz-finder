@@ -10,6 +10,7 @@ import {
 import { NotificationItemPayload } from "@/model/Notification";
 import { pusherClient } from "@/lib/pusherClient";
 import { useUser } from "./UserContext";
+import { usePostAndItem } from "./PostAndItemContext";
 
 interface NotificationContextType {
     notifications: NotificationItemPayload[];
@@ -26,6 +27,7 @@ const NotificationContext = createContext<NotificationContextType | undefined>(
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
     const { user } = useUser();
+    const { refresh } = usePostAndItem();
     const [notifications, setNotifications] = useState<
         NotificationItemPayload[]
     >([]);
@@ -51,6 +53,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         loadNotifications();
     }, []);
+
+    useEffect(() => {
+        refresh();
+    }, [notifications, refresh]);
 
     const toggleRead = async (id: string, val: boolean) => {
         setNotifications((prev) =>

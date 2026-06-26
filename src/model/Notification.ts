@@ -4,6 +4,7 @@ const NOTIFICATION_TYPES = [
     "ITEM_MATCH",
     "ITEM_UPDATE",
     "NEW_COMMENT",
+    "SEARCH_ALERT",
     "SYSTEM_ALERT",
 ] as const;
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
@@ -9,6 +9,7 @@ interface SearchBarProps<T extends Record<string, unknown>> {
     items: T[];
     setFilteredItems: (items: T[]) => void;
     searchableFields: (keyof T)[];
+    setSavedSearchTerm?: Dispatch<SetStateAction<string>>;
 }
 
 export default function SearchBar<T extends Record<string, unknown>>({
@@ -16,11 +17,15 @@ export default function SearchBar<T extends Record<string, unknown>>({
     items,
     setFilteredItems,
     searchableFields,
+    setSavedSearchTerm,
 }: SearchBarProps<T>) {
     const [searchTerm, setSearchTerm] = useState<string>("");
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
+        if (setSavedSearchTerm) {
+            setSavedSearchTerm(e.target.value);
+        }
         filterItems(e.target.value.toLowerCase());
     };
 

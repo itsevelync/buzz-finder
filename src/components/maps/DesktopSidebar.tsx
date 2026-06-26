@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
-import SearchFilters from "../ui/SearchFilters";
+import SearchFilters from "../search/SearchFilters";
 import { PlainItem } from "@/model/Item";
 import FoundItemCard from "../dashboard/FoundItemCard";
 import { useSelectedPin } from "@/context/PinContext";

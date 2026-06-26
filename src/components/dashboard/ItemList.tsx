@@ -28,7 +28,7 @@ export default function ItemList({ items }: { items: PlainItem[] }) {
                 <div className="rounded-full p-4 border-2 border-foreground/20">
                     <LuCompass size={60} />
                 </div>
-                <p className="text-lg">No found items yet</p>
+                <p className="text-lg">No found items</p>
             </div>
         );
     }

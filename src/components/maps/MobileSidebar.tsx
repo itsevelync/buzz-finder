@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { PlainItem } from "@/model/Item";
 import { useSelectedPin } from "@/context/PinContext";
-import SearchFilters from "../ui/SearchFilters";
+import SearchFilters from "../search/SearchFilters";
 import FoundItemCard from "../dashboard/FoundItemCard";
 
 interface MobileSidebarProps {
