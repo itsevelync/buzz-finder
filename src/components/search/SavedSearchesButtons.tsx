@@ -2,11 +2,10 @@
 
 import { useModal } from "@/context/ModalContext";
 import SavedSearchesModal from "./SavedSearchesModal";
-import { FaRegBell } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { toast } from "react-toastify";
-import { LuStar } from "react-icons/lu";
+import { LuBell, LuStar } from "react-icons/lu";
 import { SavedSearchItem } from "@/model/SavedSearch";
 
 interface SavedSearchesButtonsProps {
@@ -108,16 +107,16 @@ export default function SavedSearchesButtons({
     };
 
     return (
-        <>
+        <div className="flex gap-2 sm:gap-3">
             {activeSearch && (
                 <button
                     className="shadow bg-buzz-gold/1 hover:bg-buzz-gold/6 text-xs text-foreground/90 border rounded-full py-1 px-2 border-buzz-gold/40 flex items-center gap-1.5"
                     onClick={handleSaveSearch}
                 >
-                    <LuStar className="text-buzz-gold" />{" "}
+                    <LuBell className="text-buzz-gold" />{" "}
                     {searchSaved
-                        ? "Search Alert Created!"
-                        : "Create Search Alert"}
+                        ? "Search Saved!"
+                        : "Save Search"}
                 </button>
             )}
             {savedSearches && savedSearches.length > 0 && (
@@ -125,10 +124,10 @@ export default function SavedSearchesButtons({
                     onClick={handleOpen}
                     className="flex items-center gap-2 px-2 py-1 border border-buzz-blue/30 rounded-full text-xs text-buzz-blue/90 bg-white hover:bg-buzz-blue/3 transition shadow-sm"
                 >
-                    <FaRegBell className="text-buzz-blue/70" />
-                    <span>Manage Alerts</span>
+                    <LuStar className="text-buzz-blue/70" />
+                    <span>Manage Saved Searches</span>
                 </button>
             )}
-        </>
+        </div>
     );
 }

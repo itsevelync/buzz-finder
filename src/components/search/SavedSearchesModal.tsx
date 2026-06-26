@@ -37,7 +37,7 @@ export default function SavedSearchesModal({
             });
             const body = await res.json();
             if (res.ok) {
-                toast.success("Search alert deleted successfully.");
+                toast.success("Saved search deleted successfully.");
                 setSearches((prev) => prev.filter((item) => item._id !== id));
             } else {
                 toast.error(body.error);
@@ -48,7 +48,7 @@ export default function SavedSearchesModal({
             toast.error(
                 err instanceof Error
                     ? err.message
-                    : "Could not delete search alert.",
+                    : "Could not delete saved search.",
             );
         }
     };

@@ -66,8 +66,18 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         type: "searchAlert",
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
-        getMessage: (_, __, detail) =>
-            <>An item was posted matching your saved search: <span className="font-bold">{detail}</span></>,
+        getMessage: (_, __, detail) => (
+            <>
+                An item was posted matching your saved search
+                {detail ? (
+                    <>
+                        : <span className="font-bold">{detail}</span>
+                    </>
+                ) : (
+                    <>.</>
+                )}
+            </>
+        ),
     },
     SYSTEM_ALERT: {
         label: "System Alert",
