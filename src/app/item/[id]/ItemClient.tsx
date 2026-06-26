@@ -1,6 +1,5 @@
 "use client";
 
-import { notFound } from "next/navigation";
 import Image from "next/image";
 import { FaChevronLeft } from "react-icons/fa";
 import Link from "next/link";
@@ -27,7 +26,22 @@ export default function ItemClient({ id }: ItemClientProps) {
     const item = items.find((i) => i._id.toString() === id);
 
     if (!item) {
-        return notFound();
+        return (
+            <div className="p-8 text-center max-w-xl m-auto h-full justify-center flex flex-col">
+                <h2 className="text-2xl font-bold text-foreground">
+                    Item Not Found
+                </h2>
+                <p className="text-foreground/80 mt-2">
+                    The found item you are looking for may have been deleted.
+                </p>
+                <Link
+                    href="/dashboard"
+                    className="mt-4 inline-block text-buzz-blue hover:underline"
+                >
+                    Return to dashboard
+                </Link>
+            </div>
+        );
     }
 
     const isOwner = user?._id && user._id === item.personFound?._id;

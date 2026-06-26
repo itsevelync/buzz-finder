@@ -9,6 +9,7 @@ import {
     useEffect,
     useState,
     ReactNode,
+    useCallback,
 } from "react";
 
 type PostAndItemContextType = {
@@ -38,7 +39,7 @@ export function PostAndItemProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const refresh = async () => {
+    const refresh = useCallback(async () => {
         try {
             setLoading(true);
             setError(false);
@@ -65,11 +66,11 @@ export function PostAndItemProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         refresh();
-    }, []);
+    }, [refresh]);
 
     const addItem = (item: PlainItem) => {
         setItems((prev) => [...prev, item]);

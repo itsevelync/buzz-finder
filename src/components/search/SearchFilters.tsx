@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useMemo, PointerEvent } from "react";
 import { FaSlidersH } from "react-icons/fa";
-import SearchBar from "../ui/SearchBar";
+import SearchBar from "./SearchBar";
 import { categories } from "@/constants/Categories";
 import { useUserLocation } from "@/context/UserLocationContext";
+import { calculateDistance } from "@/lib/itemUtils";
+import SavedSearchesButtons from "./SavedSearchesButtons";
 
 type DateSort = "newest" | "oldest";
 type DateRange = "all" | "24h" | "7d" | "14d" | "30d";
@@ -42,25 +44,8 @@ interface SearchFiltersProps<T> {
     ) => void;
     mobileSidebarHeight?: number;
     mobileSidebarSnapFULL?: number;
+    showSavedSearches?: boolean;
 }
-
-const calculateDistance = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number,
-): number => {
-    const R = 6371;
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-            Math.cos((lat2 * Math.PI) / 180) *
-            Math.sin(dLon / 2) *
-            Math.sin(dLon / 2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-};
 
 export default function SearchFilters<T extends FilterableItem>({
     items,
@@ -78,6 +63,7 @@ export default function SearchFilters<T extends FilterableItem>({
     mobileSidebarHandleSheetDragStart,
     mobileSidebarHeight,
     mobileSidebarSnapFULL,
+    showSavedSearches = false,
 }: SearchFiltersProps<T>) {
     const { currentPosition } = useUserLocation();
 
@@ -206,6 +192,11 @@ export default function SearchFilters<T extends FilterableItem>({
 
     const isCompact = width < 350;
 
+    const [savedSearchTerm, setSavedSearchTerm] = useState<string>("");
+    const hasSearchTerm = !!savedSearchTerm;
+    const hasNonDateFilters = activeFiltersCount > 0 && !(dateRange !== "all" && activeFiltersCount === 1);
+    const activeSearch = hasNonDateFilters || hasSearchTerm;
+
     return (
         <>
             <div
@@ -228,11 +219,14 @@ export default function SearchFilters<T extends FilterableItem>({
                                 items={items}
                                 setFilteredItems={setSearchedItems}
                                 searchableFields={searchableFields}
+                                setSavedSearchTerm={setSavedSearchTerm}
                             />
                         </div>
 
                         <button
-                            onClick={() => {setShowFilters(!showFilters)}}
+                            onClick={() => {
+                                setShowFilters(!showFilters);
+                            }}
                             className={`flex items-center justify-center gap-2 h-10 px-3 border rounded-lg transition text-sm font-medium ${
                                 showFilters || activeFiltersCount > 0
                                     ? "bg-gray-800 text-white border-gray-800"
@@ -441,9 +435,17 @@ export default function SearchFilters<T extends FilterableItem>({
                             </button>
                         </div>
                     )}
-                    <div className="text-xs text-gray-400 font-medium">
-                        {displayItems.length} item
-                        {displayItems.length !== 1 ? "s" : ""} found
+                    <div className="flex items-center gap-4">
+                        <div className="text-xs text-gray-400 font-medium">
+                            {displayItems.length} item
+                            {displayItems.length !== 1 ? "s" : ""} found
+                        </div>
+                        {showSavedSearches && <SavedSearchesButtons
+                            activeSearch={activeSearch}
+                            savedSearchTerm={savedSearchTerm}
+                            categoryFilter={categoryFilter}
+                            distanceFilter={distanceFilter}
+                        />}
                     </div>
                 </div>
             )}

@@ -77,6 +77,11 @@ export type PlainItem = Omit<Item, "_id" | "personFound"> & {
     personFound?: User;
 };
 
+export type PlainItem2 = Omit<Item, "_id" | "personFound"> & {
+    _id: string;
+    personFound?: string;
+};
+
 export type { Item };
 
 export default mongoose.models?.Item ??

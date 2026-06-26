@@ -11,7 +11,7 @@ interface ConfigItem {
     label: string;
     type: string;
     getImage: (notification: NotificationItemPayload) => string;
-    getLink: (resource: NotificationResource) => string;
+    getLink: (resource?: NotificationResource) => string;
     getMessage: (
         actorName: string,
         resource?: NotificationResource,
@@ -24,7 +24,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         label: "Match Found",
         type: "itemMatches",
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
-        getLink: (r) => `/item/${r._id}`,
+        getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) =>
             `A potential match was found for your item: "${detail}".`,
     },
@@ -32,7 +32,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         label: "Status Update",
         type: "itemStatusUpdates",
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
-        getLink: (r) => `/item/${r._id}`,
+        getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) => (
             <>
                 Your found item&rsquo;s status was changed to:{" "}
@@ -50,7 +50,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
             n.resource.deletedAt || !n.actor?.image
                 ? "/default-icon.svg"
                 : n.actor.image,
-        getLink: (r) => `/lost-item/${r.itemId}`,
+        getLink: (r) => `/lost-item/${r?.itemId ?? "deleted-item"}`,
         getMessage: (actor, resource) =>
             !resource?.deletedAt ? (
                 `${actor} left a note on your item: ${resource?.note}`
@@ -60,6 +60,14 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
                     <i className="opacity-60">This note was deleted</i>.
                 </>
             ),
+    },
+    SEARCH_ALERT: {
+        label: "Search Alert",
+        type: "searchAlert",
+        getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
+        getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
+        getMessage: (_, __, detail) =>
+            <>An item was posted matching your saved search: <span className="font-bold">{detail}</span></>,
     },
     SYSTEM_ALERT: {
         label: "System Alert",

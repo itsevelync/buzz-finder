@@ -7,7 +7,7 @@ import { PlainItem } from "@/model/Item";
 import { LostItemPost } from "@/model/LostItemPost";
 import ItemList from "./ItemList";
 import PostList from "./PostList";
-import SearchFilters from "../ui/SearchFilters";
+import SearchFilters from "../search/SearchFilters";
 import { usePostAndItem } from "@/context/PostAndItemContext";
 import PullToRefreshIndicator from "../ui/PullToRefreshIndicator";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
@@ -93,10 +93,10 @@ export default function LostFoundDashboardContainer() {
                                 searchableFields={[
                                     "name",
                                     "description",
-                                    "retrievalDescription",
                                     "locationDescription",
                                 ]}
                                 searchPlaceholder="Search found items"
+                                showSavedSearches
                             />
                         )}
                     </div>
