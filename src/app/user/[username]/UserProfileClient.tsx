@@ -53,9 +53,9 @@ export default function UserProfileClient({
 
             const chatId = data.conversationId;
             if (chatId) {
-                setChatURL("/messages?id=" + chatId);
+                setChatURL("/messages/" + chatId);
             } else {
-                setChatURL("/messages?id=pending-" + userProfile?._id);
+                setChatURL("/messages/pending-" + userProfile?._id);
             }
         }
         loadChatId();

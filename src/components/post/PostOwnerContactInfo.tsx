@@ -37,7 +37,7 @@ export default function PostOwnerContactInfo({
             if (!chatId) {
                 chatId = "pending-" + lost_item.user._id;
             }
-            router.push("/chat?id=" + chatId);
+            router.push("/chat/" + chatId);
         } catch {
             console.error("Error fetching chat.");
             setLoadingChat(false);

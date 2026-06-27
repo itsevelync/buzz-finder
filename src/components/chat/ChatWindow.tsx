@@ -148,6 +148,7 @@ export default function ChatWindow({
     const loadMessages = useCallback(
         async (conversationId: string) => {
             if (conversationId.startsWith("pending-")) {
+                setIsLoadingMessages(false);
                 setMessages([]);
                 setHasMoreOlderMessages(false);
                 return;
