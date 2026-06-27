@@ -24,10 +24,10 @@ export default function NotificationsPage() {
     const hasUnreadInCurrentView = filteredNotifications.some((n) => !n.isRead);
 
     return (
-        <div className="border w-full h-full shadow ml-auto bg-background text-foreground flex flex-col font-sans border-x border-foreground/10">
+        <div className="mx-auto max-w-5xl w-full h-full flex flex-col">
             {/* Minimal Header */}
-            <div className="flex justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-1 sm:pb-2">
-                <h1 className="text-2xl font-semibold text-buzz-blue">
+            <div className="flex justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-2 sm:pb-3">
+                <h1 className="text-3xl font-semibold text-buzz-blue">
                     Notifications
                 </h1>
                 {hasUnreadInCurrentView && (
@@ -47,7 +47,7 @@ export default function NotificationsPage() {
                     <button
                         key={tab}
                         onClick={() => setFilter(tab)}
-                        className={`px-4 py-3 capitalize font-medium text-sm border-b-2 transition-all relative ${
+                        className={`px-6 py-3 capitalize font-medium border-b-2 transition-all relative ${
                             filter === tab
                                 ? "border-buzz-blue text-buzz-blue"
                                 : "border-transparent text-foreground/40 hover:text-foreground/70"
