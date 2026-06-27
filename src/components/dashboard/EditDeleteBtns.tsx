@@ -63,7 +63,7 @@ export default function EditDeleteBtns({
     }
 
     return (
-        <div className="flex gap-2 mt-5">
+        <div className="flex gap-2">
             <Link
                 href={editURL}
                 className="hover:bg-buzz-gold/8 hover:saturate-150 flex gap-2 px-4 py-1 text-buzz-gold border border-buzz-gold rounded-full items-center transition"

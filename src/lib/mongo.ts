@@ -5,6 +5,7 @@ import "@/model/LostItemPost";
 import "@/model/ItemNote";
 import "@/model/Message";
 import "@/model/Notification";
+import "@/model/ItemMatch";
 
 export async function dbConnect() {
     try {

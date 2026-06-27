@@ -58,9 +58,7 @@ export default function SubmitItemNote({
         <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-5">
                 <div>
-                    <h2 className="text-xl font-bold">
-                        Found the item or have potential leads?
-                    </h2>
+                    <h2 className="text-xl font-bold">Have potential leads?</h2>
 
                     <p className="text-sm text-gray-600 mt-2">
                         If you have information about this item, contact the
