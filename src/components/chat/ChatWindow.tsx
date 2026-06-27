@@ -73,7 +73,8 @@ export default function ChatWindow({
     const [messages, setMessages] = useState<ChatMessageSummary[]>([]);
     const [draftMessage, setDraftMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
-    const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+    const [isLoadingMessages, setIsLoadingMessages] =
+        useState(!!activeConversationId);
     const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
     const [hasMoreOlderMessages, setHasMoreOlderMessages] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -152,20 +153,21 @@ export default function ChatWindow({
                 return;
             }
 
+            const cachedMessages = messageCache[conversationId];
+
+            if (cachedMessages) {
+                setIsLoadingMessages(false);
+                setMessages(cachedMessages);
+                setHasMoreOlderMessages(
+                    cachedMessages.length >= MESSAGE_PAGE_SIZE,
+                );
+                scrollBehaviorRef.current = "auto";
+                return;
+            }
+
             setIsLoadingMessages(true);
 
             try {
-                const cachedMessages = messageCache[conversationId];
-
-                if (cachedMessages) {
-                    setMessages(cachedMessages);
-                    setHasMoreOlderMessages(
-                        cachedMessages.length >= MESSAGE_PAGE_SIZE,
-                    );
-                    scrollBehaviorRef.current = "auto";
-                    return;
-                }
-
                 const data = await fetchMessagePage(conversationId);
                 setMessages(data);
                 setHasMoreOlderMessages(data.length >= MESSAGE_PAGE_SIZE);
@@ -338,6 +340,7 @@ export default function ChatWindow({
         if (!activeConversationId) {
             setMessages([]);
             setHasMoreOlderMessages(true);
+            setIsLoadingMessages(false);
             return;
         }
 
@@ -345,23 +348,21 @@ export default function ChatWindow({
     }, [activeConversationId, loadMessages]);
 
     useEffect(() => {
-        // If no scroll was requested, don't do anything
         if (!scrollBehaviorRef.current) return;
 
         const currentBehavior = scrollBehaviorRef.current;
 
-        const timer = setTimeout(() => {
+        // Use requestAnimationFrame for instantaneous execution before the next repaint
+        const handle = requestAnimationFrame(() => {
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollIntoView({
                     behavior: currentBehavior,
                 });
-
-                // Clear the request so it doesn't fire aggressively on unrelated re-renders
                 scrollBehaviorRef.current = null;
             }
-        }, 50);
+        });
 
-        return () => clearTimeout(timer);
+        return () => cancelAnimationFrame(handle);
     }, [messages]);
 
     const upsertConversation = (nextConversation: ConversationSummary) => {
