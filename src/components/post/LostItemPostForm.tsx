@@ -279,7 +279,11 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
     }
 
     if (loading || !lostItemPosts?.length) {
-        return <div>Loading...</div>;
+        return (
+            <div className="w-full flex h-[calc(50vh-50px)] items-center justify-center">
+                Loading...
+            </div>
+        );
     }
 
     return (

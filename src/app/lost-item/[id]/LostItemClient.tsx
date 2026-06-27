@@ -26,6 +26,7 @@ import ShareModal from "@/components/post/ShareModal";
 import { useModal } from "@/context/ModalContext";
 import { usePostAndItem } from "@/context/PostAndItemContext";
 import MatchFoundItem from "@/components/post/MatchFoundItem";
+import Loading from "@/app/loading";
 
 interface LostItemClientProps {
     id: string;
@@ -76,7 +77,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
     }
 
     if (!lostItemPosts.length) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (!lost_item) {

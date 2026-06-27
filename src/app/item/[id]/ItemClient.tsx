@@ -10,6 +10,7 @@ import ItemStatusActions from "@/components/report-item/ItemStatusActions";
 import { usePostAndItem } from "@/context/PostAndItemContext";
 import { useUser } from "@/context/UserContext";
 import { ContactInfoList } from "@/components/profile/ContactInfoList";
+import Loading from "@/app/loading";
 
 interface ItemClientProps {
     id: string;
@@ -20,7 +21,7 @@ export default function ItemClient({ id }: ItemClientProps) {
     const { items } = usePostAndItem();
 
     if (!items.length) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const item = items.find((i) => i._id.toString() === id);

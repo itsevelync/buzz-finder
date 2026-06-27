@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import LostFoundDashboardContainer from "@/components/dashboard/LostFoundDashboardContainer";
 import { Metadata } from "next";
+import Loading from "../loading";
 
 export const metadata: Metadata = {
     title: "Dashboard - BuzzFinder",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 export default async function Home() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loading />}>
             <LostFoundDashboardContainer />
         </Suspense>
     );
