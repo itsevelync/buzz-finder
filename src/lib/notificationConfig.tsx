@@ -26,7 +26,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, resource, detail) =>
-            <>Your item "{detail}" has a potential match:  <span className="font-bold">{resource?.name}</span>.</>,
+            <>Your item &ldquo;{detail}&rdquo; has a potential match:  <span className="font-bold">{resource?.name}</span>.</>,
     },
     ITEM_UPDATE: {
         label: "Status Update",
