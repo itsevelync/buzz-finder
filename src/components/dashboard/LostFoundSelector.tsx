@@ -20,7 +20,7 @@ export default function LostFoundSelector({
                 }
                 onClick={() => setLostItemsSelected(false)}
             >
-                <h1>Found Items</h1>
+                <h1 className="text-center">Found Items</h1>
             </div>
             <div
                 className={
@@ -30,7 +30,7 @@ export default function LostFoundSelector({
                 }
                 onClick={() => setLostItemsSelected(true)}
             >
-                <h1>Lost Items</h1>
+                <h1 className="text-center">Lost Items</h1>
             </div>
         </div>
     );
