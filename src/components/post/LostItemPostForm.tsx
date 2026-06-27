@@ -19,9 +19,19 @@ import { FaChevronLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { usePostAndItem } from "@/context/PostAndItemContext";
+import LostItemSearchAlert from "./LostItemSearchAlert";
+import { ISavedSearch } from "@/model/SavedSearch";
 
 interface LostItemPostFormProps {
     id?: string;
+}
+
+interface AlertData {
+    query: string;
+    categories: string[];
+    maxDistance: number | null;
+    locationPin: { lat: number; lng: number } | null | undefined;
+    linkedLostItem: string | null;
 }
 
 export default function LostItemPostForm({ id }: LostItemPostFormProps) {
@@ -39,9 +49,52 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
         item ? !!item.user : !!userId,
     );
 
+    const emptyAlert = {
+        query: item?.name ?? "",
+        categories: item?.category ? [item.category] : [],
+        maxDistance: 1,
+        locationPin: item?.locationPin ?? currentPosition,
+        linkedLostItem: item?._id.toString() ?? null,
+    };
+    const [alertPayload, setAlertPayload] = useState<AlertData>(emptyAlert);
+    const [initialAlertPayload, setInitialAlertPayload] =
+        useState<ISavedSearch | null>(null);
+    const [alertEnabled, setAlertEnabled] = useState(false);
+    const [useDefaultAlert, setUseDefaultAlert] = useState(true);
+
     useEffect(() => {
         setUseAccountInfo(item ? !!item.user : !!userId);
     }, [item, userId]);
+
+    // If editing an item, look up if a linked saved search exists
+    useEffect(() => {
+        if (item?._id) {
+            fetch(`/api/saved-searches?linkedLostItem=${item._id}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data && !data.error) {
+                        // Populate configuration states right back into our tracker
+                        setAlertPayload({
+                            query: data.query ?? "",
+                            categories: data.categories ?? [],
+                            maxDistance: data.maxDistance ?? null,
+                            locationPin: data.locationPin ?? null,
+                            linkedLostItem: item?._id.toString() ?? null,
+                        });
+                        setInitialAlertPayload(data);
+                        setAlertEnabled(true);
+                        setUseDefaultAlert(false);
+                    } else {
+                        setAlertEnabled(false);
+                        setUseDefaultAlert(true);
+                    }
+                })
+                .catch(() => {
+                    setAlertEnabled(false);
+                    setUseDefaultAlert(true);
+                });
+        }
+    }, [item]);
 
     // Map State
     const [showMap, setShowMap] = useState(item ? !!item.locationPin : true);
@@ -53,9 +106,25 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
 
     // Media State
     const [file, setFile] = useState<File | null>(null);
+    const [itemName, setItemName] = useState(item?.name ?? "");
     const [category, setCategory] = useState<keyof typeof categories | "">(
         item?.category ?? "",
     );
+
+    useEffect(() => {
+        setItemName(item?.name ?? "");
+        setCategory(item?.category ?? "");
+        setSelectedLocation(item?.locationPin ?? currentPosition ?? gtCampus);
+
+        setAlertPayload({
+            query: item?.name ?? "",
+            categories: item?.category ? [item.category] : [],
+            maxDistance: 1,
+            locationPin: item?.locationPin ?? currentPosition,
+            linkedLostItem: item?._id.toString() ?? null,
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [item, currPositionFetched]);
 
     const categoryOptions = Object.entries(categories).map(([key, value]) => ({
         value: key,
@@ -163,6 +232,26 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
             );
 
             if (res.ok) {
+                if (alertEnabled) {
+                    await fetch("/api/saved-searches", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(alertPayload),
+                    });
+                } else if (initialAlertPayload) {
+                    await fetch(
+                        `/api/saved-searches/${initialAlertPayload._id}`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                        },
+                    );
+                }
+
                 if (item) {
                     toast.success("Lost item updated successfully");
                     router.push("/lost-item/" + item._id);
@@ -294,7 +383,8 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                             name="name"
                             placeholder="e.g., Silver iPhone 15 Pro with clear case"
                             required
-                            defaultValue={item?.name}
+                            value={itemName}
+                            onInputChange={(e) => setItemName(e.target.value)}
                         />
 
                         <FormInput
@@ -413,6 +503,23 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                                 </>
                             )}
                         </div>
+
+                        {userId && (
+                            <LostItemSearchAlert
+                                alertEnabled={alertEnabled}
+                                setAlertEnabled={setAlertEnabled}
+                                useDefaultAlert={useDefaultAlert}
+                                setUseDefaultAlert={setUseDefaultAlert}
+                                formItemName={itemName}
+                                formCategory={category}
+                                formLocationPin={
+                                    showMap ? selectedLocation : null
+                                }
+                                lostItemId={id ?? null}
+                                alertPayload={alertPayload}
+                                setAlertPayload={setAlertPayload}
+                            />
+                        )}
 
                         <button type="submit" disabled={isSubmitting}>
                             {isSubmitting

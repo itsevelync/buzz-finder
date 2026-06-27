@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { LuMapPin, LuStar, LuTrash2, LuX } from "react-icons/lu";
 import { useModal } from "@/context/ModalContext";
 import { SavedSearchItem } from "@/model/SavedSearch";
+import Link from "next/link";
 
 interface SavedSearchesModalProps {
     searches: SavedSearchItem[];
@@ -135,6 +136,16 @@ export default function SavedSearchesModal({
                                             )}
                                         </div>
                                     )}
+
+                                {search.linkedLostItem && (
+                                    <Link
+                                        className="text-xs italic opacity-50 underline"
+                                        onClick={closeModal}
+                                        href={`/lost-item/${search.linkedLostItem}`}
+                                    >
+                                        View Linked Item
+                                    </Link>
+                                )}
                             </div>
 
                             {/* Delete Trigger Button */}

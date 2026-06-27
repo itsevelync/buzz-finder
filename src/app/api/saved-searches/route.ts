@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 /**
  * GET: Retrieves all saved searches belonging to the authenticated user.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
         await dbConnect();
 
@@ -23,11 +23,24 @@ export async function GET() {
         }
 
         // 2. Fetch searches matching the logged-in user
-        const searches = await SavedSearch.find({ userId })
-            .sort({ createdAt: -1 })
-            .lean();
+        const linkedLostItem =
+            request.nextUrl.searchParams.get("linkedLostItem");
+        const query: { userId: string; linkedLostItem?: string } = { userId };
 
-        return new NextResponse(JSON.stringify(searches), {
+        let result;
+
+        if (linkedLostItem) {
+            query.linkedLostItem = linkedLostItem;
+            result = await SavedSearch.findOne(query)
+                .sort({ createdAt: -1 })
+                .lean();
+        } else {
+            result = await SavedSearch.find(query)
+                .sort({ createdAt: -1 })
+                .lean();
+        }
+
+        return new NextResponse(JSON.stringify(result), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
@@ -61,7 +74,8 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { query, categories, maxDistance, locationPin } = body;
+        const { query, categories, maxDistance, locationPin, linkedLostItem } =
+            body;
 
         const hasQuery = typeof query === "string" && query.trim().length > 0;
         const hasCategories =
@@ -73,9 +87,7 @@ export async function POST(req: NextRequest) {
 
         if (!hasQuery && !hasCategories && !hasDistance) {
             return new NextResponse(
-                JSON.stringify({
-                    error: "Cannot save an empty search. Provide a keyword, category, or distance filter.",
-                }),
+                JSON.stringify({ error: "Cannot save an empty search." }),
                 { status: 400 },
             );
         }
@@ -88,10 +100,18 @@ export async function POST(req: NextRequest) {
             ? { lat: locationPin.lat, lng: locationPin.lng }
             : null;
 
+        // Saved searches with a linked lost item expire in 3 weeks
+        let expiresAt: Date | null = null;
+        if (linkedLostItem) {
+            expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 21);
+        }
+
         const existingSearchQuery: Record<string, unknown> = {
             userId,
             query: cleanQuery,
             maxDistance: cleanMaxDistance,
+            linkedLostItem: linkedLostItem || null,
         };
 
         if (cleanCategories.length > 0) {
@@ -111,7 +131,6 @@ export async function POST(req: NextRequest) {
         }
 
         const existingSearch = await SavedSearch.findOne(existingSearchQuery);
-
         if (existingSearch) {
             return new NextResponse(
                 JSON.stringify({
@@ -127,9 +146,20 @@ export async function POST(req: NextRequest) {
             categories: cleanCategories,
             maxDistance: cleanMaxDistance,
             locationPin: cleanLocationPin,
+            linkedLostItem: linkedLostItem || null,
+            expiresAt,
         };
 
-        const newSavedSearch = await SavedSearch.create(savedSearchData);
+        let newSavedSearch;
+        if (linkedLostItem) {
+            newSavedSearch = await SavedSearch.findOneAndUpdate(
+                { linkedLostItem: linkedLostItem },
+                savedSearchData,
+                { upsert: true, new: true, runValidators: true },
+            );
+        } else {
+            newSavedSearch = await SavedSearch.create(savedSearchData);
+        }
 
         return new NextResponse(JSON.stringify(newSavedSearch), {
             status: 201,
