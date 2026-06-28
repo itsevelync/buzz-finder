@@ -1,6 +1,6 @@
 <div align="center">
     <picture>
-        <img src="public/images/buzzfinder-logo.png" alt="BuzzFinder Logo" width="100"/>
+        <img src="public/images/buzzfinder-logo.png" alt="BuzzFinder Logo" width="100" style="margin: -5px -5px -10px -5px;" />
     </picture>
     <h1>BuzzFinder</h1>
     <i>Reconnecting People With Lost Items</i>
