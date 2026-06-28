@@ -1,13 +1,16 @@
 import { User } from "@/model/User";
 
-export function sanitizeUser(user: User | undefined | null, viewerId?: string) {
+export function sanitizeUser(user: User | null | undefined, viewerId?: string) {
     if (!user) return user;
 
-    const isOwner = viewerId === user._id.toString();
+    const sanitized = { ...user };
+    const isOwner = viewerId === sanitized._id.toString();
 
-    if (user.hideEmail && !isOwner) {
-        delete user.email;
+    if (sanitized.hideEmail && !isOwner) {
+        delete sanitized.email;
     }
 
-    return user;
+    delete sanitized.hideEmail;
+
+    return sanitized;
 }
