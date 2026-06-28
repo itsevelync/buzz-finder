@@ -4,6 +4,7 @@ import ItemNoteSchema from "@/model/ItemNote";
 import LostItemPostModel from "@/model/LostItemPost";
 import { sendNotification } from "@/actions/Notification";
 import ItemNoteModel, { ItemNote } from "@/model/ItemNote";
+import { sanitizeUser } from "@/lib/userUtils";
 
 export async function GET(request: NextRequest) {
     try {
@@ -11,21 +12,13 @@ export async function GET(request: NextRequest) {
 
         const itemId = request.nextUrl.searchParams.get("itemId");
 
-        let notes = await ItemNoteModel.find(
-            itemId ? { itemId } : {},
-        )
+        let notes = await ItemNoteModel.find(itemId ? { itemId } : {})
             .populate("user")
             .sort({ createdAt: 1 })
             .lean<ItemNote[]>();
 
         notes = notes.map((note) => {
-            if (note.user) {
-                if (note.user.hideEmail) {
-                    delete note.user.email;
-                }
-
-                delete note.user.hideEmail;
-            }
+            note.user = sanitizeUser(note.user);
 
             return note;
         });
@@ -107,9 +100,7 @@ export async function POST(req: NextRequest) {
         // 3. Complete the cleanup work for client response
         newItemNote = newItemNote.toObject();
 
-        if (newItemNote.user?.hideEmail) {
-            delete newItemNote.user.email;
-        }
+        newItemNote.user = sanitizeUser(newItemNote.user);
 
         return new Response(JSON.stringify(newItemNote), { status: 201 });
     } catch (e: unknown) {

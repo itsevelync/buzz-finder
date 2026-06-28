@@ -62,7 +62,7 @@ const LostItemPostSchema = new Schema(
 
 type LostItemPost = InferSchemaType<typeof LostItemPostSchema> & {
     _id: ObjectId;
-    user?: User;
+    user?: User | null;
 };
 
 export type LostItemPost2 = InferSchemaType<typeof LostItemPostSchema> & {

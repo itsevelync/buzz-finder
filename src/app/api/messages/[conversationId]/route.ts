@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { dbConnect } from "@/lib/mongo";
 import { toChatMessageSummary } from "@/lib/chat";
-import Conversation, { ConversationType } from "@/model/Conversation"; // ✨ Imported ConversationType
+import Conversation, { ConversationType } from "@/model/Conversation";
 import Message from "@/model/Message";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
@@ -18,7 +18,7 @@ interface LeanMessage {
 
 export async function GET(
     request: Request,
-    { params }: { params: Promise<{ conversationId: string }> }
+    { params }: { params: Promise<{ conversationId: string }> },
 ) {
     try {
         const session = await auth();
@@ -34,14 +34,20 @@ export async function GET(
             return new NextResponse("Invalid conversation", { status: 400 });
         }
 
-        // ✨ Tell lean exactly what single object type this returns
-        const conversation = await Conversation.findById(conversationId).lean<ConversationType>();
+        const conversation =
+            await Conversation.findById(
+                conversationId,
+            ).lean<ConversationType>();
 
         if (!conversation) {
             return new NextResponse("Conversation not found", { status: 404 });
         }
 
-        if (!conversation.participants.some((p) => p.userId === session.user?._id)) {
+        if (
+            !conversation.participants.some(
+                (p) => p.userId === session.user?._id,
+            )
+        ) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 
@@ -53,7 +59,8 @@ export async function GET(
 
         const beforeParam = searchParams.get("before");
         const beforeDate = beforeParam ? new Date(beforeParam) : null;
-        const hasValidBefore = beforeDate !== null && !Number.isNaN(beforeDate.getTime());
+        const hasValidBefore =
+            beforeDate !== null && !Number.isNaN(beforeDate.getTime());
 
         const query: {
             conversationId: string;
@@ -69,12 +76,10 @@ export async function GET(
         const messages = await Message.find(query)
             .sort({ createdAt: -1 })
             .limit(limit)
-            .lean<LeanMessage[]>(); // ✨ Typed as an array of messages
+            .lean<LeanMessage[]>();
 
         return NextResponse.json(
-            messages
-                .reverse()
-                .map((message) => toChatMessageSummary(message)),
+            messages.reverse().map((message) => toChatMessageSummary(message)),
         );
     } catch (error) {
         console.error(error);

@@ -38,7 +38,7 @@ function createConversationSummary(
         _id: conversation._id.toString(),
         participants: conversation.participants.map((participant) => ({
             userId: participant.userId.toString(),
-            lastReadAt: participant.lastReadAt
+            lastReadAt: participant.lastReadAt,
         })),
         lastMessageAt: new Date(conversation.lastMessageAt).toISOString(),
         partner,
@@ -66,16 +66,21 @@ export async function GET(request: NextRequest) {
                 $size: 2, // Ensures it's a direct 1-on-1 chat
                 $all: [
                     { $elemMatch: { userId: userId } },
-                    { $elemMatch: { userId: partnerId } }
-                ]
-            }
-        }).select("_id").lean<{ _id: string }>();
+                    { $elemMatch: { userId: partnerId } },
+                ],
+            },
+        })
+            .select("_id")
+            .lean<{ _id: string }>();
 
         if (!conversation) {
             return NextResponse.json({ conversationId: null }, { status: 404 });
         }
 
-        return NextResponse.json({ conversationId: conversation._id.toString() }, { status: 200 });
+        return NextResponse.json(
+            { conversationId: conversation._id.toString() },
+            { status: 200 },
+        );
     }
 
     // Case B: Fetch ALL conversations
@@ -91,14 +96,16 @@ export async function GET(request: NextRequest) {
 
     const lastMessages = conversationIds.length
         ? await Message.find({ conversationId: { $in: conversationIds } })
-            .sort({ createdAt: -1 })
-            .lean<LeanMessage[]>()
+              .sort({ createdAt: -1 })
+              .lean<LeanMessage[]>()
         : [];
 
     const latestMessageByConversation = new Map<string, ChatMessageSummary>();
     for (const message of lastMessages) {
         const summarizedMessage = toChatMessageSummary(message);
-        if (!latestMessageByConversation.has(summarizedMessage.conversationId)) {
+        if (
+            !latestMessageByConversation.has(summarizedMessage.conversationId)
+        ) {
             latestMessageByConversation.set(
                 summarizedMessage.conversationId,
                 summarizedMessage,
@@ -111,15 +118,15 @@ export async function GET(request: NextRequest) {
             conversations.flatMap((conversation) =>
                 conversation.participants
                     .map((p) => p.userId.toString())
-                    .filter((id) => id !== userId)
+                    .filter((id) => id !== userId),
             ),
         ),
     );
 
     const partners = partnerIds.length
         ? await User.find({ _id: { $in: partnerIds } })
-            .select("name username image")
-            .lean<UserSearchResult[]>()
+              .select("name username image")
+              .lean<UserSearchResult[]>()
         : [];
 
     const partnersById = new Map<string, ChatUserSummary>();
@@ -130,15 +137,16 @@ export async function GET(request: NextRequest) {
 
     const conversationSummaries = conversations.map((conversation) => {
         const partner = conversation.participants.find(
-            (participant) => participant.userId !== userId
+            (participant) => participant.userId !== userId,
         );
 
         const partnerId = partner?.userId;
 
         return createConversationSummary(
             conversation,
-            partnerId ? partnersById.get(partnerId) ?? null : null,
-            latestMessageByConversation.get(conversation._id.toString()) ?? null,
+            partnerId ? (partnersById.get(partnerId) ?? null) : null,
+            latestMessageByConversation.get(conversation._id.toString()) ??
+                null,
         );
     });
 
@@ -163,7 +171,10 @@ export async function POST(request: Request) {
         !mongoose.Types.ObjectId.isValid(participantId) ||
         participantId === userId
     ) {
-        return NextResponse.json({ error: "Invalid participant" }, { status: 400 });
+        return NextResponse.json(
+            { error: "Invalid participant" },
+            { status: 400 },
+        );
     }
 
     const participant = await User.findById(participantId)
@@ -178,8 +189,8 @@ export async function POST(request: Request) {
         $and: [
             { participants: { $elemMatch: { userId: userId } } },
             { participants: { $elemMatch: { userId: participantId } } },
-            { participants: { $size: 2 } } // Ensures it's a 1-on-1 chat, not a group chat
-        ]
+            { participants: { $size: 2 } }, // Ensures it's a 1-on-1 chat, not a group chat
+        ],
     }).lean<ConversationType>();
 
     const conversation: ConversationType =
@@ -187,10 +198,13 @@ export async function POST(request: Request) {
         (await Conversation.create({
             participants: [
                 { userId: userId, lastReadAt: new Date() },
-                { userId: participantId, lastReadAt: new Date() }
+                { userId: participantId, lastReadAt: new Date() },
             ],
             lastMessageAt: new Date(),
-        }).then((createdConversation) => createdConversation.toObject() as ConversationType));
+        }).then(
+            (createdConversation) =>
+                createdConversation.toObject() as ConversationType,
+        ));
 
     const conversationSummary = createConversationSummary(
         conversation,

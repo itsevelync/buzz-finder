@@ -107,13 +107,13 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
     // Media State
     const [file, setFile] = useState<File | null>(null);
     const [itemName, setItemName] = useState(item?.name ?? "");
-    const [category, setCategory] = useState<keyof typeof categories | "">(
-        item?.category ?? "",
+    const [category, setCategory] = useState<keyof typeof categories>(
+        item?.category ?? "misc",
     );
 
     useEffect(() => {
         setItemName(item?.name ?? "");
-        setCategory(item?.category ?? "");
+        setCategory(item?.category ?? "misc");
         setSelectedLocation(item?.locationPin ?? currentPosition ?? gtCampus);
 
         setAlertPayload({
@@ -201,6 +201,8 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                     lat: selectedLocation.lat,
                     lng: selectedLocation.lng,
                 };
+            } else {
+                body.locationPin = null;
             }
 
             // 3. Bind successfully resolved media payloads

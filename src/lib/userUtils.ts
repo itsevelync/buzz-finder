@@ -10,7 +10,9 @@ export function sanitizeUser(user: User | null | undefined, viewerId?: string) {
         delete sanitized.email;
     }
 
+    delete sanitized.password;
     delete sanitized.hideEmail;
+    delete sanitized.notificationPreferences;
 
     return sanitized;
 }

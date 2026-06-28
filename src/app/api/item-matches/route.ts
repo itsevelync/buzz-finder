@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
         const lostItemId = searchParams.get("lostItemId");
         const foundItemId = searchParams.get("foundItemId");
 
-        const query: { lostItemId?: string, foundItemId?: string } = {};
+        const query: { lostItemId?: string; foundItemId?: string } = {};
         if (lostItemId) query.lostItemId = lostItemId;
         if (foundItemId) query.foundItemId = foundItemId;
 
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
             .populate("foundItemId")
             .lean<IItemMatch>();
 
-        if (!match) return new Response(JSON.stringify({}), { status: 200 });
+        if (!match) return new Response(JSON.stringify(match), { status: 200 });
 
         const transformedMatch = {
             lostItem: match.lostItemId,
@@ -34,9 +34,16 @@ export async function GET(req: NextRequest) {
         return new Response(JSON.stringify(transformedMatch), { status: 200 });
     } catch (error: unknown) {
         if (error instanceof Error) {
-            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+            });
         } else {
-            return new Response(JSON.stringify({ error: "Failed to fetch item matches. Unknown server error." }), { status: 500 });
+            return new Response(
+                JSON.stringify({
+                    error: "Failed to fetch item matches. Unknown server error.",
+                }),
+                { status: 500 },
+            );
         }
     }
 }
@@ -57,24 +64,23 @@ export async function POST(req: NextRequest) {
 
         if (!lostItemId || !foundItemId) {
             return new Response(
-                JSON.stringify({ error: "Both lostItemId and foundItemId are required" }),
-                { status: 400 }
+                JSON.stringify({
+                    error: "Both lostItemId and foundItemId are required",
+                }),
+                { status: 400 },
             );
         }
 
         // Search for an existing match where EITHER the lostItemId OR the foundItemId is already mapped
         // This ensures IDs remain unique to a single match relationship.
         const filter = {
-            $or: [
-                { lostItemId },
-                { foundItemId }
-            ]
+            $or: [{ lostItemId }, { foundItemId }],
         };
 
         const update = {
-            userId,      // Update with the incoming userId
-            lostItemId,  // Keeps it consistent or updates if only one matched
-            foundItemId
+            userId, // Update with the incoming userId
+            lostItemId, // Keeps it consistent or updates if only one matched
+            foundItemId,
         };
 
         // upsert: true -> creates it if it doesn't exist, updates if it does
@@ -82,12 +88,17 @@ export async function POST(req: NextRequest) {
         const match = await ItemMatch.findOneAndUpdate(filter, update, {
             upsert: true,
             new: true,
-            runValidators: true
-        }).populate("lostItemId")
+            runValidators: true,
+        })
+            .populate("lostItemId")
             .populate("foundItemId")
             .lean<ItemMatchPostReturn>();
 
-        if (!match) return new Response(JSON.stringify({ error: "Unknown error posting item match." }), { status: 500 });
+        if (!match)
+            return new Response(
+                JSON.stringify({ error: "Unknown error posting item match." }),
+                { status: 500 },
+            );
 
         const transformedMatch = {
             lostItem: match.lostItemId,
@@ -95,7 +106,10 @@ export async function POST(req: NextRequest) {
         };
 
         // Only notify the lost item owner if someone ELSE matched the item
-        if (transformedMatch.lostItem.user && transformedMatch.lostItem.user !== userId) {
+        if (
+            transformedMatch.lostItem.user &&
+            transformedMatch.lostItem.user !== userId
+        ) {
             await sendNotification({
                 recipient: transformedMatch.lostItem.user,
                 actor: userId,
@@ -109,9 +123,16 @@ export async function POST(req: NextRequest) {
         return new Response(JSON.stringify(transformedMatch), { status: 200 });
     } catch (error: unknown) {
         if (error instanceof Error) {
-            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+            });
         } else {
-            return new Response(JSON.stringify({ error: "Failed to post item match. Unknown server error." }), { status: 500 });
+            return new Response(
+                JSON.stringify({
+                    error: "Failed to post item match. Unknown server error.",
+                }),
+                { status: 500 },
+            );
         }
     }
 }
@@ -125,29 +146,49 @@ export async function DELETE(req: NextRequest) {
         const lostItemId = searchParams.get("lostItemId");
         const foundItemId = searchParams.get("foundItemId");
 
-        const query: { lostItemId?: string, foundItemId?: string } = {};
+        const query: { lostItemId?: string; foundItemId?: string } = {};
         if (lostItemId) query.lostItemId = lostItemId;
         if (foundItemId) query.foundItemId = foundItemId;
 
         if (!lostItemId && !foundItemId) {
             return new Response(
-                JSON.stringify({ error: "Must provide either lostItemId or foundItemId to delete" }),
-                { status: 400 }
+                JSON.stringify({
+                    error: "Must provide either lostItemId or foundItemId to delete",
+                }),
+                { status: 400 },
             );
         }
 
         const deletedMatch = await ItemMatch.findOneAndDelete(query);
 
         if (!deletedMatch) {
-            return new Response(JSON.stringify({ message: "No matching record found to delete" }), { status: 404 });
+            return new Response(
+                JSON.stringify({
+                    message: "No matching record found to delete",
+                }),
+                { status: 404 },
+            );
         }
 
-        return new Response(JSON.stringify({ message: "Match deleted successfully", deletedMatch }), { status: 200 });
+        return new Response(
+            JSON.stringify({
+                message: "Match deleted successfully",
+                deletedMatch,
+            }),
+            { status: 200 },
+        );
     } catch (error: unknown) {
         if (error instanceof Error) {
-            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+            return new Response(JSON.stringify({ error: error.message }), {
+                status: 500,
+            });
         } else {
-            return new Response(JSON.stringify({ error: "Failed to delete item match. Unknown server error." }), { status: 500 });
+            return new Response(
+                JSON.stringify({
+                    error: "Failed to delete item match. Unknown server error.",
+                }),
+                { status: 500 },
+            );
         }
     }
 }

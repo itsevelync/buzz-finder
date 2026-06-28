@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: Promise<{ conversationId: string }> }
+    { params }: { params: Promise<{ conversationId: string }> },
 ) {
     const session = await auth();
     const userId = session?.user?._id;
@@ -21,7 +21,10 @@ export async function POST(
 
     // 2. Validate Conversation ID format
     if (!conversationId || !mongoose.Types.ObjectId.isValid(conversationId)) {
-        return NextResponse.json({ error: "Invalid conversation ID" }, { status: 400 });
+        return NextResponse.json(
+            { error: "Invalid conversation ID" },
+            { status: 400 },
+        );
     }
 
     await dbConnect();
@@ -30,19 +33,19 @@ export async function POST(
     const updatedConversation = await Conversation.findOneAndUpdate(
         {
             _id: conversationId,
-            "participants.userId": userId // Ensures user is part of this conversation
+            "participants.userId": userId, // Ensures user is part of this conversation
         },
         {
-            $set: { "participants.$.lastReadAt": new Date() }
+            $set: { "participants.$.lastReadAt": new Date() },
         },
-        { new: true } // Returns the document after modifications
+        { new: true }, // Returns the document after modifications
     ).lean();
 
     // If no document was modified, the chat either doesn't exist or the user isn't in it
     if (!updatedConversation) {
         return NextResponse.json(
             { error: "Conversation not found or access denied" },
-            { status: 404 }
+            { status: 404 },
         );
     }
 
