@@ -1,4 +1,3 @@
-// src/components/icons/BuzzBotIcon.tsx
 import type { IconBaseProps } from "react-icons";
 
 export const LuBeeFill = ({ className, size = "1em" }: IconBaseProps) => {

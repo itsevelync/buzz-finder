@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Search for an existing match where EITHER the lostItemId OR the foundItemId is already mapped
-        // This ensures IDs remain unique to a single match relationship if that's your business logic.
+        // This ensures IDs remain unique to a single match relationship.
         const filter = {
             $or: [
                 { lostItemId },

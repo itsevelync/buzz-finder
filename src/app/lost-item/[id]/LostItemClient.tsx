@@ -42,7 +42,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
     async function getItemNotes(itemId: string) {
         try {
             const res = await fetch(
-                `/api/lost-item-posts/${itemId}/item-notes`,
+                `/api/item-notes/?itemId=${itemId}`,
             );
 
             if (!res.ok) {

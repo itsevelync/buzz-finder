@@ -38,7 +38,7 @@ function createConversationSummary(
         _id: conversation._id.toString(),
         participants: conversation.participants.map((participant) => ({
             userId: participant.userId.toString(),
-            lastReadAt: participant.lastReadAt // Keep as Date object, or .toISOString() if you need a string
+            lastReadAt: participant.lastReadAt
         })),
         lastMessageAt: new Date(conversation.lastMessageAt).toISOString(),
         partner,
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
                     { $elemMatch: { userId: partnerId } }
                 ]
             }
-        }).select("_id").lean<{ _id: string }>(); // Note: removed the extra semicolon
+        }).select("_id").lean<{ _id: string }>();
 
         if (!conversation) {
             return NextResponse.json({ conversationId: null }, { status: 404 });

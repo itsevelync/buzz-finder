@@ -40,7 +40,7 @@ type BaseItemNote = InferSchemaType<typeof ItemNoteSchema>;
 
 export type ItemNote = Omit<BaseItemNote, "user" | "parentId" | "likes"> & {
     _id: ObjectId;
-    user?: User;
+    user?: User | null;
     parentId?: ObjectId | ItemNote | null | string;
     likes: (ObjectId | AuthUser | User)[];
 };
