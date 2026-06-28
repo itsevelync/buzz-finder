@@ -8,6 +8,7 @@ import { LocationProvider } from "@/context/LocationContext";
 import { SelectedPinProvider } from "@/context/PinContext";
 import { usePostAndItem } from "@/context/PostAndItemContext";
 import { getActiveItems } from "@/actions/ItemFilter";
+import Loading from "../loading";
 
 export default function MapClient({ itemId }: { itemId: string }) {
     const { items } = usePostAndItem();
@@ -35,7 +36,7 @@ const activeItems = useMemo(
         setVh(window.innerHeight);
     }, []);
 
-    if (!items.length) return <p>Loading...</p>;
+    if (!items.length) return <Loading />;
 
     return (
         <LocationProvider>

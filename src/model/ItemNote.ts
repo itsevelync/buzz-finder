@@ -12,7 +12,6 @@ const ItemNoteSchema = new Schema(
         itemId: {
             required: true,
             type: Schema.Types.ObjectId,
-            ref: "LostItemPost",
         },
         user: {
             type: Schema.Types.ObjectId,

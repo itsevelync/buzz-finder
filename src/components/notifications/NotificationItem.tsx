@@ -38,7 +38,7 @@ export default function NotificationItem({
 
     return (
         <div
-            className={`border rounded-lg shadow border-foreground/8 p-4 sm:p-5 flex items-start justify-between gap-3 transition-colors group relative ${
+            className={`border rounded-lg shadow-sm border-foreground/10 p-4 sm:p-5 flex items-start justify-between gap-3 transition-colors group relative ${
                 !notification.isRead
                     ? "bg-[#f2b705]/9 hover:bg-[#e0a904]/9 font-semibold"
                     : "bg-background hover:bg-foreground/1"

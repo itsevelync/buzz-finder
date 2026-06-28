@@ -8,7 +8,7 @@ export function getActiveItems(items: PlainItem[]): PlainItem[] {
     return items.filter(
         (item) =>
             item.status === "unclaimed" &&
-            new Date(item.lostDate as string | Date) >= threeWeeksAgo,
+            !isOlderThanThreeWeeks(item.lostDate as string | Date),
     );
 }
 
@@ -20,7 +20,7 @@ export function archiveOldItems(items: PlainItem[]): PlainItem[] {
     return items.map((item) => {
         if (
             item.status === "unclaimed" &&
-            new Date(item.lostDate as string | Date) < threeWeeksAgo
+            isOlderThanThreeWeeks(item.lostDate as string | Date)
         ) {
             return {
                 ...item,
@@ -30,4 +30,11 @@ export function archiveOldItems(items: PlainItem[]): PlainItem[] {
 
         return item;
     });
+}
+
+export function isOlderThanThreeWeeks(date: string | Date) {
+    const threeWeeksAgo = new Date();
+    threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
+
+    return new Date(date as string | Date) < threeWeeksAgo;
 }

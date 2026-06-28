@@ -1,59 +1,60 @@
 "use client";
 
-import { LostItemPost } from "@/model/LostItemPost";
-import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LuContact, LuMessagesSquare } from "react-icons/lu";
 import { ContactInfoList } from "../profile/ContactInfoList";
+import { User } from "@/model/User";
 
-interface PostOwnerContactInfoProps {
-    lost_item: LostItemPost;
-    session: Session | null;
+interface ItemPosterContactInfoProps {
+    userId?: string;
+    itemPoster?: User;
+    itemContactInfo?: { name?: string | null; details?: string | null } | null;
+    title?: string;
 }
 
-export default function PostOwnerContactInfo({
-    lost_item,
-    session,
-}: PostOwnerContactInfoProps) {
+export default function ItemPosterContactInfo({
+    userId,
+    itemPoster,
+    itemContactInfo,
+    title = "Item Owner Contact Information",
+}: ItemPosterContactInfoProps) {
     const router = useRouter();
 
-    const isOwner =
-        session?.user?._id && session?.user?._id === lost_item.user?._id;
+    const isOwner = userId && itemPoster && userId === itemPoster._id;
 
     const [loadingChat, setLoadingChat] = useState(false);
 
     async function handleLoadChat() {
-        if (!lost_item.user) return;
+        if (!itemPoster) return;
 
         try {
             setLoadingChat(true);
             const response = await fetch(
-                `/api/conversations?partnerId=${lost_item.user._id}`,
+                `/api/conversations?partnerId=${itemPoster._id}`,
             );
             const data = await response.json();
 
             let chatId = data.conversationId;
             if (!chatId) {
-                chatId = "pending-" + lost_item.user._id;
+                chatId = "pending-" + itemPoster._id;
             }
-            router.push("/chat?id=" + chatId);
+            router.push("/messages/" + chatId);
         } catch {
             console.error("Error fetching chat.");
             setLoadingChat(false);
         }
     }
 
-    if (!lost_item.user && !lost_item.contactInfo) return;
+    if (!itemPoster && !itemContactInfo) return;
 
-    if (lost_item.contactInfo) {
-        const itemOwner = lost_item.contactInfo;
+    if (itemContactInfo) {
+        const itemOwner = itemContactInfo;
 
         return (
             <div className="border border-gray-200 rounded-lg p-4 bg-white">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <LuContact className="text-buzz-gold" /> Item Owner Contact
-                    Information
+                    <LuContact className="text-buzz-gold" /> {title}
                 </h3>
 
                 <div className="flex flex-col gap-1 text-sm mb-1">
@@ -69,24 +70,23 @@ export default function PostOwnerContactInfo({
         );
     }
 
-    if (lost_item.user) {
+    if (itemPoster) {
         return (
             <div className="border border-gray-200 rounded-lg p-4 bg-white">
                 <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <LuContact className="text-buzz-gold" /> Item Owner Contact
-                    Information
+                    <LuContact className="text-buzz-gold" /> {title}
                 </h3>
 
-                <ContactInfoList user={lost_item.user} />
+                <ContactInfoList user={itemPoster} />
 
                 {!isOwner && (
                     <button
-                        disabled={loadingChat || !session?.user?._id}
+                        disabled={loadingChat || !userId}
                         onClick={handleLoadChat}
                         className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                         <LuMessagesSquare />{" "}
-                        {!session?.user?._id
+                        {!userId
                             ? "Log in to message item owner"
                             : loadingChat
                               ? "Redirecting..."

@@ -42,33 +42,33 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
     };
     return (
         <div className="min-h-screen bg-background text-foreground font-sans">
-            <div className="mx-auto max-w-5xl pt-8 pb-4 md:pt-10 md:pb-6">
+            <div className="mx-auto max-w-5xl pt-6 pb-4 md:pt-8 md:pb-6">
                 {/* Header */}
-                <div className="mb-8 px-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-8 px-5 sm:px-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-4xl font-bold mb-2">Settings</h1>
-                        <p className="mt-1 text-neutral-500">
+                        <h1 className="text-3xl font-semibold text-buzz-blue mb-2">Settings</h1>
+                        <p className="mt-1 text-foreground/70">
                             Manage your account preferences and security.
                         </p>
                     </div>
 
                     {user && (
-                        <Logout className="rounded-lg bg-buzz-blue px-4 py-2 text-white transition hover:opacity-90" />
+                        <Logout className="rounded-md bg-buzz-blue px-4 py-2 text-white transition hover:opacity-90" />
                     )}
                 </div>
 
                 <div className="">
                     {/* Tabs */}
-                    <div className="border-b border-neutral-200">
-                        <nav className="flex">
+                    <div className="px-2 border-b border-foreground/10">
+                        <nav className="flex gap-4">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabChange(tab.id)}
                                     className={`border-b-2 px-6 py-3 font-medium transition ${
                                         activeTab === tab.id
-                                            ? "border-buzz-gold text-buzz-blue"
-                                            : "border-transparent text-neutral-500 hover:text-foreground"
+                                            ? "border-buzz-blue text-buzz-blue"
+                                            : "border-transparent text-foreground/40 hover:text-foreground"
                                     }`}
                                 >
                                     {tab.label}

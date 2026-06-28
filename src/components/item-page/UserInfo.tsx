@@ -2,7 +2,12 @@ import { User } from "@/model/User";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function UserInfo({ user }: { user: User | undefined }) {
+interface UserInfoProps {
+    user: User | undefined;
+    text?: string;
+}
+
+export default function UserInfo({ user, text = "Posted by" }: UserInfoProps) {
     const Wrapper = user ? Link : "div";
 
     return (
@@ -18,7 +23,7 @@ export default function UserInfo({ user }: { user: User | undefined }) {
                 className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
             />
             <p className="text-xs text-gray-600 font-medium">
-                Posted by{" "}
+                {text}{" "}
                 <span className="font-semibold text-gray-900">
                     {user?.username ?? "Guest"}
                 </span>

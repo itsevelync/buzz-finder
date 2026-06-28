@@ -53,9 +53,9 @@ export default function UserProfileClient({
 
             const chatId = data.conversationId;
             if (chatId) {
-                setChatURL("/messages?id=" + chatId);
+                setChatURL("/messages/" + chatId);
             } else {
-                setChatURL("/messages?id=pending-" + userProfile?._id);
+                setChatURL("/messages/pending-" + userProfile?._id);
             }
         }
         loadChatId();
@@ -76,7 +76,7 @@ export default function UserProfileClient({
 
             <div className="px-2 py-6 sm:px-8 sm:py-8 max-w-6xl flex flex-col items-center m-auto">
                 <div className="w-full max-w-2xl px-4">
-                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-20 mt-4 mb-6 w-full">
+                    <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 mt-4 mb-6 w-full">
                         <div className="flex items-center gap-6">
                             <Image
                                 src={userProfile?.image || "/default-icon.svg"}
@@ -99,14 +99,14 @@ export default function UserProfileClient({
                                 <h2 className="font-bold text-2xl text-buzz-blue">
                                     {foundItems.length}
                                 </h2>
-                                <p>Found Items</p>
+                                <p className="mt-1 text-base/5 text-center">Found Items</p>
                             </div>
                             <div className="border-l border-l-buzz-blue opacity-50 my-1"></div>
                             <div className="flex flex-col items-center">
                                 <h2 className="font-bold text-2xl text-buzz-blue">
                                     {lostItemPosts.length}
                                 </h2>
-                                <p>Lost Items</p>
+                                <p className="mt-1 text-base/5 text-center">Lost Items</p>
                             </div>
                         </div>
                     </div>

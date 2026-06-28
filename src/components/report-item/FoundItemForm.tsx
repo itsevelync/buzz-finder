@@ -4,7 +4,7 @@ import LocationSelectMap from "@/components/maps/LocationSelectMap";
 import ImageUploader from "@/components/report-item/ImageUploader";
 import FormInput from "@/components/ui/FormInput";
 import { categories } from "@/constants/Categories";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LuBox, LuContact, LuFileImage, LuMapPin } from "react-icons/lu";
 import Link from "next/link";
@@ -46,6 +46,13 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
         label: value.label,
     }));
 
+    useEffect(() => {
+        setCategory(item?.category ?? "misc");
+        setSelectedLocation(item?.locationPin ?? currentPosition ?? gtCampus);
+        setUseAccountInfo(item ? !!item.personFound : !!userId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gtCampus, item, userId, currPositionFetched]);
+
     async function uploadImage() {
         if (!file) return;
 
@@ -82,7 +89,7 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
         e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
-        
+
         const uploadedImage = file ? await uploadImage() : item?.image;
         const form = e.target as HTMLFormElement;
         const body = {

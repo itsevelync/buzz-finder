@@ -12,19 +12,20 @@ import {
     LuCheck,
     LuImageOff,
     LuMapPin,
-    LuShare2,
 } from "react-icons/lu";
 import ResolveItemModal from "@/components/post/ResolveItemModal";
 import { Session } from "next-auth";
-import UserInfo from "@/components/post/UserInfo";
+import UserInfo from "@/components/item-page/UserInfo";
 import { ItemNoteTree } from "@/model/ItemNote";
-import PostOwnerContactInfo from "@/components/post/PostOwnerContactInfo";
-import SubmitItemNote from "@/components/post/SubmitItemNote";
-import ItemNotes from "@/components/post/ItemNotes";
+import ItemPosterContactInfo from "@/components/item-page/ItemPosterContactInfo";
+import SubmitItemNote from "@/components/item-page/SubmitItemNote";
+import ItemNotes from "@/components/item-page/ItemNotes";
 import { useEffect, useState } from "react";
-import ShareModal from "@/components/post/ShareModal";
 import { useModal } from "@/context/ModalContext";
 import { usePostAndItem } from "@/context/PostAndItemContext";
+import Loading from "@/app/loading";
+import SharePostButton from "@/components/item-page/SharePostButton";
+import MatchItem from "@/components/item-page/MatchItem";
 
 interface LostItemClientProps {
     id: string;
@@ -61,10 +62,6 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
         getItemNotes(id.toString());
     }, [id]);
 
-    function openShareModal() {
-        openModal(<ShareModal />);
-    }
-
     function openResolveItemModal() {
         openModal(
             <ResolveItemModal
@@ -75,7 +72,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
     }
 
     if (!lostItemPosts.length) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (!lost_item) {
@@ -122,7 +119,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
         session?.user?._id && session?.user?._id === lost_item.user?._id;
 
     return (
-        <div className="p-4 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
+        <div className="p-4 pb-8 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
             {/* Top Navigation */}
             <div className="flex items-center justify-between">
                 <Link
@@ -138,7 +135,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                 <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
                     <LuBadgeCheck className="text-lg text-emerald-600" />
                     <h3 className="font-medium text-emerald-950 text-base leading-tight">
-                        This item has been successfully recovered!
+                        This item has been marked as claimed!
                     </h3>
                 </div>
             )}
@@ -163,12 +160,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                         </p>
                         <UserInfo user={lost_item.user} />
                     </div>
-                    <button
-                        onClick={openShareModal}
-                        className="sm:ml-auto flex items-center gap-2 text-sm text-foreground-90 hover:text-foreground hover:bg-foreground/3 border border-foreground/30 rounded px-3 py-1.5 transition"
-                    >
-                        <LuShare2 /> Share Post
-                    </button>
+                    <SharePostButton />
                 </div>
             </div>
 
@@ -178,6 +170,34 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 {/* LEFT COLUMN */}
                 <div className="flex flex-col gap-4 w-full">
+                    {isOwner && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white flex flex-col gap-3">
+                            <h3 className="text-lg font-bold">
+                                Item Owner Actions
+                            </h3>
+                            {lost_item.isFound ? (
+                                <div className="w-full text-foreground/80 font-medium py-2.5 rounded-md border border-dashed border-foreground/30 flex items-center justify-center gap-2">
+                                    <LuCheck /> Marked as Found!
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={openResolveItemModal}
+                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded-md transition text-sm flex items-center justify-center gap-2"
+                                >
+                                    <LuCheck /> Mark as Found
+                                </button>
+                            )}
+                            {!lost_item.isFound && (
+                                <div className="flex justify-center mt-1">
+                                    <EditDeleteBtns
+                                        editURL={`/lost-item/${lost_item._id}/edit`}
+                                        deleteAPIRoute={`/api/lost-item-posts/${lost_item._id}`}
+                                        redirect="/dashboard?tab=lost"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                     {/* Item image */}
                     <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
                         {lost_item.image?.url ? (
@@ -201,37 +221,22 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                     </div>
 
                     {/* Owner contact information */}
-                    <PostOwnerContactInfo
-                        lost_item={lost_item}
-                        session={session}
+                    <ItemPosterContactInfo
+                        userId={session?.user?._id}
+                        itemPoster={lost_item.user}
+                        itemContactInfo={lost_item.contactInfo}
                     />
 
                     {!lost_item.isFound && (
-                        <div className="border border-gray-200 rounded-lg p-4 bg-white flex flex-col gap-5">
-                            {/* Context Actions Block */}
-                            {isOwner ? (
-                                <button
-                                    onClick={openResolveItemModal}
-                                    className="w-full bg-buzz-blue hover:opacity-90 text-white font-semibold py-2.5 rounded-md transition text-sm flex items-center justify-center gap-2"
-                                >
-                                    <LuCheck /> Mark as Found
-                                </button>
-                            ) : (
-                                <SubmitItemNote
-                                    lost_item={lost_item}
-                                    getItemNotes={getItemNotes}
-                                />
-                            )}
-                        </div>
+                        <MatchItem currentItemId={id} mode="found" />
                     )}
 
-                    {/* Edit/delete buttons for poster */}
-                    {isOwner && (
-                        <div className="border-t border-gray-100 flex justify-center">
-                            <EditDeleteBtns
-                                editURL={`/lost-item/${lost_item._id}/edit`}
-                                deleteAPIRoute={`/api/lost-item-posts/${lost_item._id}`}
-                                redirect="/dashboard?tab=lost"
+                    {/* Desktop submit item note */}
+                    {!lost_item.isFound && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white hidden sm:flex flex-col gap-5">
+                            <SubmitItemNote
+                                itemId={lost_item._id.toString()}
+                                getItemNotes={getItemNotes}
                             />
                         </div>
                     )}
@@ -285,6 +290,16 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                             )}
                         </div>
                     </div>
+
+                    {/* Mobile submit item note */}
+                    {!lost_item.isFound && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white flex sm:hidden flex-col gap-5">
+                            <SubmitItemNote
+                                itemId={lost_item._id.toString()}
+                                getItemNotes={getItemNotes}
+                            />
+                        </div>
+                    )}
 
                     {/* Item Notes */}
                     <ItemNotes

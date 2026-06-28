@@ -9,7 +9,24 @@ import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import ItemStatusActions from "@/components/report-item/ItemStatusActions";
 import { usePostAndItem } from "@/context/PostAndItemContext";
 import { useUser } from "@/context/UserContext";
-import { ContactInfoList } from "@/components/profile/ContactInfoList";
+import Loading from "@/app/loading";
+import {
+    LuBadgeCheck,
+    LuBox,
+    LuImageOff,
+    LuMapPin,
+    LuInfo,
+    LuTriangleAlert,
+    LuArchive,
+} from "react-icons/lu";
+import SubmitItemNote from "@/components/item-page/SubmitItemNote";
+import { useEffect, useState } from "react";
+import { ItemNoteTree } from "@/model/ItemNote";
+import ItemNotes from "@/components/item-page/ItemNotes";
+import ItemPosterContactInfo from "@/components/item-page/ItemPosterContactInfo";
+import UserInfo from "@/components/item-page/UserInfo";
+import SharePostButton from "@/components/item-page/SharePostButton";
+import MatchItem from "@/components/item-page/MatchItem";
 
 interface ItemClientProps {
     id: string;
@@ -18,9 +35,33 @@ interface ItemClientProps {
 export default function ItemClient({ id }: ItemClientProps) {
     const { user } = useUser();
     const { items } = usePostAndItem();
+    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
+
+    async function getItemNotes(itemId: string) {
+        try {
+            const res = await fetch(
+                `/api/lost-item-posts/${itemId}/item-notes`,
+            );
+
+            if (!res.ok) {
+                console.error(
+                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
+                );
+            }
+
+            const data = await res.json();
+            setItemNotes(data);
+        } catch (error) {
+            console.error("Error fetching item:", error);
+        }
+    }
+
+    useEffect(() => {
+        getItemNotes(id.toString());
+    }, [id]);
 
     if (!items.length) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const item = items.find((i) => i._id.toString() === id);
@@ -45,110 +86,236 @@ export default function ItemClient({ id }: ItemClientProps) {
     }
 
     const isOwner = user?._id && user._id === item.personFound?._id;
-    const category = categories[item.category];
+    const category = categories[item.category] || {
+        label: "Unknown",
+        color: "#6B7280",
+    };
 
-    const formattedLostDate = new Date(item.lostDate).toLocaleDateString();
+    const formattedLostDate = new Date(item.lostDate).toLocaleDateString(
+        undefined,
+        {
+            dateStyle: "long",
+        },
+    );
     const formattedLostTime = new Date(item.lostDate).toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
     });
 
     return (
-        <div className="p-5 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
-            <Link
-                href="/dashboard"
-                className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all w-fit"
-            >
-                <FaChevronLeft /> View all Items
-            </Link>
-            <div className="flex flex-col sm:flex-row w-full items-center justify-between sm:items-start gap-4">
-                <div className="text-center sm:text-left">
-                    <h1 className="text-3xl font-bold">{item.name ?? "N/A"}</h1>
-                    <p className="text-gray-500 mb-2">{`Found on ${formattedLostDate} at ${formattedLostTime}`}</p>
-                    <p
-                        style={{
-                            color: category.color,
-                            backgroundColor: category.color + "20",
-                        }}
-                        className="w-fit rounded-full px-4 py-1 m-auto sm:m-0 text-sm font-medium"
-                    >
-                        {category.label ?? "N/A"}
-                    </p>
-                </div>
-                {isOwner && (
-                    <EditDeleteBtns
-                        editURL={`/item/${item._id}/edit`}
-                        deleteAPIRoute={`/api/items/${item._id}`}
-                    />
-                )}
+        <div className="p-4 pb-8 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
+            {/* Top Navigation */}
+            <div className="flex items-center justify-between">
+                <Link
+                    href="/dashboard"
+                    className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all w-fit"
+                >
+                    <FaChevronLeft className="text-xs" /> View all Items
+                </Link>
             </div>
-            <div className="flex gap-6 flex-col md:flex-row">
-                <div className="w-full items-center md:w-1/3 lg:w-1/4 flex flex-col gap-4">
-                    <Image
-                        src={item.image?.url ?? "/img-placeholder.jpg"}
-                        alt={`${item.name} Image`}
-                        className="object-cover rounded-xl border border-gray-200 shadow-xs mb-2"
-                        width={280}
-                        height={280}
-                        priority
-                    />
 
-                    {/* Dynamic Client Side Actions Injection */}
-                    <ItemStatusActions
-                        itemId={item._id.toString()}
-                        currentStatus={item.status}
-                    />
+            {/* Status Banner Announcement */}
+            {item.status === "claimed" && (
+                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
+                    <LuBadgeCheck className="text-lg text-emerald-600" />
+                    <h3 className="font-medium text-emerald-900 text-base leading-tight">
+                        This item has been successfully claimed!
+                    </h3>
                 </div>
-                <div className="flex flex-col gap-10 grow">
-                    <div className="h-90 w-full rounded-xl overflow-hidden border border-gray-300 shadow">
-                        <CenteredMap
-                            width="100%"
-                            height="100%"
-                            pin={item}
-                            disableHover={true}
-                        />
-                    </div>
-                    <div className="w-full flex flex-col gap-4">
-                        <h2 className="font-bold text-2xl">Item Details</h2>
-                        <div>
-                            <h3 className="font-bold text-buzz-blue">
-                                Description
-                            </h3>
-                            <p className="text-gray-700 mt-0.5">
-                                {item.description || "N/A"}
+            )}
+            {item.status === "gone" && (
+                <div className="items-center w-full bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2 flex gap-3">
+                    <LuTriangleAlert className="text-lg text-amber-600" />
+                    <h3 className="font-medium text-amber-900 text-base leading-tight">
+                        This item has been marked as no longer there.
+                    </h3>
+                </div>
+            )}
+            {item.status === "archived" && (
+                <div className="items-center w-full bg-gray-50 border border-gray-200 rounded-xl p-4 mb-2 flex gap-3">
+                    <LuArchive className="text-lg text-gray-600" />
+                    <h3 className="font-medium text-gray-800 text-base leading-tight">
+                        This item was found more than three weeks ago and has
+                        been archived.
+                    </h3>
+                </div>
+            )}
+
+            {/* Core Title and Badges */}
+            <div className="flex flex-col sm:flex-row justify-between sm:items-end w-full gap-4">
+                <div className="text-center sm:text-left">
+                    <h1 className="text-3xl font-bold">
+                        {item.name ?? "Untitled Found Item"}
+                    </h1>
+                    <p className="text-gray-500 mb-2">{`Found on ${formattedLostDate} at ${formattedLostTime}`}</p>
+
+                    <div className="flex flex-col sm:flex-row gap-3 w-full items-center">
+                        <div className="flex flex-col sm:flex-row gap-3 items-center my-1">
+                            <p
+                                style={{
+                                    color: category.color,
+                                    backgroundColor: category.color + "20",
+                                }}
+                                className="w-fit rounded-full px-4 py-1 text-sm font-medium flex items-center"
+                            >
+                                {category.label ?? "N/A"}
                             </p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-buzz-blue">
-                                Retrieval Information
-                            </h3>
-                            <p className="text-gray-700 mt-0.5">
-                                {item.retrievalDescription || "N/A"}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-buzz-blue">
-                                Location Details
-                            </h3>
-                            <p className="text-gray-700 mt-0.5">
-                                {item.locationDescription || "N/A"}
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-buzz-blue">
-                                Contact Information
-                            </h3>
-                            {item.personFound ? (
-                                <div className="space-y-1 text-gray-700 mt-0.5">
-                                    <ContactInfoList user={item.personFound} />
-                                </div>
-                            ) : (
-                                <p className="text-gray-700 mt-0.5">
-                                    {item.contactInfo?.details || "N/A"}
-                                </p>
+                            {item.personFound && (
+                                <UserInfo
+                                    user={item.personFound}
+                                    text="Found by"
+                                />
                             )}
                         </div>
                     </div>
+                </div>{" "}
+                <div className="flex flex-col gap-4 items-center sm:items-end mt-1">
+                    {isOwner && (
+                        <EditDeleteBtns
+                            editURL={`/item/${item._id}/edit`}
+                            deleteAPIRoute={`/api/items/${item._id}`}
+                        />
+                    )}
+                    <SharePostButton />
+                </div>
+            </div>
+
+            <hr className="border-gray-200" />
+
+            {/* Main content split into 2 Columns */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* LEFT COLUMN */}
+                <div className="flex flex-col gap-4 w-full">
+                    {/* Item Image Card */}
+                    {item.image?.url ? (
+                        <Image
+                            src={item.image.url}
+                            alt={item.name ?? "Found Item"}
+                            width={250}
+                            height={250}
+                            className="mx-auto w-4/5 rounded-lg border border-foreground/10"
+                            priority
+                        />
+                    ) : (
+                        <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
+                            <div className="w-full h-full flex flex-col items-center justify-center text-foreground/60 gap-2 p-6 text-center">
+                                <div className="text-5xl">
+                                    <LuImageOff />
+                                </div>
+                                <p className="text-foreground/70">
+                                    No image uploaded
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Item Finder / Owner Actions Card */}
+
+                    <div className="border border-gray-200 rounded-lg p-4 bg-white flex flex-col gap-3">
+                        <ItemStatusActions
+                            itemId={item._id.toString()}
+                            currentStatus={item.status}
+                            lostDate={item.lostDate}
+                        />
+                    </div>
+
+                    {/* Contact Information Card */}
+                    <ItemPosterContactInfo
+                        userId={user?._id}
+                        itemPoster={item.personFound}
+                        itemContactInfo={item.contactInfo}
+                        title="Contact Item Finder"
+                    />
+
+                    <MatchItem currentItemId={id} mode="lost" />
+
+                    {/* Desktop submit item note */}
+                    {item.status === "unclaimed" && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white hidden sm:flex flex-col gap-5">
+                            <SubmitItemNote
+                                itemId={item._id}
+                                getItemNotes={getItemNotes}
+                                title="Submit an Item Note"
+                                subtitle="Leave notes about this item below."
+                                placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* RIGHT COLUMN */}
+                <div className="lg:col-span-2 flex flex-col gap-6">
+                    {/* Item Description */}
+                    <div>
+                        <h3 className="font-bold text-gray-900 text-lg mb-2 flex items-center gap-1.5">
+                            <LuBox className="text-buzz-gold" /> Item
+                            Description
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap bg-white border border-dashed border-gray-200 rounded-lg p-4">
+                            {item.description ||
+                                "The finder did not provide an extended description for this item."}
+                        </p>
+                    </div>
+
+                    {/* Retrieval Information */}
+                    <div>
+                        <h3 className="font-bold text-gray-900 text-lg mb-2 flex items-center gap-1.5">
+                            <LuInfo className="text-buzz-gold" /> Retrieval
+                            Information
+                        </h3>
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-wrap bg-white border border-dashed border-gray-200 rounded-lg p-4">
+                            {item.retrievalDescription ||
+                                "No specific retrieval instructions left by the finder."}
+                        </p>
+                    </div>
+
+                    {/* Location Details & Map */}
+                    <div>
+                        <h3 className="font-bold text-gray-900 text-lg mb-2 flex items-center gap-1.5">
+                            <LuMapPin className="text-buzz-gold" /> Location
+                            Details
+                        </h3>
+                        <p className="text-gray-600 mb-3">
+                            Found near:{" "}
+                            <span className="font-medium text-foreground">
+                                {item.locationDescription || "Unknown Location"}
+                            </span>
+                        </p>
+
+                        {/* Map Container */}
+                        <div className="h-90 w-full rounded-lg overflow-hidden border border-foreground/10 flex justify-center items-center bg-foreground/2 text-foreground/70">
+                            {/* Assumed item has geographic pin structure similar to lost_item */}
+                            {item.locationPin ? (
+                                <CenteredMap
+                                    width="100%"
+                                    height="100%"
+                                    pin={item}
+                                    disableHover={true}
+                                />
+                            ) : (
+                                <div>No map location selected.</div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Mobile submit item note */}
+                    {item.status === "unclaimed" && (
+                        <div className="border border-gray-200 rounded-lg p-4 bg-white flex sm:hidden flex-col gap-5">
+                            <SubmitItemNote
+                                itemId={item._id}
+                                getItemNotes={getItemNotes}
+                                title="Submit an Item Note"
+                                subtitle="Leave notes about this item below."
+                                placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                            />
+                        </div>
+                    )}
+
+                    {/* Item Notes */}
+                    <ItemNotes
+                        itemNotes={itemNotes}
+                        setItemNotes={setItemNotes}
+                    />
                 </div>
             </div>
         </div>

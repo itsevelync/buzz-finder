@@ -65,6 +65,11 @@ type LostItemPost = InferSchemaType<typeof LostItemPostSchema> & {
     user?: User;
 };
 
+export type LostItemPost2 = InferSchemaType<typeof LostItemPostSchema> & {
+    _id: ObjectId;
+    user?: string;
+};
+
 export type { LostItemPost };
 
 export default mongoose.models?.LostItemPost ??

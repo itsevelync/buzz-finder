@@ -1,17 +1,22 @@
 "use client";
 
 import { useUser } from "@/context/UserContext";
-import { LostItemPost } from "@/model/LostItemPost";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface SubmitItemNoteProps {
-    lost_item: LostItemPost;
+    itemId: string;
     getItemNotes: (itemId: string) => Promise<void>;
+    title?: string;
+    subtitle?: string;
+    placeholder?: string;
 }
 export default function SubmitItemNote({
-    lost_item,
+    itemId,
     getItemNotes,
+    title = "Have potential leads?",
+    subtitle = "If you have information about this item, contact the owner directly or leave information about it below.",
+    placeholder = "Example: I found this near the Student Center entrance and left it with campus security. Ask for Officer Williams at the front desk.",
 }: SubmitItemNoteProps) {
     const { user } = useUser();
     const [note, setNote] = useState("");
@@ -24,7 +29,7 @@ export default function SubmitItemNote({
         try {
             const body = {
                 note: note,
-                itemId: lost_item._id,
+                itemId: itemId,
                 user: !anonymize && user ? user : undefined,
             };
 
@@ -39,7 +44,7 @@ export default function SubmitItemNote({
             if (res.ok) {
                 toast.success("Successfully submitted item note!");
                 setNote("");
-                getItemNotes(lost_item._id.toString());
+                getItemNotes(itemId);
             } else {
                 const errData = await res.json();
                 toast.error(
@@ -58,14 +63,9 @@ export default function SubmitItemNote({
         <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-5">
                 <div>
-                    <h2 className="text-xl font-bold">
-                        Found the item or have potential leads?
-                    </h2>
+                    <h2 className="text-xl font-bold">{title}</h2>
 
-                    <p className="text-sm text-gray-600 mt-2">
-                        If you have information about this item, contact the
-                        owner directly or leave information about it below.
-                    </p>
+                    <p className="text-sm text-gray-600 mt-2">{subtitle}</p>
                 </div>
 
                 {/* Recovery Note */}
@@ -76,7 +76,7 @@ export default function SubmitItemNote({
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                         rows={5}
-                        placeholder="Example: I found this near the Student Center entrance and left it with campus security. Ask for Officer Williams at the front desk."
+                        placeholder={placeholder}
                         className="w-full rounded-lg border border-gray-300 p-3 resize-none focus:outline-none focus:ring-2 focus:ring-buzz-blue"
                     />
 
