@@ -9,7 +9,7 @@ import { useUser } from "@/context/UserContext";
 
 export default function BottomBar() {
     const { user } = useUser();
-    const avatarSrc = user?.image ?? "/default-icon.svg";
+    const avatarSrc = user?.image ?? "/images/default-icon.svg";
     const avatarKey = `${user?._id ?? "guest"}-${avatarSrc}`;
 
     return (

@@ -6,7 +6,7 @@ import Message from "@/model/Message";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-import { sendPushToUsers } from "@/actions/Push";
+import { sendPushToUsers } from "@/actions/Notification";
 
 export async function POST(request: Request) {
     try {

@@ -2,7 +2,7 @@
 
 import { useModal } from "@/context/ModalContext";
 import { urlBase64ToUint8Array } from "@/lib/push";
-import { subscribeUser } from "@/actions/Push";
+import { subscribeUser } from "@/actions/Notification";
 import { updateNotificationPreferences } from "@/actions/Notification";
 import Image from "next/image";
 import { useState } from "react";

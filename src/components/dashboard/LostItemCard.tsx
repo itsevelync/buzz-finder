@@ -8,7 +8,7 @@ function UserMini({ user }: { user?: LostItemPost["user"] }) {
     return (
         <div className="flex items-center gap-2">
             <Image
-                src={user?.image ?? "/default-icon.svg"}
+                src={user?.image ?? "/images/default-icon.svg"}
                 alt="User avatar"
                 width={28}
                 height={28}

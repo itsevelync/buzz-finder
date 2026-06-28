@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { updateNotificationPreferences } from "@/actions/Notification";
-import { subscribeUser, unsubscribeUser } from "@/actions/Push";
+import { subscribeUser, unsubscribeUser } from "@/actions/Notification";
 import { urlBase64ToUint8Array } from "@/lib/push";
 import { UserContextUser } from "@/context/UserContext";
 import { NotificationPreferences } from "@/model/User";
@@ -144,7 +144,6 @@ export default function NotificationSettings({
                 await sub.unsubscribe();
 
                 // 2. Call your custom Server Action to drop it from the DB
-                // (Import unsubscribeUser from your actions/Push file if not already imported)
                 await unsubscribeUser(endpoint);
             }
 

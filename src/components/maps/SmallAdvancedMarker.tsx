@@ -78,7 +78,7 @@ export default function SmallAdvancedMarker({
                             <Image
                                 height={200}
                                 width={250}
-                                src={item.image?.url || "/img-placeholder.jpg"}
+                                src={item.image?.url || "/images/img-placeholder.jpg"}
                                 alt={`${item.name} Image`}
                                 className="rounded w-full max-h-50 object-cover"
                             />
@@ -108,7 +108,7 @@ export default function SmallAdvancedMarker({
                             <Image
                                 width={50}
                                 height={50}
-                                src={item.image?.url ?? "/img-placeholder.jpg"}
+                                src={item.image?.url ?? "/images/img-placeholder.jpg"}
                                 alt={`${item.name} photo`}
                                 className={`w-full h-full object-cover rounded-full
                                             group-hover:brightness-100 group-hover:invert-0

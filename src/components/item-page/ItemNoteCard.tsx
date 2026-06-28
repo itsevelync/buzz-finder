@@ -61,7 +61,7 @@ export function ItemNoteCard({
                             <Link href={`/user/${note.user.username}`}>
                                 <Image
                                     src={
-                                        note.user?.image ?? "/default-icon.svg"
+                                        note.user?.image ?? "/images/default-icon.svg"
                                     }
                                     alt={note.user.username}
                                     width={40}
@@ -71,7 +71,7 @@ export function ItemNoteCard({
                             </Link>
                         ) : (
                             <Image
-                                src={"/default-icon.svg"}
+                                src={"/images/default-icon.svg"}
                                 alt={"Anonymous User"}
                                 width={40}
                                 height={40}

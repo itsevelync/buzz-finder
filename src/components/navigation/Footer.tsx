@@ -138,7 +138,7 @@ export default function Footer() {
             <div className="border-t border-gray-400 pt-6 text-gray-400 text-center mt-6">
                 <Image
                     className="mx-auto"
-                    src="/buzzfinder-logo.png"
+                    src="/images/buzzfinder-logo.png"
                     alt="BuzzFinder"
                     width={100}
                     height={100}

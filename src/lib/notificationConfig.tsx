@@ -23,7 +23,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     ITEM_MATCH: {
         label: "Match Found",
         type: "itemMatches",
-        getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
+        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, resource, detail) =>
             <>Your item &ldquo;{detail}&rdquo; has a potential match:  <span className="font-bold">{resource?.name}</span>.</>,
@@ -31,7 +31,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     ITEM_UPDATE: {
         label: "Status Update",
         type: "itemStatusUpdates",
-        getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
+        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) => (
             <>
@@ -48,7 +48,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         type: "newItemNotes",
         getImage: (n) =>
             n.resource.deletedAt || !n.actor?.image
-                ? "/default-icon.svg"
+                ? "/images/default-icon.svg"
                 : n.actor.image,
         getLink: (r) => `/lost-item/${r?.itemId ?? "deleted-item"}`,
         getMessage: (actor, resource) =>
@@ -64,7 +64,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     SEARCH_ALERT: {
         label: "Search Alert",
         type: "searchAlert",
-        getImage: (n) => n.resource?.image?.url ?? "/img-placeholder.jpg",
+        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) => (
             <>
@@ -82,7 +82,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     SYSTEM_ALERT: {
         label: "System Alert",
         type: "systemAlert",
-        getImage: () => "/buzzfinder-logo.png",
+        getImage: () => "/images/buzzfinder-logo.png",
         getLink: () => "/",
         getMessage: (_, __, detail) => detail || "System update notice.",
     },

@@ -5,7 +5,7 @@ import ItemSchema from "@/model/Item";
 import { dbConnect } from "@/lib/mongo";
 import mongoose, { Types } from "mongoose";
 import { sanitizeUser } from "@/lib/userUtils";
-import { processSavedSearches } from "@/actions/SavedSearches";
+import { processSavedSearches } from "@/actions/SavedSearch";
 
 /**
  * If a "personFound" query parameter is provided, return items found by that user.

@@ -16,7 +16,7 @@ export default function UserInfo({ user, text = "Posted by" }: UserInfoProps) {
             className="flex flex-row items-center gap-2 bg-gray-50 border border-gray-100 rounded-full py-1.5 px-3 w-fit"
         >
             <Image
-                src={user?.image ?? "/default-icon.svg"}
+                src={user?.image ?? "/images/default-icon.svg"}
                 alt="User avatar"
                 width={24}
                 height={24}

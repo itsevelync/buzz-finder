@@ -77,7 +77,7 @@ export default function CustomAdvancedMarker({
                                     height={50}
                                     src={
                                         item.image?.url ??
-                                        "/img-placeholder.jpg"
+                                        "/images/img-placeholder.jpg"
                                     }
                                     alt="Item photo"
                                     className={`w-full h-full object-cover ${

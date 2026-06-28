@@ -1,3 +1,4 @@
+// Marks a conversation as read
 export async function markAsRead(conversationId: string) {
     if (conversationId.startsWith("pending-")) {
         return;

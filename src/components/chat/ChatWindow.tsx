@@ -540,7 +540,7 @@ export default function ChatWindow({
                                     <Image
                                         src={
                                             activePartner.image ||
-                                            "/default-icon.svg"
+                                            "/images/default-icon.svg"
                                         }
                                         alt={activePartner.name}
                                         width={50}

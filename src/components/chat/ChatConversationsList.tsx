@@ -82,7 +82,7 @@ onClick={() => {
                             <Image
                                 src={
                                     conversation.partner?.image ||
-                                    "/default-icon.svg"
+                                    "/images/default-icon.svg"
                                 }
                                 alt={
                                     conversation.partner?.name || "Deleted user"

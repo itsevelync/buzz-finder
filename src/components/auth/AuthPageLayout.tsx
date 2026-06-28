@@ -23,7 +23,7 @@ export default function AuthPageLayout({
             </div>
             <div className="w-full sm:w-1/2">
                 <Image
-                    src="/gt-map.png"
+                    src="/images/gt-map.png"
                     alt="GT Campus Map"
                     width={500}
                     height={700}
