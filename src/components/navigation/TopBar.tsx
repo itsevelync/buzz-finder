@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { IoSettings } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
