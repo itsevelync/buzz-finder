@@ -227,7 +227,7 @@ export default function ItemClient({ id }: ItemClientProps) {
                         title="Contact Item Finder"
                     />
 
-                    <MatchItem currentItemId={id} mode="lost" />
+                    <MatchItem currentItemId={id} mode="lost" resolved={item.status !== "unclaimed"} />
 
                     {/* Desktop submit item note */}
                     {item.status === "unclaimed" && (

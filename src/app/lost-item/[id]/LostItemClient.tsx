@@ -134,8 +134,8 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
             {lost_item.isFound && (
                 <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
                     <LuBadgeCheck className="text-lg text-emerald-600" />
-                    <h3 className="font-medium text-emerald-950 text-base leading-tight">
-                        This item has been marked as claimed!
+                    <h3 className="font-medium text-emerald-900 text-base leading-tight">
+                        This item has been marked as found!
                     </h3>
                 </div>
             )}
@@ -227,9 +227,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                         itemContactInfo={lost_item.contactInfo}
                     />
 
-                    {!lost_item.isFound && (
-                        <MatchItem currentItemId={id} mode="found" />
-                    )}
+                    <MatchItem currentItemId={id} mode="found" resolved={lost_item.isFound}/>
 
                     {/* Desktop submit item note */}
                     {!lost_item.isFound && (

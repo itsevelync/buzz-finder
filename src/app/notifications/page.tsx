@@ -26,7 +26,7 @@ export default function NotificationsPage() {
     return (
         <div className="mx-auto max-w-5xl w-full h-full flex flex-col">
             {/* Minimal Header */}
-            <div className="flex justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-2 sm:pb-3">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-2 sm:pb-3">
                 <h1 className="text-3xl font-semibold text-buzz-blue">
                     Notifications
                 </h1>
