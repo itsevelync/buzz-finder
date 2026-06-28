@@ -45,6 +45,11 @@ export async function sendNotification({
     notificationType,
     body,
 }: Partial<PlainNotification>) {
+    const session = await auth();
+    const userId = session?.user?._id;
+
+    if (recipient?.toString() === userId?.toString()) return;
+
     const notification = await Notification.create({
         recipient,
         actor,

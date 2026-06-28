@@ -8,15 +8,18 @@ import { useModal } from "@/context/ModalContext";
 import { LuMapPinCheckInside, LuSearchX } from "react-icons/lu";
 import ConfirmationModal from "../ui/ConfirmationModal";
 import { usePostAndItem } from "@/context/PostAndItemContext";
+import { isOlderThanThreeWeeks } from "@/actions/ItemFilter";
 
 interface ItemStatusActionsProps {
     itemId: string;
     currentStatus: ItemStatus;
+    lostDate: NativeDate;
 }
 
 export default function ItemStatusActions({
     itemId,
     currentStatus,
+    lostDate,
 }: ItemStatusActionsProps) {
     const { openModal, closeModal } = useModal();
     const [loading, setLoading] = useState(false);
@@ -71,7 +74,7 @@ export default function ItemStatusActions({
         }
     };
     // If the item is already wrapped up, don't show active action options
-    if (currentStatus === "claimed" || currentStatus === "gone") {
+    if (currentStatus !== "unclaimed") {
         return (
             <>
                 <div className="w-full text-center p-3 rounded-lg bg-gray-100 border text-gray-500 font-medium">
@@ -81,12 +84,15 @@ export default function ItemStatusActions({
                     </span>
                 </div>
 
-                <button
-                    onClick={() => handleUpdateStatus("unclaimed")}
-                    className="-mt-1 underline text-foreground/50 text-sm"
-                >
-                    Item still there? Mark as unclaimed.
-                </button>
+                {currentStatus !== "archived" &&
+                    !isOlderThanThreeWeeks(lostDate as string | Date) && (
+                        <button
+                            onClick={() => handleUpdateStatus("unclaimed")}
+                            className="-mt-1 underline text-foreground/50 text-sm"
+                        >
+                            Item still there? Mark as unclaimed.
+                        </button>
+                    )}
             </>
         );
     }
