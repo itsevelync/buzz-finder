@@ -78,7 +78,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
     if (!lost_item) {
         return (
             <div className="p-8 text-center max-w-xl m-auto h-full justify-center flex flex-col">
-                <h2 className="text-2xl font-bold text-foreground">
+                <h2 className="text-2xl font-semibold text-foreground">
                     Item Not Found
                 </h2>
                 <p className="text-foreground/80 mt-2">

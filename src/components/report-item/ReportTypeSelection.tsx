@@ -30,7 +30,7 @@ export default function ReportTypeSelection() {
                     onClick={() => handleSelect("found")}
                     className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center text-center gap-4 hover:border-buzz-gold hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-buzz-gold"
                 >
-                    <div className="p-4 bg-amber-50 text-buzz-gold rounded-full group-hover:scale-110 transition-transform duration-200">
+                    <div className="border border-dashed border-buzz-gold/40 p-4 bg-buzz-gold/6 text-buzz-gold rounded-full group-hover:scale-110 transition-transform duration-200">
                         <LuPackage size={40} />
                     </div>
                     <div>
@@ -48,7 +48,7 @@ export default function ReportTypeSelection() {
                     onClick={() => handleSelect("lost")}
                     className="group bg-white border border-gray-200 rounded-xl p-8 flex flex-col items-center text-center gap-4 hover:border-buzz-blue hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-buzz-blue"
                 >
-                    <div className="p-4 bg-blue-50 text-buzz-blue rounded-full group-hover:scale-110 transition-transform duration-200">
+                    <div className="border border-dashed border-buzz-blue/25 p-4 bg-buzz-blue/5 text-buzz-blue rounded-full group-hover:scale-110 transition-transform duration-200">
                         <LuSearch size={40} />
                     </div>
                     <div>
