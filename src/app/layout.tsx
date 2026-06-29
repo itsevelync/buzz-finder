@@ -27,7 +27,10 @@ const monaSans = Mona_Sans({
 });
 
 export const metadata: Metadata = {
-    title: "BuzzFinder",
+    title: {
+        default: "BuzzFinder",
+        template: "%s - BuzzFinder",
+    },
     description:
         "Lost something? Found something? BuzzFinder helps you report, map, and track lost and found items in your community to quickly reunite them with owners.",
 };

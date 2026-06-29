@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import ItemClient from "./ItemClient";
 
 export const metadata: Metadata = {
-    title: "Found Item - BuzzFinder",
+    title: "Found Item",
 };
 
 interface ItemPageProps {

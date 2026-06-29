@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import ChatbotClient from "./ChatbotClient";
 
 export const metadata: Metadata = {
-    title: "BuzzBot - BuzzFinder",
+    title: "BuzzBot",
 };
 
 export default function ChatbotPage() {

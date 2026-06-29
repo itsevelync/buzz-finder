@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Login - BuzzFinder",
+    title: "Login",
 };
 
 export default async function SignInPage() {

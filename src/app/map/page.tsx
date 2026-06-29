@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import MapClient from "./MapClient";
 
 export const metadata: Metadata = {
-    title: "Map - BuzzFinder",
+    title: "Map",
     description: "An interactive map displaying lost items.",
 };
 

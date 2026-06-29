@@ -2,7 +2,7 @@ import FoundItemForm from "@/components/report-item/FoundItemForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Edit Found Item - BuzzFinder",
+    title: "Edit Found Item",
 };
 
 interface ItemPageProps {

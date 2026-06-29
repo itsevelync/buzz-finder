@@ -5,7 +5,7 @@ import styles from "./chatbot.module.css";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "BuzzBot - BuzzFinder",
+    title: "BuzzBot",
 };
 
 type ChatMessage = {

@@ -4,7 +4,7 @@ import { Metadata } from "next";
 import Loading from "../loading";
 
 export const metadata: Metadata = {
-    title: "Dashboard - BuzzFinder",
+    title: "Dashboard",
     description:
         "Search and filter reported lost and found items.",
 };
