@@ -45,7 +45,7 @@ export default function GoogleMap(props: {
     SNAP: { COLLAPSED: number; FULL: number };
 }) {
     const { refresh } = usePostAndItem();
-    const { currentPosition, currPositionFetchFailed } = useUserLocation();
+    const { currentPosition, currPositionFetchFailed, currPositionFetched } = useUserLocation();
     const { setLocation } = useLocation();
     const { selectedId, setSelectedId } = useSelectedPin();
 
@@ -190,7 +190,7 @@ export default function GoogleMap(props: {
                             </button>
                         </MapControl>
 
-                        {!currPositionFetchFailed && (
+                        {currPositionFetched && !currPositionFetchFailed && (
                             <AdvancedMarker position={currentPosition}>
                                 <div className="w-3.5 h-3.5 rounded-full outline-5 outline-blue-400/30 bg-blue-500 border-2 border-white"></div>
                             </AdvancedMarker>
