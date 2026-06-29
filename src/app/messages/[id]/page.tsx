@@ -18,7 +18,7 @@ export default function ConversationPage() {
     } = useChat();
 
     return (
-        <div className="absolute right-0 z-50 flex h-full flex-col bg-slate-50 transition-transform duration-300 ease-in-out w-full md:static flex-1 translate-x-0 md:z-0">
+        <div className="absolute right-0 z-50 flex h-full flex-col bg-slate-50 transition-transform duration-300 ease-in-out w-full md:static md:w-1/3 flex-1 translate-x-0 md:z-0">
             <ChatWindow
                 conversationItems={conversationItems}
                 currentUser={currentUser}
