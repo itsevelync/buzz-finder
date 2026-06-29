@@ -114,7 +114,7 @@ export default function PWAPromptManager() {
         }, 1500);
 
         return () => clearTimeout(timeout);
-    }, [isIOS, isAndroid, isStandalone, openModal, basicCloseModal]);
+    }, [isIOS, isAndroid, isStandalone, openModal, basicCloseModal, user?._id]);
 
     return null;
 }

@@ -10,6 +10,7 @@ type Position = {
 type UserLocationContextType = {
     currentPosition: Position | undefined;
     currPositionFetched: boolean;
+    currPositionFetchFailed: boolean;
 };
 
 const UserLocationContext = createContext<UserLocationContextType | undefined>(
@@ -17,8 +18,8 @@ const UserLocationContext = createContext<UserLocationContextType | undefined>(
 );
 
 const gtCampus = {
-    lat: 33.7756,
-    lng: -84.3963,
+    lat: 33.778,
+    lng: -84.398,
 };
 
 export function UserLocationProvider({
@@ -30,10 +31,13 @@ export function UserLocationProvider({
         Position | undefined
     >(undefined);
     const [currPositionFetched, setCurrPositionFetched] = useState(false);
+    const [currPositionFetchFailed, setCurrPositionFetchFailed] =
+        useState(false);
 
     useEffect(() => {
         if (!navigator.geolocation) {
             setCurrentPosition(gtCampus);
+            setCurrPositionFetchFailed(true);
             setCurrPositionFetched(true);
             return;
         }
@@ -44,11 +48,13 @@ export function UserLocationProvider({
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 });
+                setCurrPositionFetchFailed(false);
                 setCurrPositionFetched(true);
             },
             (error) => {
                 console.log("Error getting location", error);
                 setCurrentPosition(gtCampus);
+                setCurrPositionFetchFailed(true);
                 setCurrPositionFetched(true);
             },
         );
@@ -60,7 +66,11 @@ export function UserLocationProvider({
 
     return (
         <UserLocationContext.Provider
-            value={{ currentPosition, currPositionFetched }}
+            value={{
+                currentPosition,
+                currPositionFetched,
+                currPositionFetchFailed,
+            }}
         >
             {children}
         </UserLocationContext.Provider>
