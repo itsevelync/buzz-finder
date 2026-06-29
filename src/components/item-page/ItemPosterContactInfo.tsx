@@ -8,7 +8,7 @@ import { User } from "@/model/User";
 
 interface ItemPosterContactInfoProps {
     userId?: string;
-    itemPoster?: User;
+    itemPoster?: User | null;
     itemContactInfo?: { name?: string | null; details?: string | null } | null;
     title?: string;
 }
@@ -46,54 +46,51 @@ export default function ItemPosterContactInfo({
         }
     }
 
-    if (!itemPoster && !itemContactInfo) return;
+    const noContactDetails =
+        !itemContactInfo || (!itemContactInfo.name && !itemContactInfo.details);
 
-    if (itemContactInfo) {
-        const itemOwner = itemContactInfo;
+    if (!itemPoster && noContactDetails) return;
 
-        return (
-            <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <LuContact className="text-buzz-gold" /> {title}
-                </h3>
+    return (
+        <div className="border border-gray-200 rounded-lg p-4 bg-white">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <LuContact className="text-buzz-gold" /> {title}
+            </h3>
 
+            {itemContactInfo && (
                 <div className="flex flex-col gap-1 text-sm mb-1">
                     <div>
-                        <span className="font-medium">{itemOwner.name}</span>
+                        <span className="font-medium">
+                            {itemContactInfo.name}
+                        </span>
                     </div>
 
                     <div className="flex items-center gap-2 text-gray-700">
-                        <span>{itemOwner.details}</span>
+                        <span>
+                            {itemContactInfo.details ||
+                                "No contact details provided."}
+                        </span>
                     </div>
                 </div>
-            </div>
-        );
-    }
+            )}
 
-    if (itemPoster) {
-        return (
-            <div className="border border-gray-200 rounded-lg p-4 bg-white">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                    <LuContact className="text-buzz-gold" /> {title}
-                </h3>
+            {itemPoster && <ContactInfoList user={itemPoster} />}
 
-                <ContactInfoList user={itemPoster} />
-
-                {!isOwner && (
-                    <button
-                        disabled={loadingChat || !userId}
-                        onClick={handleLoadChat}
-                        className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-                    >
-                        <LuMessagesSquare />{" "}
-                        {!userId
-                            ? "Log in to message item owner"
-                            : loadingChat
-                              ? "Redirecting..."
-                              : "Message Item Owner"}
-                    </button>
-                )}
-            </div>
-        );
-    }
+            {itemPoster && !isOwner && (
+                <button
+                    disabled={loadingChat || !userId}
+                    onClick={handleLoadChat}
+                    className="mt-4 w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium
+                        py-2.5 rounded transition text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                    <LuMessagesSquare />{" "}
+                    {!userId
+                        ? "Log in to message item owner"
+                        : loadingChat
+                          ? "Redirecting..."
+                          : "Message Item Owner"}
+                </button>
+            )}
+        </div>
+    );
 }

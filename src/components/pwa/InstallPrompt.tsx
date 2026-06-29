@@ -41,8 +41,9 @@ export default function InstallPrompt() {
                     Install App
                 </h3>
                 <p className="opacity-70 text-sm">
-                    For push notifications and the best user experience, please
-                    install BuzzFinder.
+                    For reporting items on-the-go and push notifications with
+                    item updates and real-time messaging, please install
+                    BuzzFinder.
                 </p>
             </div>
             {/* Android / Chrome */}

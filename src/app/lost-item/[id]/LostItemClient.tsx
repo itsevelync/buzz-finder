@@ -7,7 +7,6 @@ import { FaChevronLeft } from "react-icons/fa";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import CenteredMap from "@/components/maps/CenteredMap";
 import {
-    LuBadgeCheck,
     LuBox,
     LuCheck,
     LuImageOff,
@@ -26,6 +25,7 @@ import { usePostAndItem } from "@/context/PostAndItemContext";
 import Loading from "@/app/loading";
 import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
+import StatusBanner from "@/components/item-page/StatusBanner";
 
 interface LostItemClientProps {
     id: string;
@@ -129,14 +129,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
             </div>
 
             {/* Found Status Banner Announcement */}
-            {lost_item.isFound && (
-                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
-                    <LuBadgeCheck className="text-lg text-emerald-600" />
-                    <h3 className="font-medium text-emerald-900 text-base leading-tight">
-                        This item has been marked as found!
-                    </h3>
-                </div>
-            )}
+            {lost_item.isFound && <StatusBanner text="This item is marked as found!" />}
 
             {/* Core Title and Badges */}
             <div className="text-center sm:text-left w-full">

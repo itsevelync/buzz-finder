@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface UserInfoProps {
-    user: User | undefined;
+    user: User | null | undefined;
     text?: string;
 }
 
