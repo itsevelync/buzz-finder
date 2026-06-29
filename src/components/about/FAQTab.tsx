@@ -4,7 +4,7 @@ import { LuPlus } from "react-icons/lu";
 
 export default function FAQTab() {
     // FAQ Active Accordion state
-    const [openFaq, setOpenFaq] = useState<number | null>(0);
+    const [openFaq, setOpenFaq] = useState<number | null>(null);
 
     return (
         <div className="max-w-3xl mx-auto space-y-4 animate-fade-in">
@@ -160,7 +160,7 @@ export default function FAQTab() {
                         <div
                             className={`transition-all  px-6 duration-300 ease-in-out overflow-hidden ${
                                 isCurrentOpen
-                                    ? "max-h-40 pb-6"
+                                    ? "max-h-80 pb-6"
                                     : "max-h-0 pointer-events-none"
                             }`}
                         >

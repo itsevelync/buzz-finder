@@ -7,6 +7,7 @@ import { categories } from "@/constants/Categories";
 import { useUserLocation } from "@/context/UserLocationContext";
 import { calculateDistance } from "@/lib/itemUtils";
 import SavedSearchesButtons from "./SavedSearchesButtons";
+import { useUser } from "@/context/UserContext";
 
 type DateSort = "newest" | "oldest";
 type DateRange = "all" | "24h" | "7d" | "14d" | "30d";
@@ -66,6 +67,7 @@ export default function SearchFilters<T extends FilterableItem>({
     showSavedSearches = false,
 }: SearchFiltersProps<T>) {
     const { currentPosition } = useUserLocation();
+    const { user } = useUser();
 
     // Filter States
     const [dateSort, setDateSort] = useState<DateSort>("newest");
@@ -194,7 +196,9 @@ export default function SearchFilters<T extends FilterableItem>({
 
     const [savedSearchTerm, setSavedSearchTerm] = useState<string>("");
     const hasSearchTerm = !!savedSearchTerm;
-    const hasNonDateFilters = activeFiltersCount > 0 && !(dateRange !== "all" && activeFiltersCount === 1);
+    const hasNonDateFilters =
+        activeFiltersCount > 0 &&
+        !(dateRange !== "all" && activeFiltersCount === 1);
     const activeSearch = hasNonDateFilters || hasSearchTerm;
 
     return (
@@ -440,12 +444,14 @@ export default function SearchFilters<T extends FilterableItem>({
                             {displayItems.length} item
                             {displayItems.length !== 1 ? "s" : ""} found
                         </div>
-                        {showSavedSearches && <SavedSearchesButtons
-                            activeSearch={activeSearch}
-                            savedSearchTerm={savedSearchTerm}
-                            categoryFilter={categoryFilter}
-                            distanceFilter={distanceFilter}
-                        />}
+                        {user?._id && showSavedSearches && (
+                            <SavedSearchesButtons
+                                activeSearch={activeSearch}
+                                savedSearchTerm={savedSearchTerm}
+                                categoryFilter={categoryFilter}
+                                distanceFilter={distanceFilter}
+                            />
+                        )}
                     </div>
                 </div>
             )}
