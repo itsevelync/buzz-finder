@@ -35,8 +35,8 @@ export default function ContactTab() {
             const name = formData.get("name") as string;
             const message = formData.get("message") as string;
             const response = await submitContactForm(
-                email,
                 name,
+                email,
                 message,
                 ticketType,
             );
