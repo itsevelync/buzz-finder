@@ -30,11 +30,11 @@ export default function WelcomeModal() {
                     {/* Header */}
                     <div className="flex flex-col items-center text-center">
                         <Image
-                            src="/buzzfinder-logo.png"
+                            src="/images/buzzfinder-logo.png"
                             alt="BuzzFinder Logo"
-                            width={72}
-                            height={72}
-                            className="mb-5"
+                            width={130}
+                            height={130}
+                            className="-mx-5 -mt-7 mb-2"
                         />
 
                         <h1 className="text-3xl font-bold text-buzz-blue md:text-4xl">

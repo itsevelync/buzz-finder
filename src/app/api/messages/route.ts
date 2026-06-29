@@ -6,7 +6,7 @@ import Message from "@/model/Message";
 import { pusherServer } from "@/model/pusherServer";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
-import { sendPushToUsers } from "@/actions/Push";
+import { sendPushToUsers } from "@/actions/Notification";
 
 export async function POST(request: Request) {
     try {
@@ -30,13 +30,21 @@ export async function POST(request: Request) {
             return new NextResponse("Missing fields", { status: 400 });
         }
 
-        const conversation = await Conversation.findById(conversationId).lean<ConversationType>();
+        const conversation =
+            await Conversation.findById(
+                conversationId,
+            ).lean<ConversationType>();
 
         if (!conversation) {
             return new NextResponse("Conversation not found", { status: 404 });
         }
 
-        if (!conversation.participants.some((p: { userId: string }) => p.userId.toString() === userId.toString())) {
+        if (
+            !conversation.participants.some(
+                (p: { userId: string }) =>
+                    p.userId.toString() === userId.toString(),
+            )
+        ) {
             return new NextResponse("Forbidden", { status: 403 });
         }
 
@@ -60,12 +68,13 @@ export async function POST(request: Request) {
                 messagePayload,
             ),
 
-            ...conversation.participants.map((participant: { userId: string }) =>
-                pusherServer.trigger(
-                    `inbox-${participant.userId.toString()}`,
-                    "conversation-updated",
-                    { conversationId }
-                )
+            ...conversation.participants.map(
+                (participant: { userId: string }) =>
+                    pusherServer.trigger(
+                        `inbox-${participant.userId.toString()}`,
+                        "conversation-updated",
+                        { conversationId },
+                    ),
             ),
         ]);
 
@@ -82,7 +91,7 @@ export async function POST(request: Request) {
             for (const recipientId of recipientIds) {
                 const isActive = await isUserInConversation(
                     conversationId,
-                    recipientId
+                    recipientId,
                 );
 
                 if (isActive) {
@@ -103,7 +112,7 @@ export async function POST(request: Request) {
                     groupId: `conversation:${conversationId}`,
                     notificationType: "messages",
                 }).catch((err) =>
-                    console.error("Web Push Notification failed: ", err)
+                    console.error("Web Push Notification failed: ", err),
                 );
             }
         }

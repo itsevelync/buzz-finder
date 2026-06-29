@@ -39,12 +39,17 @@ export default function MatchItem({
                 const res = await fetch(`/api/item-matches?${queryParam}`);
                 const body = await res.json();
                 if (res.ok) {
-                    console.log(body);
                     let matchedItem;
-                    if (mode === "found") {
-                        matchedItem = items.find((i) => i._id === body.foundItem._id);
-                    } else {
-                        matchedItem = lostItemPosts.find((i) => i._id === body.lostItem._id);
+                    if (body) {
+                        if (mode === "found") {
+                            matchedItem = items.find(
+                                (i) => i._id === body.foundItem._id,
+                            );
+                        } else {
+                            matchedItem = lostItemPosts.find(
+                                (i) => i._id === body.lostItem._id,
+                            );
+                        }
                     }
                     setMatch(matchedItem ?? null);
                 }
@@ -74,9 +79,13 @@ export default function MatchItem({
                 toast.success("Successfully submitted item match!");
                 let matchedItem;
                 if (mode === "found") {
-                    matchedItem = items.find((i) => i._id === resBody.foundItem._id);
+                    matchedItem = items.find(
+                        (i) => i._id === resBody.foundItem._id,
+                    );
                 } else {
-                    matchedItem = lostItemPosts.find((i) => i._id === resBody.lostItem._id);
+                    matchedItem = lostItemPosts.find(
+                        (i) => i._id === resBody.lostItem._id,
+                    );
                 }
                 setMatch(matchedItem ?? null);
             } else {

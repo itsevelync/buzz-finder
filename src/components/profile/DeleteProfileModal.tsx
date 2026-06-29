@@ -1,43 +1,47 @@
 "use client";
 
-import { deleteUser } from "@/actions/User";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import FormInput from "../ui/FormInput";
 import { useUser } from "@/context/UserContext";
 import { useModal } from "@/context/ModalContext";
 import { LuTriangleAlert, LuX } from "react-icons/lu";
 import { toast } from "react-toastify";
+import { doLogout } from "@/actions/User";
 
 export default function DeleteProfileModal() {
     const { closeModal } = useModal();
     const { user, setUser } = useUser();
-    const { update } = useSession();
     const userID = user?._id ?? "";
-
-    const router = useRouter();
-    const [error, setError] = useState("");
 
     async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
-        const values = Object.fromEntries(formData.entries()) as {
-            confirmation: string;
-        };
+        const confirmation = formData.get("confirmation") as string;
 
-        const result = await deleteUser(userID, values);
-
-        if (result.error) {
-            setError(result.error);
+        if (confirmation !== "Confirm Deletion") {
+            toast.error("Confirmation text does not match.");
             return;
         }
-        await update(values);
-        toast.success("Profile deleted successfully.");
-        closeModal();
-        setUser(null);
-        router.push("/dashboard");
+
+        try {
+            const res = await fetch(`/api/users/${userID}`, {
+                method: "DELETE",
+            });
+        
+            if (!res.ok) {
+                const errData = await res.json();
+                toast.error(`Error deleting account: ${errData.error || "Unknown server error."}`);
+                return;
+            }
+        
+            toast.success("Account deleted successfully.");
+            closeModal();
+            setUser(null);
+            doLogout();
+        } catch (error) {
+            console.error("Error deleting profile:", error);
+            toast.error("Error deleting profile. Please try again");
+        }
     }
 
     return (
@@ -58,7 +62,6 @@ export default function DeleteProfileModal() {
                 be undone.
             </p>
 
-            <div className="text-red-500">{error}</div>
             <form className="form" onSubmit={onSubmit}>
                 <FormInput
                     label="Type 'Confirm Deletion' (case-sensitive) to confirm."

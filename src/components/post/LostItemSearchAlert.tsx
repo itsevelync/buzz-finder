@@ -147,7 +147,7 @@ export default function LostItemSearchAlert({
                     }`}
                 >
                     <div
-                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-300 ${
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transition-transform duration-300 ${
                             isEnabled ? "translate-x-5" : "translate-x-0"
                         }`}
                     />

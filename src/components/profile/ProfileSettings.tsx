@@ -298,7 +298,7 @@ export default function ProfileSettings() {
                             src={
                                 profileImage
                                     ? URL.createObjectURL(profileImage)
-                                    : user.image || "/default-icon.svg"
+                                    : user.image || "/images/default-icon.svg"
                             }
                             alt="Profile"
                             width={96}

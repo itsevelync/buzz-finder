@@ -14,7 +14,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import ChatSidebarShell from "@/components/chat/ChatSidebarShell";
 
 export const metadata: Metadata = {
-    title: "Messages - BuzzFinder",
+    title: "Messages",
     description:
         "Chat in real-time with other BuzzFinder users to safely arrange inquiries, verifications, and drop-offs.",
 };

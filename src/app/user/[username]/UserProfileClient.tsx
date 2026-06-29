@@ -79,7 +79,7 @@ export default function UserProfileClient({
                     <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 mt-4 mb-6 w-full">
                         <div className="flex items-center gap-6">
                             <Image
-                                src={userProfile?.image || "/default-icon.svg"}
+                                src={userProfile?.image || "/images/default-icon.svg"}
                                 alt="Profile"
                                 width={96}
                                 height={96}

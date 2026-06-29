@@ -11,7 +11,6 @@ import { usePostAndItem } from "@/context/PostAndItemContext";
 import { useUser } from "@/context/UserContext";
 import Loading from "@/app/loading";
 import {
-    LuBadgeCheck,
     LuBox,
     LuImageOff,
     LuMapPin,
@@ -27,6 +26,7 @@ import ItemPosterContactInfo from "@/components/item-page/ItemPosterContactInfo"
 import UserInfo from "@/components/item-page/UserInfo";
 import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
+import StatusBanner from "@/components/item-page/StatusBanner";
 
 interface ItemClientProps {
     id: string;
@@ -39,9 +39,7 @@ export default function ItemClient({ id }: ItemClientProps) {
 
     async function getItemNotes(itemId: string) {
         try {
-            const res = await fetch(
-                `/api/lost-item-posts/${itemId}/item-notes`,
-            );
+            const res = await fetch(`/api/item-notes/?itemId=${itemId}`);
 
             if (!res.ok) {
                 console.error(
@@ -52,7 +50,7 @@ export default function ItemClient({ id }: ItemClientProps) {
             const data = await res.json();
             setItemNotes(data);
         } catch (error) {
-            console.error("Error fetching item:", error);
+            console.error("Error fetching item notes:", error);
         }
     }
 
@@ -116,29 +114,21 @@ export default function ItemClient({ id }: ItemClientProps) {
 
             {/* Status Banner Announcement */}
             {item.status === "claimed" && (
-                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
-                    <LuBadgeCheck className="text-lg text-emerald-600" />
-                    <h3 className="font-medium text-emerald-900 text-base leading-tight">
-                        This item has been successfully claimed!
-                    </h3>
-                </div>
+                <StatusBanner text="This item is marked as claimed!" />
             )}
             {item.status === "gone" && (
-                <div className="items-center w-full bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2 flex gap-3">
-                    <LuTriangleAlert className="text-lg text-amber-600" />
-                    <h3 className="font-medium text-amber-900 text-base leading-tight">
-                        This item has been marked as no longer there.
-                    </h3>
-                </div>
+                <StatusBanner
+                    color="amber"
+                    icon={LuTriangleAlert}
+                    text="This item is marked as no longer there."
+                />
             )}
             {item.status === "archived" && (
-                <div className="items-center w-full bg-gray-50 border border-gray-200 rounded-xl p-4 mb-2 flex gap-3">
-                    <LuArchive className="text-lg text-gray-600" />
-                    <h3 className="font-medium text-gray-800 text-base leading-tight">
-                        This item was found more than three weeks ago and has
-                        been archived.
-                    </h3>
-                </div>
+                <StatusBanner
+                    color="gray"
+                    icon={LuArchive}
+                    text="This item was found over three weeks ago and has been archived."
+                />
             )}
 
             {/* Core Title and Badges */}
@@ -227,7 +217,11 @@ export default function ItemClient({ id }: ItemClientProps) {
                         title="Contact Item Finder"
                     />
 
-                    <MatchItem currentItemId={id} mode="lost" resolved={item.status !== "unclaimed"} />
+                    <MatchItem
+                        currentItemId={id}
+                        mode="lost"
+                        resolved={item.status !== "unclaimed"}
+                    />
 
                     {/* Desktop submit item note */}
                     {item.status === "unclaimed" && (

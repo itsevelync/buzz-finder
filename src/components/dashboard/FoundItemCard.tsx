@@ -35,7 +35,7 @@ export default function FoundItemCard({
         >
             <Image
                 className="w-full h-50 max-h-full rounded-t-xl object-cover"
-                src={item.image?.url ?? "/img-placeholder.jpg"}
+                src={item.image?.url ?? "/images/img-placeholder.jpg"}
                 alt={`${item.name} Image`}
                 height={280}
                 width={200}

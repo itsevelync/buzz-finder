@@ -9,6 +9,7 @@ import { CredentialsSignin } from "next-auth";
 import { MongoServerError } from "mongodb";
 import { auth } from "@/auth";
 import { compareResetCode } from "@/actions/ResetCode";
+import { sanitizeUser } from "@/lib/userUtils";
 
 interface NewUser {
     name: string;
@@ -30,10 +31,6 @@ export interface UserUpdateData {
     linkedIn?: string;
     hideEmail?: boolean;
     resetCode?: string;
-}
-
-interface UserDeleteData {
-    confirmation?: string;
 }
 
 export async function createUser(user: NewUser) {
@@ -68,17 +65,13 @@ export async function getUserByEmail(email: string) {
 export async function getUserByUsername(username: string, viewerId?: string) {
     await dbConnect();
 
-    const userDoc = await User.findOne({ username })
+    let userDoc = await User.findOne({ username })
         .select("-password")
-        .lean<UserType>();
+        .lean<UserType | null | undefined>();
+
+    userDoc = sanitizeUser(userDoc, viewerId);
 
     if (!userDoc) return null;
-
-    const isOwner = viewerId && userDoc._id.toString() === viewerId;
-
-    if (userDoc.hideEmail && !isOwner) {
-        delete userDoc.email;
-    }
 
     return {
         ...userDoc,
@@ -184,37 +177,6 @@ export async function updateUser(
             return { error: "This username is already taken." };
         }
         return { error: "Unable to update user, please try again." };
-    }
-}
-
-export async function deleteUser(
-    userId: string,
-    userData: UserDeleteData,
-): Promise<{ success?: string; error?: string }> {
-    // Check if the userId is a valid ObjectId before updating
-    if (!Types.ObjectId.isValid(userId)) {
-        return { error: "Invalid user ID." };
-    }
-
-    try {
-        await dbConnect();
-
-        if (userData.confirmation !== "Confirm Deletion") {
-            return { error: "Confirmation text does not match." };
-        }
-
-        const userToDelete = await User.findById(userId);
-
-        if (!userToDelete) {
-            return { error: "User not found." };
-        }
-
-        doLogout();
-        await User.findByIdAndDelete(userId);
-
-        return { success: "User deleted successfully." };
-    } catch {
-        return { error: "Unable to delete user, please try again." };
     }
 }
 

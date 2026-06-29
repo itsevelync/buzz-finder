@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Reset Password - BuzzFinder",
+    title: "Reset Password",
 };
 
 export default function ResetPasswordPage() {

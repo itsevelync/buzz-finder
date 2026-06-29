@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import LostItemPostSchema, { LostItemPost } from "@/model/LostItemPost";
 import { dbConnect } from "@/lib/mongo";
+import { sanitizeUser } from "@/lib/userUtils";
 
 /**
  * Returns all lost item posts in the database.
@@ -18,19 +19,15 @@ export async function GET(req: NextRequest) {
         query.user = user;
     }
 
-    const lostItemPosts = await LostItemPostSchema.find(query).sort({ createdAt: -1 }).populate("user").lean<LostItemPost[]>();
+    const lostItemPosts = await LostItemPostSchema.find(query)
+        .sort({ createdAt: -1 })
+        .populate("user")
+        .lean<LostItemPost[]>();
 
-    const sanitizedPosts = lostItemPosts.map(post => {
-        if (post.user) {
-            if (post.user.hideEmail) {
-                delete post.user.email;
-            }
-
-            delete post.user.hideEmail;
-        }
-
-        return post;
-    });
+    const sanitizedPosts = lostItemPosts.map((post) => ({
+        ...post,
+        user: sanitizeUser(post.user),
+    }));
 
     return new Response(JSON.stringify(sanitizedPosts), { status: 200 });
 }
@@ -48,44 +45,15 @@ export async function POST(req: NextRequest) {
         return new Response(JSON.stringify(newLostItemPost), { status: 201 });
     } catch (e: unknown) {
         if (e instanceof Error) {
-            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+            return new Response(JSON.stringify({ error: e.message }), {
+                status: 500,
+            });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/lost-item-posts." }), { status: 500 })
-    }
-}
-
-/**
- * Updates an existing lost item post in the database.
- */
-export async function PATCH(req: NextRequest) {
-    try {
-        const body = await req.json();
-        const { id, ...updates } = body;
-
-        if (!id) {
-            return new Response(JSON.stringify({ error: "Missing post ID." }), { status: 400 });
-        }
-
-        await dbConnect();
-
-        const updatedPost = await LostItemPostSchema.findByIdAndUpdate(
-            id,
-            updates,
-            { new: true }
+        return new Response(
+            JSON.stringify({
+                error: "An unexpected error occurred at POST /api/lost-item-posts.",
+            }),
+            { status: 500 },
         );
-
-        if (!updatedPost) {
-            return new Response(JSON.stringify({ error: "Post not found." }), { status: 404 });
-        }
-
-        return new Response(JSON.stringify(updatedPost), { status: 200 });
-    } catch (e: unknown) {
-        console.error("PATCH /api/lost-item-posts error:", e);
-
-        if (e instanceof Error) {
-            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
-        } else {
-            return new Response(JSON.stringify({ error: "An unexpected error occurred updating the lost item post." }), { status: 500 });
-        }
     }
 }

@@ -12,7 +12,7 @@ type GenericItem = {
     image?: { url?: string | null } | null;
     // Normalizing different naming conventions for dates/users
     date: string | Date;
-    user?: { username?: string; name?: string; image?: string | null };
+    user?: { username?: string; name?: string; image?: string | null } | null;
 };
 
 type Props = {

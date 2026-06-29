@@ -2,7 +2,7 @@ import SettingsClient from "./SettingsClient";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Settings - BuzzFinder",
+    title: "Settings",
 };
 
 export default async function Settings({

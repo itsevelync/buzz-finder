@@ -1,6 +1,6 @@
 <div align="center">
     <picture>
-        <img src="public/buzzfinder-logo.png" alt="BuzzFinder Logo" width="100"/>
+        <img src="public/images/buzzfinder-logo.png" alt="BuzzFinder Logo" width="100" style="margin: -5px -5px -10px -5px;" />
     </picture>
     <h1>BuzzFinder</h1>
     <i>Reconnecting People With Lost Items</i>
@@ -86,6 +86,10 @@ Before you begin, ensure you have the following installed:
 
     # Google Maps
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+    # Web Push Notifications (VAPID)
+    NEXT_PUBLIC_VAPID_PUBLIC_KEY=your_vapid_public_key
+    VAPID_PRIVATE_KEY=your_vapid_private_key
 
     # Pusher
     NEXT_PUBLIC_PUSHER_APP_KEY=your_pusher_app_key

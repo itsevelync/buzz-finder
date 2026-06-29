@@ -10,7 +10,7 @@ export default function SocialLogins() {
         value="google"
         className="flex gap-3 border border-gray-400 rounded-sm p-2 w-full justify-center hover:bg-gray-100 mb-2"
       >
-        <Image src="/google.svg" alt="Google Logo" width={16} height={16} />
+        <Image src="/images/google.svg" alt="Google Logo" width={16} height={16} />
         Sign in with Google
       </button>
 
@@ -20,7 +20,7 @@ export default function SocialLogins() {
         value="microsoft-entra-id"
         className="flex gap-3 border border-gray-400 rounded-sm p-2 w-full justify-center hover:bg-gray-100"
       >
-        <Image src="/buzz.png" alt="buzz logo" width={16} height={16} />
+        <Image src="/images/gt-logo.svg" alt="buzz logo" width={20} height={16} />
         Sign in with Georgia Tech
       </button>
     </form>

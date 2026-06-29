@@ -2,7 +2,7 @@ import LostItemPostForm from "@/components/post/LostItemPostForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Edit Lost Item - BuzzFinder",
+    title: "Edit Lost Item",
 };
 
 interface EditLostItemProps {

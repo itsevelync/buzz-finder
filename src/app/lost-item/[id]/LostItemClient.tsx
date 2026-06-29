@@ -7,7 +7,6 @@ import { FaChevronLeft } from "react-icons/fa";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import CenteredMap from "@/components/maps/CenteredMap";
 import {
-    LuBadgeCheck,
     LuBox,
     LuCheck,
     LuImageOff,
@@ -26,6 +25,7 @@ import { usePostAndItem } from "@/context/PostAndItemContext";
 import Loading from "@/app/loading";
 import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
+import StatusBanner from "@/components/item-page/StatusBanner";
 
 interface LostItemClientProps {
     id: string;
@@ -41,9 +41,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
 
     async function getItemNotes(itemId: string) {
         try {
-            const res = await fetch(
-                `/api/lost-item-posts/${itemId}/item-notes`,
-            );
+            const res = await fetch(`/api/item-notes/?itemId=${itemId}`);
 
             if (!res.ok) {
                 console.error(
@@ -131,14 +129,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
             </div>
 
             {/* Found Status Banner Announcement */}
-            {lost_item.isFound && (
-                <div className="items-center w-full bg-emerald-50 border border-emerald-200 rounded-xl p-4 mb-2 flex gap-3">
-                    <LuBadgeCheck className="text-lg text-emerald-600" />
-                    <h3 className="font-medium text-emerald-900 text-base leading-tight">
-                        This item has been marked as found!
-                    </h3>
-                </div>
-            )}
+            {lost_item.isFound && <StatusBanner text="This item is marked as found!" />}
 
             {/* Core Title and Badges */}
             <div className="text-center sm:text-left w-full">
@@ -227,7 +218,11 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                         itemContactInfo={lost_item.contactInfo}
                     />
 
-                    <MatchItem currentItemId={id} mode="found" resolved={lost_item.isFound}/>
+                    <MatchItem
+                        currentItemId={id}
+                        mode="found"
+                        resolved={lost_item.isFound}
+                    />
 
                     {/* Desktop submit item note */}
                     {!lost_item.isFound && (
@@ -266,7 +261,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                                 {formattedLostDate}
                             </span>
                         </p>
-                        <p className="text-gray-600 mb-3">
+                        <p className="text-gray-600">
                             Last seen near:{" "}
                             <span className="font-medium text-foreground">
                                 {lost_item.locationDescription ||
@@ -275,18 +270,16 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                         </p>
 
                         {/* Map Container */}
-                        <div className="h-90 w-full rounded-lg overflow-hidden border border-foreground/10 flex justify-center items-center bg-foreground/2 text-foreground/70">
-                            {lost_item.locationPin ? (
+                        {lost_item.locationPin && (
+                            <div className="mt-3 h-90 w-full rounded-lg overflow-hidden border border-foreground/10 flex justify-center items-center bg-foreground/2 text-foreground/70">
                                 <CenteredMap
                                     width="100%"
                                     height="100%"
                                     pin={lost_item}
                                     disableClick={true}
                                 />
-                            ) : (
-                                <div>No map location selected.</div>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Mobile submit item note */}

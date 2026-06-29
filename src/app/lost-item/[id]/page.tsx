@@ -3,7 +3,7 @@ import LostItemClient from "./LostItemClient";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Lost Item - BuzzFinder",
+    title: "Lost Item",
 };
 
 export default async function LostItemPage({

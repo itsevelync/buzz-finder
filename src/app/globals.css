@@ -46,6 +46,10 @@ body {
   font-family: var(--font-sans);
 }
 
+body {
+  @apply selection:bg-buzz-gold selection:text-background;
+}
+
 button {
   transition: 0.3s ease;
 }

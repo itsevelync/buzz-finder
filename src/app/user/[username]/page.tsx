@@ -6,7 +6,7 @@ import { LostItemPost } from "@/model/LostItemPost";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "User Profile - BuzzFinder",
+    title: "User Profile",
 };
 
 interface ProfilePageProps {

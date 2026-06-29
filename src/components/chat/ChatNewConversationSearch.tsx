@@ -239,7 +239,7 @@ export default function ChatNewConversationSearch({
                                         <Image
                                             src={
                                                 user.image ||
-                                                "/default-icon.svg"
+                                                "/images/default-icon.svg"
                                             }
                                             alt={user.name}
                                             width={50}

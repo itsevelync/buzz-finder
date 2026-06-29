@@ -3,6 +3,66 @@ import { dbConnect } from "@/lib/mongo";
 import ItemNoteSchema from "@/model/ItemNote";
 import LostItemPostModel from "@/model/LostItemPost";
 import { sendNotification } from "@/actions/Notification";
+import ItemNoteModel, { ItemNote } from "@/model/ItemNote";
+import { sanitizeUser } from "@/lib/userUtils";
+
+export async function GET(request: NextRequest) {
+    try {
+        await dbConnect();
+
+        const itemId = request.nextUrl.searchParams.get("itemId");
+
+        let notes = await ItemNoteModel.find(itemId ? { itemId } : {})
+            .populate("user")
+            .sort({ createdAt: 1 })
+            .lean<ItemNote[]>();
+
+        notes = notes.map((note) => {
+            note.user = sanitizeUser(note.user);
+
+            return note;
+        });
+
+        const noteMap = new Map();
+
+        notes.forEach((note) => {
+            noteMap.set(note._id.toString(), {
+                ...note,
+                replies: [],
+            });
+        });
+
+        const rootNotes: typeof notes = [];
+
+        noteMap.forEach((note) => {
+            if (note.parentId) {
+                const parent = noteMap.get(note.parentId.toString());
+
+                if (parent) {
+                    parent.replies.push(note);
+                } else {
+                    // Parent was deleted or missing
+                    rootNotes.push(note);
+                }
+            } else {
+                rootNotes.push(note);
+            }
+        });
+
+        return Response.json(rootNotes);
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error("GET /api/item-notes error:", e);
+
+            return Response.json({ error: e.message }, { status: 500 });
+        }
+
+        return Response.json(
+            { error: "An unexpected error occurred at GET /api/item-notes." },
+            { status: 500 },
+        );
+    }
+}
 
 /**
  * Creates a new item note in the database matching the body of the request.
@@ -40,9 +100,7 @@ export async function POST(req: NextRequest) {
         // 3. Complete the cleanup work for client response
         newItemNote = newItemNote.toObject();
 
-        if (newItemNote.user?.hideEmail) {
-            delete newItemNote.user.email;
-        }
+        newItemNote.user = sanitizeUser(newItemNote.user);
 
         return new Response(JSON.stringify(newItemNote), { status: 201 });
     } catch (e: unknown) {

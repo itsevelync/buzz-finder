@@ -62,7 +62,7 @@ export async function processSavedSearches(item: PlainItem2) {
             actor: item.personFound, // Author of post
             resource: item._id,
             resourceType: "Item",
-            notificationType: "SEARCH_ALERT", //
+            notificationType: "SEARCH_ALERT",
             body: search.query,
         });
     }

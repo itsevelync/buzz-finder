@@ -1,12 +1,16 @@
 "use client";
 
-import Image from "next/image";
-import { IoSettings } from "react-icons/io5";
+import {
+    IoInformationCircle,
+    IoInformationCircleOutline,
+    IoSettings,
+} from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
 import Link from "next/link";
 import NotificationBadge from "./NotificationBadge";
 import { useUser } from "@/context/UserContext";
+import Logo from "../icons/Logo";
 
 export default function TopBar() {
     const { user } = useUser();
@@ -14,17 +18,23 @@ export default function TopBar() {
     return (
         <div className="flex w-full h-14 justify-between items-center border-b border-b-gray-300 py-3 px-5 bg-white">
             <Link href="/" className="flex items-center gap-2">
-                <Image
-                    src="/buzzfinder-logo.png"
-                    alt="BuzzFinder Logo"
-                    width={50}
-                    height={50}
-                    className="w-10"
-                />
-                <h1 className="text-2xl font-bold">BuzzFinder</h1>
+                <Logo className="h-9 w-9" />
+                <h1 className="text-2xl font-bold text-buzz-blue">
+                    BuzzFinder
+                </h1>
             </Link>
 
             <div className="flex items-center gap-3">
+                <div className="-mr-px -mb-px">
+                    <NavItem
+                        name="About"
+                        href="/help/about"
+                        icon={IoInformationCircleOutline}
+                        iconFill={IoInformationCircle}
+                        direction="bottom"
+                        size="text-2xl"
+                    />
+                </div>
                 {user?._id && (
                     <NotificationBadge direction="bottom" size="text-2xl" />
                 )}

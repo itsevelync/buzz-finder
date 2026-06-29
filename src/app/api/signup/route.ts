@@ -11,26 +11,33 @@ interface CreateUserRequestBody {
 }
 
 export const POST = async (request: Request) => {
-    const { name, email, password }: CreateUserRequestBody = await request.json();
+    const { name, email, password }: CreateUserRequestBody =
+        await request.json();
 
     await dbConnect();
     const hashedPassword = await bcrypt.hash(password, 5);
     const newUser = {
         name,
         password: hashedPassword,
-        email
-    }
+        email,
+    };
     try {
         await createUser(newUser);
     } catch (e: unknown) {
         if (e instanceof Error) {
-            return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+            return new Response(JSON.stringify({ error: e.message }), {
+                status: 500,
+            });
         }
-        return new Response(JSON.stringify({ error: "An unexpected error occurred at POST /api/signup." }), { status: 500 })
+        return new Response(
+            JSON.stringify({
+                error: "An unexpected error occurred at POST /api/signup.",
+            }),
+            { status: 500 },
+        );
     }
 
     return new NextResponse("User has been created", {
         status: 201,
     });
-
-}
+};
