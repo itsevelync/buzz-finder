@@ -1,6 +1,10 @@
 "use client";
 
-import { IoSettings } from "react-icons/io5";
+import {
+    IoInformationCircle,
+    IoInformationCircleOutline,
+    IoSettings,
+} from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
 import Link from "next/link";
@@ -15,10 +19,22 @@ export default function TopBar() {
         <div className="flex w-full h-14 justify-between items-center border-b border-b-gray-300 py-3 px-5 bg-white">
             <Link href="/" className="flex items-center gap-2">
                 <Logo className="h-9 w-9" />
-                <h1 className="text-2xl font-bold text-buzz-blue">BuzzFinder</h1>
+                <h1 className="text-2xl font-bold text-buzz-blue">
+                    BuzzFinder
+                </h1>
             </Link>
 
             <div className="flex items-center gap-3">
+                <div className="-mr-px -mb-px">
+                    <NavItem
+                        name="About"
+                        href="/help/about"
+                        icon={IoInformationCircleOutline}
+                        iconFill={IoInformationCircle}
+                        direction="bottom"
+                        size="text-2xl"
+                    />
+                </div>
                 {user?._id && (
                     <NotificationBadge direction="bottom" size="text-2xl" />
                 )}

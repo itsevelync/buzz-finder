@@ -59,7 +59,7 @@ export default function BottomBar() {
                         />
                     </Link>
                     {/* Tooltip */}
-                    <span className="tooltip tooltip-bottom">
+                    <span className="tooltip tooltip-top">
                         {user?.name ?? "Guest"}
                     </span>
                 </div>

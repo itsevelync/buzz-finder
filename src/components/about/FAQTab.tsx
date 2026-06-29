@@ -147,7 +147,7 @@ export default function FAQTab() {
                             onClick={() =>
                                 setOpenFaq(isCurrentOpen ? null : idx)
                             }
-                            className="w-full text-left px-6 py-4 flex items-center justify-between font-medium text-buzz-blue text-lg"
+                            className="gap-2 w-full text-left px-6 py-4 flex items-center justify-between font-medium text-buzz-blue text-lg"
                         >
                             <span>{faq.q}</span>
                             <span

@@ -1,7 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { IoSettings } from "react-icons/io5";
+import {
+    IoInformationCircle,
+    IoInformationCircleOutline,
+    IoSettings,
+} from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import NavItem from "./NavItem";
 import Link from "next/link";
@@ -52,7 +56,16 @@ export default function Navbar() {
                     </span>
                 </div>
             </div>
-            <div className="flex flex-col items-center gap-[1.8vh]">
+            <div className="flex flex-col items-center justify-center gap-[1.5vh]">
+                <div className="pl-px -mb-[0.3vh]">
+                    <NavItem
+                        name="About"
+                        href="/help/about"
+                        icon={IoInformationCircleOutline}
+                        iconFill={IoInformationCircle}
+                        size="text-2xl"
+                    />
+                </div>
                 {user?._id && <NotificationBadge size="text-2xl" />}
                 <NavItem
                     name="Settings"
