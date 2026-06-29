@@ -9,7 +9,7 @@ export default function FAQTab() {
     return (
         <div className="max-w-3xl mx-auto space-y-4 animate-fade-in">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-medium text-buzz-blue">
+                <h2 className="text-3xl font-semibold text-buzz-blue">
                     Frequently Asked Questions
                 </h2>
             </div>
