@@ -301,15 +301,11 @@ export default function SearchFilters<T extends FilterableItem>({
                             ))}
                         </FilterSection>
 
-                        <div className="flex flex-col gap-2">
-                            <label className="text-xs font-medium text-gray-500">
-                                Distance Radius
-                            </label>
-                            {!currentPosition ? (
-                                <span className="text-xs text-amber-600 font-medium">
-                                    📍 Enable location to filter by distance
-                                </span>
-                            ) : (
+                        {currentPosition && (
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-medium text-gray-500">
+                                    Distance Radius
+                                </label>
                                 <div className="flex flex-wrap gap-2">
                                     {[
                                         { value: "all", label: "Anywhere" },
@@ -333,8 +329,8 @@ export default function SearchFilters<T extends FilterableItem>({
                                         </button>
                                     ))}
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
 
                         {!isMap && (
                             <div className="flex items-center gap-2 py-1">

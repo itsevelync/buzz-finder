@@ -300,14 +300,14 @@ export default function NotificationSettings({
                             {/* WARNING 1: BROWSER BLOCKS OR WANTS PERMISSION */}
                             {item.key === "pushEnabled" &&
                                 showPermissionWarning && (
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 text-sm rounded-lg border border-destructive/20 bg-destructive/5 text-destructive-foreground">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 text-sm rounded-lg border border-buzz-blue/50 bg-buzz-blue/2">
                                         <div className="flex items-start gap-2">
                                             <LuTriangleAlert className="text-destructive mt-0.5 shrink-0 text-base" />
                                             <div>
-                                                <p className="font-semibold text-neutral-900">
+                                                <p className="font-semibold text-buzz-blue">
                                                     Device permission missing
                                                 </p>
-                                                <p className="text-xs text-neutral-500 mt-0.5">
+                                                <p className="text-xs text-foreground/75 mt-0.5">
                                                     {permissionState ===
                                                     "denied"
                                                         ? "Your browser is blocking alerts. Please re-enable notifications manually inside your browser's site settings layout."
@@ -334,14 +334,14 @@ export default function NotificationSettings({
                             {item.key === "pushEnabled" &&
                                 showDeviceMismatchWarning &&
                                 !showPermissionWarning && (
-                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 text-sm rounded-lg border border-amber-500/20 bg-amber-500/5 text-amber-800">
-                                        <div className="flex items-start gap-2">
-                                            <LuTriangleAlert className="text-amber-500 mt-0.5 shrink-0 text-base" />
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-lg border border-buzz-gold/20 bg-buzz-gold/5">
+                                        <div className="flex items-start gap-2.5">
+                                            <LuTriangleAlert className="text-buzz-gold mt-1 shrink-0 text-lg" />
                                             <div>
-                                                <p className="font-semibold text-neutral-900">
+                                                <p className="font-semibold text-foreground">
                                                     Device unlinked
                                                 </p>
-                                                <p className="text-xs text-neutral-500 mt-0.5">
+                                                <p className="text-sm text-foreground/80 mt-0.5">
                                                     Notifications are active on
                                                     your profile, but this
                                                     specific device isn&rsquo;t
@@ -354,9 +354,9 @@ export default function NotificationSettings({
                                             onClick={() =>
                                                 requestBrowserPushSubscription()
                                             }
-                                            className="ml-auto px-3 py-1.5 whitespace-nowrap rounded-md text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 transition flex items-center gap-1 shadow-sm"
+                                            className="ml-auto px-3 py-1.5 whitespace-nowrap rounded text-xs font-semibold bg-buzz-gold text-white hover:brightness-90 transition flex items-center gap-1 shadow-sm"
                                         >
-                                            <LuRefreshCw className="text-xs" />
+                                            <LuRefreshCw className="text-sm" />
                                             Sync This Device
                                         </button>
                                     </div>
