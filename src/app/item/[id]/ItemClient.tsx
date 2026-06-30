@@ -30,33 +30,17 @@ import StatusBanner from "@/components/item-page/StatusBanner";
 
 interface ItemClientProps {
     id: string;
+    initialNotes: ItemNoteTree[];
 }
 
-export default function ItemClient({ id }: ItemClientProps) {
+export default function ItemClient({ id, initialNotes }: ItemClientProps) {
     const { user } = useUser();
     const { items } = usePostAndItem();
-    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
-
-    async function getItemNotes(itemId: string) {
-        try {
-            const res = await fetch(`/api/item-notes/?itemId=${itemId}`);
-
-            if (!res.ok) {
-                console.error(
-                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
-                );
-            }
-
-            const data = await res.json();
-            setItemNotes(data);
-        } catch (error) {
-            console.error("Error fetching item notes:", error);
-        }
-    }
+    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>(initialNotes);
 
     useEffect(() => {
-        getItemNotes(id.toString());
-    }, [id]);
+        setItemNotes(initialNotes);
+    }, [initialNotes]);
 
     if (!items.length) {
         return <Loading />;
@@ -228,10 +212,10 @@ export default function ItemClient({ id }: ItemClientProps) {
                         <div className="border border-gray-200 rounded-lg p-4 bg-white hidden sm:flex flex-col gap-5">
                             <SubmitItemNote
                                 itemId={item._id}
-                                getItemNotes={getItemNotes}
                                 title="Submit an Item Note"
                                 subtitle="Leave notes about this item below."
                                 placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                                itemType="Item"
                             />
                         </div>
                     )}
@@ -297,10 +281,10 @@ export default function ItemClient({ id }: ItemClientProps) {
                         <div className="border border-gray-200 rounded-lg p-4 bg-white flex sm:hidden flex-col gap-5">
                             <SubmitItemNote
                                 itemId={item._id}
-                                getItemNotes={getItemNotes}
                                 title="Submit an Item Note"
                                 subtitle="Leave notes about this item below."
                                 placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                                itemType="Item"
                             />
                         </div>
                     )}
@@ -309,6 +293,7 @@ export default function ItemClient({ id }: ItemClientProps) {
                     <ItemNotes
                         itemNotes={itemNotes}
                         setItemNotes={setItemNotes}
+                        itemType="Item"
                     />
                 </div>
             </div>

@@ -12,6 +12,11 @@ const ItemNoteSchema = new Schema(
         itemId: {
             required: true,
             type: Schema.Types.ObjectId,
+            refPath: "itemType",
+        },
+        itemType: {
+            type: String,
+            enum: ["Item", "LostItemPost"],
         },
         user: {
             type: Schema.Types.ObjectId,
@@ -28,6 +33,10 @@ const ItemNoteSchema = new Schema(
                 ref: "User",
             },
         ],
+        editedAt: {
+            type: Date,
+            default: null,
+        },
         deletedAt: {
             type: Date,
             default: null,

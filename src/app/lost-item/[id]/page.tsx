@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
 import LostItemClient from "./LostItemClient";
 import { Metadata } from "next";
+import { getItemNotes } from "@/actions/ItemNotes";
 
 export const metadata: Metadata = {
     title: "Lost Item",
@@ -12,7 +12,8 @@ export default async function LostItemPage({
     params: { id: string };
 }) {
     const { id } = await params;
-    const session = await auth();
 
-    return <LostItemClient id={id} session={session} />;
+    const initialNotes = await getItemNotes(id);
+
+    return <LostItemClient id={id} initialNotes={initialNotes} />;
 }

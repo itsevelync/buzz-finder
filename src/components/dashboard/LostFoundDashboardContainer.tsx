@@ -9,8 +9,6 @@ import ItemList from "./ItemList";
 import PostList from "./PostList";
 import SearchFilters from "../search/SearchFilters";
 import { usePostAndItem } from "@/context/PostAndItemContext";
-import PullToRefreshIndicator from "../ui/PullToRefreshIndicator";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
@@ -26,12 +24,7 @@ export default function LostFoundDashboardContainer() {
     const [searchedItems, setSearchedItems] = useState<PlainItem[]>([]);
     const [displayItems, setDisplayItems] = useState<PlainItem[]>([]);
 
-    const { items, lostItemPosts, loading, error, refresh } = usePostAndItem();
-
-    // Pull-to-refresh
-    const { pullDistance } = usePullToRefresh({
-        onRefresh: refresh,
-    });
+    const { items, lostItemPosts, loading, error } = usePostAndItem();
 
     useEffect(() => {
         setSearchedItems(items);
@@ -54,9 +47,6 @@ export default function LostFoundDashboardContainer() {
 
     return (
         <>
-            {/* Pull-to-refresh */}
-            <PullToRefreshIndicator pullDistance={pullDistance} />
-
             <div className="flex flex-col w-full">
                 <LostFoundSelector
                     lostItemsSelected={lostItemsSelected}

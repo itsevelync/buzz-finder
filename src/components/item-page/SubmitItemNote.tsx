@@ -1,24 +1,28 @@
 "use client";
 
 import { useUser } from "@/context/UserContext";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 interface SubmitItemNoteProps {
     itemId: string;
-    getItemNotes: (itemId: string) => Promise<void>;
     title?: string;
     subtitle?: string;
     placeholder?: string;
+    itemType?: "LostItemPost" | "Item";
 }
+
 export default function SubmitItemNote({
     itemId,
-    getItemNotes,
     title = "Have potential leads?",
     subtitle = "If you have information about this item, contact the owner directly or leave information about it below.",
     placeholder = "Example: I found this near the Student Center entrance and left it with campus security. Ask for Officer Williams at the front desk.",
+    itemType = "LostItemPost",
 }: SubmitItemNoteProps) {
     const { user } = useUser();
+    const router = useRouter();
+
     const [note, setNote] = useState("");
     const [anonymize, setAnonymize] = useState(false);
     const [submitting, setSubmitting] = useState(false);
@@ -28,8 +32,9 @@ export default function SubmitItemNote({
 
         try {
             const body = {
-                note: note,
-                itemId: itemId,
+                note,
+                itemId,
+                itemType,
                 user: !anonymize && user ? user : undefined,
             };
 
@@ -41,14 +46,15 @@ export default function SubmitItemNote({
                 body: JSON.stringify(body),
             });
 
+            const resData = await res.json();
             if (res.ok) {
+                console.log("refreshing.....");
                 toast.success("Successfully submitted item note!");
                 setNote("");
-                getItemNotes(itemId);
+                router.refresh();
             } else {
-                const errData = await res.json();
                 toast.error(
-                    `Error reporting lost item: ${errData.error || "Server issue"}`,
+                    `Error reporting lost item: ${resData.error || "Server issue"}`,
                 );
             }
         } catch (err) {

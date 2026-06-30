@@ -14,6 +14,7 @@ import { PostAndItemProvider } from "@/context/PostAndItemContext";
 import { InstallProvider } from "@/context/InstallContext";
 import PWAPromptManager from "@/components/pwa/PWAPromptManager";
 import { NotificationProvider } from "@/context/NotificationContext";
+import GlobalPullToRefresh from "@/components/ui/GlobalPullToRefresh";
 
 export const viewport: Viewport = {
     initialScale: 1,
@@ -62,7 +63,9 @@ export default async function RootLayout({
                                                 id="children-outer-container"
                                                 className="md:pl-15 md:py-0 w-full grow overflow-y-auto"
                                             >
-                                                {children}
+                                                <GlobalPullToRefresh>
+                                                    {children}
+                                                </GlobalPullToRefresh>
                                                 <ToastContainer />
                                             </div>
                                             <div className="bottom-0 w-full md:hidden z-100">

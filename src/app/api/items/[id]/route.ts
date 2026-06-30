@@ -51,17 +51,20 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
         const updateData = await req.json();
 
         await dbConnect();
-        const updatedItem = await ItemSchema.findByIdAndUpdate(
-            id,
-            { $set: updateData },
-            { new: true, runValidators: true },
-        );
 
-        if (!updatedItem) {
+        const item = await ItemSchema.findById(id);
+
+        if (!item) {
             return new Response(JSON.stringify({ error: "Item not found." }), {
                 status: 404,
             });
-        } else {
+        }
+
+        Object.assign(item, updateData);
+        const hasChanges = item.isModified();
+        const updatedItem = await item.save();
+
+        if (hasChanges) {
             const session = await auth();
 
             if (updatedItem.personFound.toString() !== session?.user?._id) {

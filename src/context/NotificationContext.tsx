@@ -19,6 +19,7 @@ interface NotificationContextType {
     toggleRead: (id: string, val: boolean) => Promise<void>;
     toggleArchive: (id: string, val: boolean) => Promise<void>;
     markAllRead: () => Promise<void>;
+    refreshNotifications: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -47,6 +48,11 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
+    };
+
+    // alias for external use
+    const refreshNotifications = async () => {
+        await loadNotifications();
     };
 
     // Fetch all records once on mount
@@ -117,6 +123,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
                 toggleRead,
                 toggleArchive,
                 markAllRead,
+                refreshNotifications,
             }}
         >
             {children}

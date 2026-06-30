@@ -81,6 +81,7 @@ export type NotificationResource = {
     note?: string;
     itemId?: string;
     deletedAt?: string;
+    itemType?: string;
 };
 
 export type NotificationItemPayload = {

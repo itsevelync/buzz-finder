@@ -26,7 +26,7 @@ export default function NotificationItem({
         notification.resource,
         notification.body,
     );
-    const targetLink = config.getLink(notification.resource);
+    const targetLink = config.getLink(notification.resource, notification.body);
 
     const timeAgo = new Date(notification.createdAt).toLocaleDateString(
         undefined,

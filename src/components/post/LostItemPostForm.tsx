@@ -111,6 +111,9 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
         item?.category ?? "misc",
     );
 
+    const today = new Date();
+    today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
     useEffect(() => {
         setItemName(item?.name ?? "");
         setCategory(item?.category ?? "misc");
@@ -441,7 +444,7 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                                         ? new Date(item.lostDate)
                                               .toISOString()
                                               .split("T")[0]
-                                        : ""
+                                        : today.toISOString().split("T")[0]
                                 }
                             />
                         </div>
@@ -453,9 +456,11 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
 
                         <div className="p-1">
                             <p className="italic text-sm mb-3 opacity-60">
-                                {userId ? "Your account" : "This"} information
-                                will be visible on the item page so that others
-                                can contact you if needed.
+                                {userId && useAccountInfo
+                                    ? "Your account"
+                                    : "This"}{" "}
+                                information will be visible on the item page so
+                                that others can contact you if needed.
                             </p>
                             {userId && (
                                 <div className="flex items-center space-x-2">

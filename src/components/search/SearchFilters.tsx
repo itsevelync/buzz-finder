@@ -377,7 +377,7 @@ export default function SearchFilters<T extends FilterableItem>({
                         </div>
 
                         {isMap && (
-                            <p className="text-sm italic text-gray-600">
+                            <p className="text-sm mb-3 italic text-gray-600">
                                 *Only unclaimed items are displayed
                             </p>
                         )}

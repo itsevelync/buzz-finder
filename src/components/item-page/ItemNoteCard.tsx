@@ -61,7 +61,8 @@ export function ItemNoteCard({
                             <Link href={`/user/${note.user.username}`}>
                                 <Image
                                     src={
-                                        note.user?.image ?? "/images/default-icon.svg"
+                                        note.user?.image ??
+                                        "/images/default-icon.svg"
                                     }
                                     alt={note.user.username}
                                     width={40}
@@ -106,7 +107,7 @@ export function ItemNoteCard({
                                             timeStyle: "short",
                                         },
                                     )}{" "}
-                                    {note.createdAt !== note.updatedAt && (
+                                    {note.editedAt && (
                                         <i className="pr-px">(Edited)</i>
                                     )}
                                 </span>
