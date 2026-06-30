@@ -68,7 +68,7 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
             ) : (
                 <>
                     Someone left a note on your item:{" "}
-                    <i className="opacity-60">This note was deleted</i>.
+                    <i className="opacity-60 font-normal">This note was deleted</i>.
                 </>
             ),
     },

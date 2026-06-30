@@ -28,7 +28,7 @@ type UserContextUser = Pick<
             | "instagram"
             | "linkedIn"
             | "hideEmail"
-            | "hasPassword"
+            | "password"
             | "notificationPreferences"
         >
     >;

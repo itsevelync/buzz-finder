@@ -44,7 +44,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
         <div className="min-h-screen bg-background text-foreground font-sans">
             <div className="mx-auto max-w-5xl pt-6 pb-4 md:pt-8 md:pb-6">
                 {/* Header */}
-                <div className="mb-8 px-5 sm:px-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-7 px-5 sm:px-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-3xl font-semibold text-buzz-blue mb-2">Settings</h1>
                         <p className="mt-1 text-foreground/70">
@@ -59,7 +59,7 @@ export default function SettingsClient({ initialTab }: SettingsClientProps) {
 
                 <div className="">
                     {/* Tabs */}
-                    <div className="px-2 border-b border-foreground/10">
+                    <div className="z-1 sticky top-0 px-2 border-b border-foreground/15 shadow-sm lg:shadow-none bg-background pt-1">
                         <nav className="flex gap-4">
                             {tabs.map((tab) => (
                                 <button
