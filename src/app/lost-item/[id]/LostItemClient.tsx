@@ -21,6 +21,7 @@ import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
 import StatusBanner from "@/components/item-page/StatusBanner";
 import { useUser } from "@/context/UserContext";
+import ItemTypeBadge from "@/components/item-page/ItemTypeBadge";
 
 interface LostItemClientProps {
     id: string;
@@ -116,7 +117,8 @@ export default function LostItemClient({
 
             {/* Core Title and Badges */}
             <div className="text-center sm:text-left w-full">
-                <h1 className="text-3xl font-bold">
+                <ItemTypeBadge type="lost" />
+                <h1 className="mt-4 text-3xl font-bold">
                     {lost_item.name ?? "Untitled Missing Item"}
                 </h1>
                 <p className="text-gray-500 mb-2">{`Posted on ${formattedCreatedDate}`}</p>
@@ -173,16 +175,19 @@ export default function LostItemClient({
                         </div>
                     )}
                     {/* Item image */}
-                    <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
-                        {lost_item.image?.url ? (
-                            <Image
-                                src={lost_item.image.url}
-                                alt={lost_item.name ?? "Lost Item"}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        ) : (
+                    {lost_item.image?.url ? (
+                        <div className="w-full p-2 rounded-lg border border-foreground/10">
+                        <Image
+                            src={lost_item.image.url}
+                            alt={lost_item.name ?? "Lost Item"}
+                            width={200}
+                            height={200}
+                            className="w-full mx-auto max-w-80 max-h-80 object-cover rounded-md border border-foreground/10"
+                            priority
+                        />
+                        </div>
+                    ) : (
+                        <div className="w-full h-40 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
                             <div className="w-full h-full flex flex-col items-center justify-center text-foreground/60 gap-2 p-6 text-center">
                                 <div className="text-5xl">
                                     <LuImageOff />
@@ -191,8 +196,8 @@ export default function LostItemClient({
                                     No image uploaded
                                 </p>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
                     {/* Owner contact information */}
                     <ItemPosterContactInfo
