@@ -29,12 +29,12 @@ export default function LostFoundDashboardContainer() {
     useEffect(() => {
         setSearchedItems(items);
         setDisplayItems(items);
-    }, [items]);
+    }, [items, lostItemsSelected]);
 
     useEffect(() => {
         setSearchedPosts(lostItemPosts);
         setDisplayPosts(lostItemPosts);
-    }, [lostItemPosts]);
+    }, [lostItemPosts, lostItemsSelected]);
 
     useEffect(() => {
         const currentTab = searchParams.get("tab");
@@ -58,6 +58,7 @@ export default function LostFoundDashboardContainer() {
                     <div className="bg-white shadow-md rounded-lg w-full">
                         {lostItemsSelected ? (
                             <SearchFilters<LostItemPost>
+                                key="lost"
                                 items={lostItemPosts}
                                 searchedItems={searchedPosts}
                                 setSearchedItems={setSearchedPosts}
@@ -74,6 +75,7 @@ export default function LostFoundDashboardContainer() {
                             />
                         ) : (
                             <SearchFilters<PlainItem>
+                                key="found"
                                 items={items}
                                 searchedItems={searchedItems}
                                 setSearchedItems={setSearchedItems}

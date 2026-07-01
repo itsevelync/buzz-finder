@@ -8,6 +8,7 @@ import { useUserLocation } from "@/context/UserLocationContext";
 import { calculateDistance } from "@/lib/itemUtils";
 import SavedSearchesButtons from "./SavedSearchesButtons";
 import { useUser } from "@/context/UserContext";
+import { LuRefreshCcw } from "react-icons/lu";
 
 type DateSort = "newest" | "oldest";
 type DateRange = "all" | "24h" | "7d" | "14d" | "30d";
@@ -252,7 +253,7 @@ export default function SearchFilters<T extends FilterableItem>({
 
             <div className="relative w-full">
                 {showFilters && (
-                    <div className="absolute w-full top-0 bg-white p-4 space-y-4 border-t border-gray-100 max-h-[calc(100vh-249px)] overflow-y-auto subtle-scrollbar shadow-sm z-10">
+                    <div className="absolute w-full top-0 bg-white p-4 space-y-4 border-t border-gray-100 max-h-[calc(100vh-263px)] lg:max-h-[calc(100vh-200px)] overflow-y-auto subtle-scrollbar shadow z-10">
                         {/* ================= SHARED FILTER UI CONTROLS ================= */}
                         <FilterSection label="Categories">
                             <button
@@ -377,6 +378,27 @@ export default function SearchFilters<T extends FilterableItem>({
                                 *Only unclaimed items are displayed
                             </p>
                         )}
+
+                        <div className="bg-white pt-4 border-t border-gray-200 flex gap-2.5 justify-end">
+                            {activeFiltersCount > 0 && (
+                                <button
+                                    onClick={() => {
+                                        clearAllFilters();
+                                        setShowFilters(false);
+                                    }}
+                                    className="px-4 py-1 rounded-md border border-foreground/15 text-foreground/80 hover:bg-foreground/3"
+                                >
+                                    Reset
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => setShowFilters(false)}
+                                className="px-4 py-1 rounded-md bg-buzz-blue border border-buzz-blue text-white hover:opacity-80"
+                            >
+                                Apply
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>
