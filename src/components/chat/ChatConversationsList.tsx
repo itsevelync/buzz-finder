@@ -75,7 +75,7 @@ onClick={() => {
                             className={`flex w-full items-center gap-3 rounded-xl border px-3 py-3 text-left transition ${
                                 isActive
                                     ? "border-buzz-blue bg-buzz-blue text-white shadow shadow-buzz-blue/20"
-                                    : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
+                                    : isUnread ? "border-buzz-gold/30 hover:bg-buzz-gold/6" : "border-slate-100 bg-white hover:border-slate-200 hover:bg-slate-50"
                             }`}
                         >
                             {/* Avatar Section */}
@@ -121,7 +121,7 @@ onClick={() => {
 
                                         {/* Visual indicator dot */}
                                         {isUnread && (
-                                            <span className="h-2.5 w-2.5 rounded-full bg-buzz-blue animate-pulse" />
+                                            <span className="h-2 w-2 rounded-full bg-buzz-gold" />
                                         )}
                                     </div>
                                 </div>
