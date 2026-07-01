@@ -27,36 +27,21 @@ import UserInfo from "@/components/item-page/UserInfo";
 import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
 import StatusBanner from "@/components/item-page/StatusBanner";
+import ItemTypeBadge from "@/components/item-page/ItemTypeBadge";
 
 interface ItemClientProps {
     id: string;
+    initialNotes: ItemNoteTree[];
 }
 
-export default function ItemClient({ id }: ItemClientProps) {
+export default function ItemClient({ id, initialNotes }: ItemClientProps) {
     const { user } = useUser();
     const { items } = usePostAndItem();
-    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
-
-    async function getItemNotes(itemId: string) {
-        try {
-            const res = await fetch(`/api/item-notes/?itemId=${itemId}`);
-
-            if (!res.ok) {
-                console.error(
-                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
-                );
-            }
-
-            const data = await res.json();
-            setItemNotes(data);
-        } catch (error) {
-            console.error("Error fetching item notes:", error);
-        }
-    }
+    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>(initialNotes);
 
     useEffect(() => {
-        getItemNotes(id.toString());
-    }, [id]);
+        setItemNotes(initialNotes);
+    }, [initialNotes]);
 
     if (!items.length) {
         return <Loading />;
@@ -108,7 +93,7 @@ export default function ItemClient({ id }: ItemClientProps) {
                     href="/dashboard"
                     className="flex items-center gap-1 text-buzz-gold hover:brightness-90 transition-all w-fit"
                 >
-                    <FaChevronLeft className="text-xs" /> View all Items
+                    <FaChevronLeft className="text-xs" /> Back to Dashboard
                 </Link>
             </div>
 
@@ -134,7 +119,8 @@ export default function ItemClient({ id }: ItemClientProps) {
             {/* Core Title and Badges */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-end w-full gap-4">
                 <div className="text-center sm:text-left">
-                    <h1 className="text-3xl font-bold">
+                    <ItemTypeBadge type="found" />
+                    <h1 className="mt-4 text-3xl font-bold">
                         {item.name ?? "Untitled Found Item"}
                     </h1>
                     <p className="text-gray-500 mb-2">{`Found on ${formattedLostDate} at ${formattedLostTime}`}</p>
@@ -183,11 +169,11 @@ export default function ItemClient({ id }: ItemClientProps) {
                             alt={item.name ?? "Found Item"}
                             width={250}
                             height={250}
-                            className="mx-auto w-4/5 rounded-lg border border-foreground/10"
+                            className="mx-auto w-4/5 max-w-80 rounded-lg border border-foreground/10"
                             priority
                         />
                     ) : (
-                        <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
+                        <div className="w-full h-40 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
                             <div className="w-full h-full flex flex-col items-center justify-center text-foreground/60 gap-2 p-6 text-center">
                                 <div className="text-5xl">
                                     <LuImageOff />
@@ -228,10 +214,10 @@ export default function ItemClient({ id }: ItemClientProps) {
                         <div className="border border-gray-200 rounded-lg p-4 bg-white hidden sm:flex flex-col gap-5">
                             <SubmitItemNote
                                 itemId={item._id}
-                                getItemNotes={getItemNotes}
                                 title="Submit an Item Note"
                                 subtitle="Leave notes about this item below."
                                 placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                                itemType="Item"
                             />
                         </div>
                     )}
@@ -297,10 +283,10 @@ export default function ItemClient({ id }: ItemClientProps) {
                         <div className="border border-gray-200 rounded-lg p-4 bg-white flex sm:hidden flex-col gap-5">
                             <SubmitItemNote
                                 itemId={item._id}
-                                getItemNotes={getItemNotes}
                                 title="Submit an Item Note"
                                 subtitle="Leave notes about this item below."
                                 placeholder="Example: I left the item with campus security. It is at the library lost and found now."
+                                itemType="Item"
                             />
                         </div>
                     )}
@@ -309,6 +295,7 @@ export default function ItemClient({ id }: ItemClientProps) {
                     <ItemNotes
                         itemNotes={itemNotes}
                         setItemNotes={setItemNotes}
+                        itemType="Item"
                     />
                 </div>
             </div>

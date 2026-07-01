@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { dbConnect } from "@/lib/mongo";
 import ItemNoteSchema from "@/model/ItemNote";
 import LostItemPostModel from "@/model/LostItemPost";
+import ItemModel from "@/model/Item";
 import { sendNotification } from "@/actions/Notification";
 import ItemNoteModel, { ItemNote } from "@/model/ItemNote";
 import { sanitizeUser } from "@/lib/userUtils";
@@ -78,21 +79,33 @@ export async function POST(req: NextRequest) {
         await newItemNote.populate("user");
 
         // 2. Fetch the original lost item post to find out who the owner is
-        const lostItem = await LostItemPostModel.findById(newItemNote.itemId);
+        let owner;
 
-        if (lostItem && lostItem.user) {
-            const itemOwnerId = lostItem.user.toString();
+        if (newItemNote.itemType === "LostItemPost") {
+            const lostItem = await LostItemPostModel.findById(
+                newItemNote.itemId,
+            );
+            owner = lostItem?.user;
+        } else {
+            const item = await ItemModel.findById(newItemNote.itemId);
+            owner = item?.personFound;
+        }
+
+        if (owner) {
+            const itemOwnerId = owner.toString();
             const actorId = newItemNote.user?._id?.toString();
 
             // Only notify the owner if someone ELSE left the note
             if (itemOwnerId !== actorId) {
                 await sendNotification({
-                    recipient: lostItem.user,
+                    recipient: owner,
                     actor: newItemNote.user?._id || null,
                     resource: newItemNote._id,
                     resourceType: "ItemNote",
                     notificationType: "NEW_COMMENT",
-                    body: newItemNote.note,
+                    body: newItemNote.itemType === "Item"
+                        ? `/item/${newItemNote.itemId.toString()}`
+                        : `/lost-item/${newItemNote.itemId.toString()}`,
                 });
             }
         }

@@ -312,9 +312,11 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
 
                         <div>
                             <p className="italic text-sm mb-3 opacity-60">
-                                {userId ? "Your account" : "This"} information
-                                will be visible on the item page so the owner
-                                can contact you if needed.
+                                {userId && useAccountInfo
+                                    ? "Your account"
+                                    : "This"}{" "}
+                                information will be visible on the item page so
+                                the owner can contact you if needed.
                             </p>
 
                             {userId && (

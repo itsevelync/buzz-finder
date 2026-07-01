@@ -16,14 +16,20 @@ webpush.setVapidDetails(
     process.env.VAPID_PRIVATE_KEY!,
 );
 
-// Subscribes user to push notifications
-export async function subscribeUser(sub: webpush.PushSubscription) {
+async function requireUserId() {
     const session = await auth();
     const userId = session?.user?._id;
 
     if (!userId) {
         throw new Error("Unauthorized. Please log in.");
     }
+
+    return userId;
+}
+
+// Subscribes user to push notifications
+export async function subscribeUser(sub: webpush.PushSubscription) {
+    const userId = await requireUserId();
 
     await PushSubscription.updateOne(
         { endpoint: sub.endpoint },
@@ -42,12 +48,7 @@ export async function subscribeUser(sub: webpush.PushSubscription) {
 
 // Unsubscribes user from push notifications
 export async function unsubscribeUser(endpoint: string) {
-    const session = await auth();
-    const userId = session?.user?._id;
-
-    if (!userId) {
-        throw new Error("Unauthorized. Please log in.");
-    }
+    const userId = await requireUserId();
 
     await PushSubscription.deleteOne({
         userId,
@@ -76,10 +77,12 @@ export async function sendPushToUser({
     notificationType: string;
 }) {
     // 1. Check if the recipient has notifications enabled for the notification type
-    const recipient = await User.findById(recipientId).select("notificationPreferences");
-    
+    const recipient = await User.findById(recipientId).select(
+        "notificationPreferences",
+    );
+
     if (!recipient) return { success: false, error: "User not found" };
-    
+
     const prefs = recipient.notificationPreferences;
     if (!prefs?.pushEnabled || !prefs?.[notificationType]) {
         return { success: false, error: "User disabled message notifications" };
@@ -87,7 +90,8 @@ export async function sendPushToUser({
 
     // 2. Fetch all active push subscriptions for this recipient
     const subscriptions = await PushSubscription.find({ userId: recipientId });
-    if (!subscriptions.length) return { success: true, message: "No active subscriptions" };
+    if (!subscriptions.length)
+        return { success: true, message: "No active subscriptions" };
 
     const payload = JSON.stringify({ title, body, url, tag, groupId });
 
@@ -167,12 +171,7 @@ export async function updateNotificationPreferences(preferences: {
     newItemNotes?: boolean;
     itemStatusUpdates?: boolean;
 }) {
-    const session = await auth();
-    const userId = session?.user?._id;
-
-    if (!userId) {
-        throw new Error("Unauthorized. Please log in.");
-    }
+    const userId = await requireUserId();
 
     await dbConnect();
 
@@ -197,10 +196,18 @@ export async function sendNotification({
     notificationType,
     body,
 }: Partial<PlainNotification>) {
+    if (!recipient?.toString() || !notificationType) return;
+
     const session = await auth();
     const userId = session?.user?._id;
 
-    if (recipient?.toString() === userId?.toString()) return;
+    if (recipient.toString() === userId?.toString()) return;
+
+    const config = NOTIFICATION_CONFIG[notificationType as NotificationType];
+    const type = config.type;
+
+    const allowed = await _canReceiveNotification(recipient.toString(), type);
+    if (!allowed) return;
 
     const notification = await Notification.create({
         recipient,
@@ -213,7 +220,7 @@ export async function sendNotification({
 
     const populated = await Notification.findById(notification._id)
         .populate("actor", "name image")
-        .populate("resource", "name image text note itemId deletedAt");
+        .populate("resource", "name image text note itemId deletedAt itemType");
 
     await pusherServer.trigger(
         `user-${populated.recipient}`,
@@ -221,14 +228,12 @@ export async function sendNotification({
         populated,
     );
 
-    const config = NOTIFICATION_CONFIG[populated.notificationType as NotificationType];
     const displayMessage = config.getMessage(
         populated.actor?.name || "Someone",
         populated.resource,
         populated.body,
     );
-    const targetLink = config.getLink(populated.resource);
-    const type = config.type;
+    const targetLink = config.getLink(populated.resource, populated.body);
 
     sendPushToUser({
         recipientId: populated.recipient,
@@ -237,9 +242,22 @@ export async function sendNotification({
         url: targetLink,
         groupId: `${populated.resourceType}:${populated.resource}`,
         notificationType: type,
-    }).catch((err) =>
-        console.error("Web Push Notification failed: ", err)
-    );
+    }).catch((err) => console.error("Web Push Notification failed: ", err));
 
     return populated;
+}
+
+async function _canReceiveNotification(
+    userId: string,
+    notificationType: string,
+) {
+    const user = await User.findById(userId).select("notificationPreferences");
+
+    if (!user) return false;
+
+    const prefs = user.notificationPreferences;
+
+    if (!prefs || !prefs.pushEnabled || !prefs[notificationType]) return false;
+
+    return true;
 }

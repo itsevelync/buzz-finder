@@ -44,7 +44,7 @@ export default function LostItemSearchAlert({
     alertPayload,
     setAlertPayload,
 }: LostItemSearchAlertProps) {
-    const { currentPosition } = useUserLocation();
+    const { currentPosition, currPositionFetchFailed } = useUserLocation();
 
     const [locationType, setLocationType] = useState<"pin" | "current">("pin");
 
@@ -334,7 +334,7 @@ export default function LostItemSearchAlert({
                                         </option>
                                     )}
                                     <option value="current">
-                                        my current position
+                                        {!currPositionFetchFailed ? "my current position" : "GT campus"}
                                     </option>
                                 </select>
                                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-foreground/50">

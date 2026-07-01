@@ -72,7 +72,7 @@ export default function LostItemCard({
                     {/* IMAGE */}
                     {lostItemPost.image?.url && (
                         <div
-                            className={`${columns <= 2 ? `${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} lg:w-28 lg:h-28 lg:rounded-b-lg` : ""} relative w-full h-35 rounded-t-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}
+                            className={`${columns <= 2 ? `${lostItemPost.isFound ? "lg:mx-4 lg:mt-14" : "lg:m-4"} lg:w-28 lg:h-28 lg:rounded-b-lg` : ""} relative w-full h-45 rounded-t-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0`}
                         >
                             <Image
                                 src={lostItemPost.image.url}

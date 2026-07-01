@@ -20,9 +20,9 @@ export default function UpdateProfileForm() {
 
     // Determine if the user signed up via SSO and lacks a password
     // (Ensure your backend/context provides a way to check this, e.g., user.hasPassword)
-    const hasPassword = user?.hasPassword ?? true;
+    const hasPassword = user?.password ?? false;
 
-    async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    async function onSubmit(event: React.SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
         if (password !== passwordConfirm) {
@@ -67,7 +67,7 @@ export default function UpdateProfileForm() {
 
             {/* SSO / No-Password Banner (Matches your screenshot styling) */}
             {!hasPassword && (
-                <div className="flex items-start gap-3 rounded-lg bg-indigo-50 p-4 text-sm border border-indigo-100">
+                <div className="flex items-start gap-3 rounded-lg bg-buzz-blue/3 p-4 text-sm border border-buzz-blue/20">
                     <LuBadgeInfo className="text-buzz-blue text-2xl" />
                     <div className="flex-1 space-y-1">
                         <p>

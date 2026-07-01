@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import type { User } from "@/model/User";
-import type { PlainItem } from "@/model/Item";
-import { LostItemPost } from "@/model/LostItemPost";
 
 import ContactInfoModal from "@/components/profile/ContactInfoModal";
 import LostFoundSelector from "@/components/dashboard/LostFoundSelector";
@@ -16,33 +14,29 @@ import { useUser } from "../../../context/UserContext";
 import Link from "next/link";
 import { LuIdCard, LuMessagesSquare, LuPencil } from "react-icons/lu";
 import { useModal } from "@/context/ModalContext";
-
-import PullToRefreshIndicator from "@/components/ui/PullToRefreshIndicator";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
-import { useRouter } from "next/navigation";
+import { usePostAndItem } from "@/context/PostAndItemContext";
 
 interface UserProfileClientProps {
     userProfile: User;
-    foundItems: PlainItem[];
-    lostItemPosts: LostItemPost[];
 }
 
 export default function UserProfileClient({
     userProfile,
-    foundItems,
-    lostItemPosts,
 }: UserProfileClientProps) {
     const { user: activeUser } = useUser();
     const { openModal } = useModal();
+    const { items, lostItemPosts } = usePostAndItem();
 
     const [lostItemsSelected, setLostItemsSelected] = useState(false);
     const myProfile = activeUser?._id === userProfile?._id;
     const [chatURL, setChatURL] = useState("/messages");
 
-    const router = useRouter();
-    const { pullDistance } = usePullToRefresh({
-        onRefresh: router.refresh,
-    });
+    const userFoundItems = items.filter(
+        (item) => item.personFound?._id === userProfile._id,
+    );
+    const userLostItems = lostItemPosts.filter(
+        (item) => item.user?._id === userProfile._id,
+    );
 
     useEffect(() => {
         async function loadChatId() {
@@ -71,15 +65,15 @@ export default function UserProfileClient({
 
     return (
         <>
-            {/* Pull-to-refresh */}
-            <PullToRefreshIndicator pullDistance={pullDistance} />
-
             <div className="px-2 py-6 sm:px-8 sm:py-8 max-w-6xl flex flex-col items-center m-auto">
                 <div className="w-full max-w-2xl px-4">
                     <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10 mt-4 mb-6 w-full">
                         <div className="flex items-center gap-6">
                             <Image
-                                src={userProfile?.image || "/images/default-icon.svg"}
+                                src={
+                                    userProfile?.image ||
+                                    "/images/default-icon.svg"
+                                }
                                 alt="Profile"
                                 width={96}
                                 height={96}
@@ -97,16 +91,20 @@ export default function UserProfileClient({
                         <div className="flex gap-8 grow px-4 justify-around">
                             <div className="flex flex-col items-center">
                                 <h2 className="font-bold text-2xl text-buzz-blue">
-                                    {foundItems.length}
+                                    {userFoundItems.length}
                                 </h2>
-                                <p className="mt-1 text-base/5 text-center">Found Items</p>
+                                <p className="mt-1 text-base/5 text-center">
+                                    Found Items
+                                </p>
                             </div>
                             <div className="border-l border-l-buzz-blue opacity-50 my-1"></div>
                             <div className="flex flex-col items-center">
                                 <h2 className="font-bold text-2xl text-buzz-blue">
-                                    {lostItemPosts.length}
+                                    {userLostItems.length}
                                 </h2>
-                                <p className="mt-1 text-base/5 text-center">Lost Items</p>
+                                <p className="mt-1 text-base/5 text-center">
+                                    Lost Items
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -144,9 +142,9 @@ export default function UserProfileClient({
 
                 <div className="w-full">
                     {lostItemsSelected ? (
-                        <PostList lostItemPosts={lostItemPosts} columns={3} />
+                        <PostList lostItemPosts={userLostItems} columns={3} />
                     ) : (
-                        <ItemList items={foundItems} />
+                        <ItemList items={userFoundItems} />
                     )}
                 </div>
             </div>

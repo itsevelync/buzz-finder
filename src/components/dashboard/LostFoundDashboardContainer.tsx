@@ -9,8 +9,6 @@ import ItemList from "./ItemList";
 import PostList from "./PostList";
 import SearchFilters from "../search/SearchFilters";
 import { usePostAndItem } from "@/context/PostAndItemContext";
-import PullToRefreshIndicator from "../ui/PullToRefreshIndicator";
-import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 
 export default function LostFoundDashboardContainer() {
     const router = useRouter();
@@ -26,22 +24,17 @@ export default function LostFoundDashboardContainer() {
     const [searchedItems, setSearchedItems] = useState<PlainItem[]>([]);
     const [displayItems, setDisplayItems] = useState<PlainItem[]>([]);
 
-    const { items, lostItemPosts, loading, error, refresh } = usePostAndItem();
-
-    // Pull-to-refresh
-    const { pullDistance } = usePullToRefresh({
-        onRefresh: refresh,
-    });
+    const { items, lostItemPosts, loading, error } = usePostAndItem();
 
     useEffect(() => {
         setSearchedItems(items);
         setDisplayItems(items);
-    }, [items]);
+    }, [items, lostItemsSelected]);
 
     useEffect(() => {
         setSearchedPosts(lostItemPosts);
         setDisplayPosts(lostItemPosts);
-    }, [lostItemPosts]);
+    }, [lostItemPosts, lostItemsSelected]);
 
     useEffect(() => {
         const currentTab = searchParams.get("tab");
@@ -54,9 +47,6 @@ export default function LostFoundDashboardContainer() {
 
     return (
         <>
-            {/* Pull-to-refresh */}
-            <PullToRefreshIndicator pullDistance={pullDistance} />
-
             <div className="flex flex-col w-full">
                 <LostFoundSelector
                     lostItemsSelected={lostItemsSelected}
@@ -68,6 +58,7 @@ export default function LostFoundDashboardContainer() {
                     <div className="bg-white shadow-md rounded-lg w-full">
                         {lostItemsSelected ? (
                             <SearchFilters<LostItemPost>
+                                key="lost"
                                 items={lostItemPosts}
                                 searchedItems={searchedPosts}
                                 setSearchedItems={setSearchedPosts}
@@ -84,6 +75,7 @@ export default function LostFoundDashboardContainer() {
                             />
                         ) : (
                             <SearchFilters<PlainItem>
+                                key="found"
                                 items={items}
                                 searchedItems={searchedItems}
                                 setSearchedItems={setSearchedItems}

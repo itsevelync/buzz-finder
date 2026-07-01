@@ -42,13 +42,15 @@ export async function PATCH(
 
     const notification = await Notification.findOne({ resource: id })
         .populate("actor", "name image")
-        .populate("resource", "name image text note itemId deletedAt");
+        .populate("resource", "name image text note itemId deletedAt itemType");
 
-    await pusherServer.trigger(
-        `user-${notification.recipient}`,
-        "update-notification",
-        notification,
-    );
+    if (notification) {
+        await pusherServer.trigger(
+            `user-${notification.recipient}`,
+            "update-notification",
+            notification,
+        );
+    }
 
     return Response.json(updated);
 }
@@ -84,13 +86,15 @@ export async function DELETE(
 
     const notification = await Notification.findOne({ resource: id })
         .populate("actor", "name image")
-        .populate("resource", "name image text note itemId deletedAt");
+        .populate("resource", "name image text note itemId deletedAt itemType");
 
-    await pusherServer.trigger(
-        `user-${notification.recipient}`,
-        "update-notification",
-        notification,
-    );
+    if (notification) {
+        await pusherServer.trigger(
+            `user-${notification.recipient}`,
+            "update-notification",
+            notification,
+        );
+    }
 
     return Response.json({
         success: true,

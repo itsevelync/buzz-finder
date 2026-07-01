@@ -6,14 +6,8 @@ import Image from "next/image";
 import { FaChevronLeft } from "react-icons/fa";
 import EditDeleteBtns from "@/components/dashboard/EditDeleteBtns";
 import CenteredMap from "@/components/maps/CenteredMap";
-import {
-    LuBox,
-    LuCheck,
-    LuImageOff,
-    LuMapPin,
-} from "react-icons/lu";
+import { LuBox, LuCheck, LuImageOff, LuMapPin } from "react-icons/lu";
 import ResolveItemModal from "@/components/post/ResolveItemModal";
-import { Session } from "next-auth";
 import UserInfo from "@/components/item-page/UserInfo";
 import { ItemNoteTree } from "@/model/ItemNote";
 import ItemPosterContactInfo from "@/components/item-page/ItemPosterContactInfo";
@@ -26,39 +20,28 @@ import Loading from "@/app/loading";
 import SharePostButton from "@/components/item-page/SharePostButton";
 import MatchItem from "@/components/item-page/MatchItem";
 import StatusBanner from "@/components/item-page/StatusBanner";
+import { useUser } from "@/context/UserContext";
+import ItemTypeBadge from "@/components/item-page/ItemTypeBadge";
 
 interface LostItemClientProps {
     id: string;
-    session: Session | null;
+    initialNotes: ItemNoteTree[];
 }
 
-export default function LostItemClient({ id, session }: LostItemClientProps) {
-    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>([]);
+export default function LostItemClient({
+    id,
+    initialNotes,
+}: LostItemClientProps) {
+    const [itemNotes, setItemNotes] = useState<ItemNoteTree[]>(initialNotes);
     const { openModal } = useModal();
     const { lostItemPosts } = usePostAndItem();
+    const { user } = useUser();
 
     const lost_item = lostItemPosts.find((i) => i._id.toString() === id);
 
-    async function getItemNotes(itemId: string) {
-        try {
-            const res = await fetch(`/api/item-notes/?itemId=${itemId}`);
-
-            if (!res.ok) {
-                console.error(
-                    `Failed to fetch item notes: ${res.status} ${res.statusText}`,
-                );
-            }
-
-            const data = await res.json();
-            setItemNotes(data);
-        } catch (error) {
-            console.error("Error fetching item:", error);
-        }
-    }
-
     useEffect(() => {
-        getItemNotes(id.toString());
-    }, [id]);
+        setItemNotes(initialNotes);
+    }, [initialNotes]);
 
     function openResolveItemModal() {
         openModal(
@@ -113,8 +96,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
         timeZone: "UTC",
     });
 
-    const isOwner =
-        session?.user?._id && session?.user?._id === lost_item.user?._id;
+    const isOwner = user?._id && user?._id === lost_item.user?._id;
 
     return (
         <div className="p-4 pb-8 sm:p-8 max-w-6xl m-auto flex flex-col gap-6">
@@ -129,11 +111,14 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
             </div>
 
             {/* Found Status Banner Announcement */}
-            {lost_item.isFound && <StatusBanner text="This item is marked as found!" />}
+            {lost_item.isFound && (
+                <StatusBanner text="This item is marked as found!" />
+            )}
 
             {/* Core Title and Badges */}
             <div className="text-center sm:text-left w-full">
-                <h1 className="text-3xl font-bold">
+                <ItemTypeBadge type="lost" />
+                <h1 className="mt-4 text-3xl font-bold">
                     {lost_item.name ?? "Untitled Missing Item"}
                 </h1>
                 <p className="text-gray-500 mb-2">{`Posted on ${formattedCreatedDate}`}</p>
@@ -190,16 +175,19 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                         </div>
                     )}
                     {/* Item image */}
-                    <div className="w-full h-30 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
-                        {lost_item.image?.url ? (
-                            <Image
-                                src={lost_item.image.url}
-                                alt={lost_item.name ?? "Lost Item"}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                        ) : (
+                    {lost_item.image?.url ? (
+                        <div className="w-full p-2 rounded-lg border border-foreground/10">
+                        <Image
+                            src={lost_item.image.url}
+                            alt={lost_item.name ?? "Lost Item"}
+                            width={200}
+                            height={200}
+                            className="w-full mx-auto max-w-80 max-h-80 object-cover rounded-md border border-foreground/10"
+                            priority
+                        />
+                        </div>
+                    ) : (
+                        <div className="w-full h-40 sm:h-50 bg-foreground/2 rounded-lg overflow-hidden relative border border-foreground/10">
                             <div className="w-full h-full flex flex-col items-center justify-center text-foreground/60 gap-2 p-6 text-center">
                                 <div className="text-5xl">
                                     <LuImageOff />
@@ -208,12 +196,12 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                                     No image uploaded
                                 </p>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
 
                     {/* Owner contact information */}
                     <ItemPosterContactInfo
-                        userId={session?.user?._id}
+                        userId={user?._id}
                         itemPoster={lost_item.user}
                         itemContactInfo={lost_item.contactInfo}
                     />
@@ -227,10 +215,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                     {/* Desktop submit item note */}
                     {!lost_item.isFound && (
                         <div className="border border-gray-200 rounded-lg p-4 bg-white hidden sm:flex flex-col gap-5">
-                            <SubmitItemNote
-                                itemId={lost_item._id.toString()}
-                                getItemNotes={getItemNotes}
-                            />
+                            <SubmitItemNote itemId={lost_item._id.toString()} />
                         </div>
                     )}
                 </div>
@@ -285,10 +270,7 @@ export default function LostItemClient({ id, session }: LostItemClientProps) {
                     {/* Mobile submit item note */}
                     {!lost_item.isFound && (
                         <div className="border border-gray-200 rounded-lg p-4 bg-white flex sm:hidden flex-col gap-5">
-                            <SubmitItemNote
-                                itemId={lost_item._id.toString()}
-                                getItemNotes={getItemNotes}
-                            />
+                            <SubmitItemNote itemId={lost_item._id.toString()} />
                         </div>
                     )}
 

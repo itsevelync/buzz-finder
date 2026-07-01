@@ -47,7 +47,7 @@ export default function DeleteProfileModal() {
     return (
         <div className="bg-white rounded-lg w-full p-5 shadow-xl space-y-2.5 border border-gray-100">
             <div className="flex justify-between items-start">
-                <h2 className="flex items-center gap-3 text-2xl font-bold text-buzz-blue">
+                <h2 className="flex items-center gap-3 text-2xl font-bold text-red-700">
                     <LuTriangleAlert /> Delete Profile
                 </h2>
                 <button
@@ -69,7 +69,7 @@ export default function DeleteProfileModal() {
                     type="text"
                     placeholder="Type here..."
                 />
-                <button type="submit">Delete Account</button>
+                <button type="submit" className="bg-red-700!">Delete Account</button>
             </form>
         </div>
     );

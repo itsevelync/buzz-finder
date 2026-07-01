@@ -10,9 +10,14 @@ import { useModal } from "@/context/ModalContext";
 interface ItemNotesProps {
     itemNotes: ItemNoteTree[];
     setItemNotes: Dispatch<SetStateAction<ItemNoteTree[]>>;
+    itemType?: "LostItemPost" | "Item";
 }
 
-export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
+export default function ItemNotes({
+    itemNotes,
+    setItemNotes,
+    itemType = "LostItemPost",
+}: ItemNotesProps) {
     const { user } = useUser();
     const { openModal, closeModal } = useModal();
 
@@ -109,6 +114,7 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
                 updateTree(prev, noteId, (note) => ({
                     ...note,
                     note: content,
+                    editedAt: new Date(),
                 })),
             );
 
@@ -164,6 +170,7 @@ export default function ItemNotes({ itemNotes, setItemNotes }: ItemNotesProps) {
                 itemId: itemNotes[0].itemId,
                 parentId,
                 note: content,
+                itemType,
                 user: !anonymizeReply && user ? user : undefined,
             };
 

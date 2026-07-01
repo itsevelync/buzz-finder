@@ -17,7 +17,7 @@ export async function GET() {
             createdAt: { $gte: thirtyDaysAgo },
         })
             .populate("actor", "name image")
-            .populate("resource", "name image text note itemId deletedAt")
+            .populate("resource", "name image text note itemId deletedAt itemType")
             .sort({ createdAt: -1 })
             .lean();
 

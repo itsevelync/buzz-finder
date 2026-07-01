@@ -11,7 +11,7 @@ interface ConfigItem {
     label: string;
     type: string;
     getImage: (notification: NotificationItemPayload) => string;
-    getLink: (resource?: NotificationResource) => string;
+    getLink: (resource?: NotificationResource, detail?: string) => string;
     getMessage: (
         actorName: string,
         resource?: NotificationResource,
@@ -23,15 +23,21 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
     ITEM_MATCH: {
         label: "Match Found",
         type: "itemMatches",
-        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
+        getImage: (n) =>
+            n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
-        getMessage: (_, resource, detail) =>
-            <>Your item &ldquo;{detail}&rdquo; has a potential match:  <span className="font-bold">{resource?.name}</span>.</>,
+        getMessage: (_, resource, detail) => (
+            <>
+                Your item &ldquo;{detail}&rdquo; has a potential match:{" "}
+                <span className="font-bold">{resource?.name}</span>.
+            </>
+        ),
     },
     ITEM_UPDATE: {
         label: "Status Update",
         type: "itemStatusUpdates",
-        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
+        getImage: (n) =>
+            n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) => (
             <>
@@ -47,24 +53,30 @@ export const NOTIFICATION_CONFIG: Record<NotificationType, ConfigItem> = {
         label: "New Comment",
         type: "newItemNotes",
         getImage: (n) =>
-            n.resource.deletedAt || !n.actor?.image
+            !n.resource || n.resource.deletedAt || !n.actor?.image
                 ? "/images/default-icon.svg"
                 : n.actor.image,
-        getLink: (r) => `/lost-item/${r?.itemId ?? "deleted-item"}`,
+        getLink: (r, detail) =>
+            r
+                ? r?.itemType === "Item"
+                    ? `/item/${r?.itemId}`
+                    : `/lost-item/${r?.itemId}`
+                : (detail ?? ""),
         getMessage: (actor, resource) =>
-            !resource?.deletedAt ? (
+            resource && !resource.deletedAt ? (
                 `${actor} left a note on your item: ${resource?.note}`
             ) : (
                 <>
                     Someone left a note on your item:{" "}
-                    <i className="opacity-60">This note was deleted</i>.
+                    <i className="opacity-60 font-normal">This note was deleted</i>.
                 </>
             ),
     },
     SEARCH_ALERT: {
         label: "Search Alert",
         type: "searchAlert",
-        getImage: (n) => n.resource?.image?.url ?? "/images/img-placeholder.jpg",
+        getImage: (n) =>
+            n.resource?.image?.url ?? "/images/img-placeholder.jpg",
         getLink: (r) => `/item/${r?._id ?? "deleted-item"}`,
         getMessage: (_, __, detail) => (
             <>

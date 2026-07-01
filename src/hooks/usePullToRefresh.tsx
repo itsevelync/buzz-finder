@@ -4,12 +4,14 @@ type Options = {
     onRefresh: () => Promise<void> | void;
     pullThreshold?: number;
     maxPull?: number;
+    enabled?: boolean;
 };
 
 export function usePullToRefresh({
     onRefresh,
     pullThreshold = 70,
     maxPull = 80,
+    enabled = true,
 }: Options) {
     // ===== Pull-to-refresh =====
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -23,7 +25,11 @@ export function usePullToRefresh({
     // Pull-to-refresh logic
     // -------------------------
     useEffect(() => {
-        const getScrollTopSafe = () => window.scrollY || 0;
+        if (!enabled) return;
+
+        const container = document.getElementById("children-outer-container");
+
+        const getScrollTopSafe = () => container ? container.scrollTop : window.scrollY || 0;
 
         const onTouchStart = (e: TouchEvent) => {
             if (getScrollTopSafe() > 2) return;
@@ -77,7 +83,7 @@ export function usePullToRefresh({
             document.removeEventListener("touchmove", onTouchMove);
             document.removeEventListener("touchend", onTouchEnd);
         };
-    }, [onRefresh, isRefreshing, pullThreshold, maxPull]);
+    }, [onRefresh, isRefreshing, pullThreshold, maxPull, enabled]);
 
     return {
         isRefreshing,

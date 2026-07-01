@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import ItemClient from "./ItemClient";
+import { getItemNotes } from "@/actions/ItemNotes";
 
 export const metadata: Metadata = {
     title: "Found Item",
@@ -12,7 +13,9 @@ interface ItemPageProps {
 }
 
 export default async function ItemPage({ params }: ItemPageProps) {
-    params = await params;
+    const { id } = await params;
 
-    return <ItemClient id={params.id} />;
+    const initialNotes = await getItemNotes(id);
+
+    return <ItemClient id={id} initialNotes={initialNotes} />;
 }

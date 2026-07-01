@@ -24,9 +24,9 @@ export default function NotificationsPage() {
     const hasUnreadInCurrentView = filteredNotifications.some((n) => !n.isRead);
 
     return (
-        <div className="mx-auto max-w-5xl w-full h-full flex flex-col">
+        <div className="mx-auto max-w-5xl w-full flex flex-col">
             {/* Minimal Header */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-2 sm:pb-3">
+            <div className="flex flex-col sm:flex-row gap-4 justify-between px-5 sm:px-6 pt-6 sm:pt-8 pb-1 sm:pb-2">
                 <h1 className="text-3xl font-semibold text-buzz-blue">
                     Notifications
                 </h1>
@@ -42,7 +42,7 @@ export default function NotificationsPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex border-b border-foreground/10 px-2 sm:px-4 gap-4 sm:gap-6">
+            <div className="z-1 shadow-sm lg:shadow-none sticky top-0 pt-1 bg-background flex border-b border-foreground/15 px-2 sm:px-4 gap-4 sm:gap-6">
                 {(["inbox", "unread", "archive"] as FilterType[]).map((tab) => (
                     <button
                         key={tab}
@@ -59,7 +59,7 @@ export default function NotificationsPage() {
             </div>
 
             {/* Notification Container Stream */}
-            <div className="flex-1 overflow-y-auto space-y-2 py-5 px-4">
+            <div className="space-y-2 py-5 px-4">
                 {loading ? (
                     <div className="text-center py-12 text-sm text-foreground/40">
                         Loading notifications...
