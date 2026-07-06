@@ -16,7 +16,7 @@ export default function LostFoundSelector({
                 className={
                     `text-lg -mb-0.5 border-b-3 p-2 cursor-pointer ${lostItemsSelected
                         ? "border-b-transparent"
-                        : "border-b-buzz-gold brightness-130 font-semibold"}`
+                        : "border-b-buzz-gold font-semibold"}`
                 }
                 onClick={() => setLostItemsSelected(false)}
             >
@@ -25,7 +25,7 @@ export default function LostFoundSelector({
             <div
                 className={
                     `text-lg -mb-0.5 border-b-3 p-2 cursor-pointer ${lostItemsSelected
-                        ? "border-b-buzz-gold brightness-130 font-semibold"
+                        ? "border-b-buzz-gold font-semibold"
                         : "border-b-transparent"}`
                 }
                 onClick={() => setLostItemsSelected(true)}

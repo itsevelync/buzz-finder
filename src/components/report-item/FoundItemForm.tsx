@@ -51,7 +51,7 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
         setSelectedLocation(item?.locationPin ?? currentPosition ?? gtCampus);
         setUseAccountInfo(item ? !!item.personFound : !!userId);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [gtCampus, item, userId, currPositionFetched]);
+    }, [item, userId, currPositionFetched]);
 
     async function uploadImage() {
         if (!file) return;

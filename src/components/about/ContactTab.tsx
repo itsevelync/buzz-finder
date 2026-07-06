@@ -126,8 +126,8 @@ export default function ContactTab() {
                                             }
                                             className={`text-base/5 flex flex-col items-center justify-center p-3 rounded-lg border border-buzz-blue/30 transition-all gap-1 text-buzz-blue ${
                                                 ticketType === type
-                                                    ? "font-bold bg-gray-50 translate-y-0.5 border-buzz-blue/50"
-                                                    : "font-normal shadow-md hover:border-buzz-gold hover:bg-buzz-gold/10"
+                                                    ? "font-bold translate-y-0.5 border-buzz-gold bg-buzz-gold/4 text-buzz-gold"
+                                                    : "font-normal shadow-md hover:shadow-lg hover:-translate-y-px hover:scale-101 hover:border-buzz-gold hover:bg-buzz-gold/4 hover:text-buzz-gold"
                                             }`}
                                         >
                                             <span className="text-2xl mb-1">
