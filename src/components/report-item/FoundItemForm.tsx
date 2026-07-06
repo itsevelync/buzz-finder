@@ -344,11 +344,11 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
 
                             {!useAccountInfo && (
                                 <>
-                                    <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
+                                    <div className="flex flex-col gap-3 mt-4 w-full">
                                         <FormInput
                                             label="Name"
                                             name="contactName"
-                                            placeholder="Your name"
+                                            placeholder="e.g., George P. Burdell"
                                             className="grow"
                                             defaultValue={
                                                 item?.contactInfo?.name || ""
@@ -358,8 +358,10 @@ export default function FoundItemForm({ id }: FoundItemFormProps) {
                                         <FormInput
                                             label="Contact Information"
                                             name="contactDetails"
-                                            placeholder="Phone number, email, Instagram, etc."
+                                            placeholder="Leave your phone number, email, Instagram, etc."
                                             className="grow"
+                                            rows={3}
+                                            isTextarea
                                             defaultValue={
                                                 item?.contactInfo?.details || ""
                                             }

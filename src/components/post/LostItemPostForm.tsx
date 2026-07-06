@@ -390,7 +390,7 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                         <FormInput
                             label="Item Name"
                             name="name"
-                            placeholder="e.g., Silver iPhone 15 Pro with clear case"
+                            placeholder="e.g., Silver iPhone 15"
                             required
                             value={itemName}
                             onInputChange={(e) => setItemName(e.target.value)}
@@ -486,11 +486,11 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
 
                             {!useAccountInfo && (
                                 <>
-                                    <div className="flex flex-col md:flex-row gap-3 mt-4 w-full">
+                                    <div className="flex flex-col gap-3 mt-4 w-full">
                                         <FormInput
                                             label="Name"
                                             name="contactName"
-                                            placeholder="Your name"
+                                            placeholder="e.g., George P. Burdell"
                                             className="grow"
                                             defaultValue={
                                                 item?.contactInfo?.name || ""
@@ -499,8 +499,10 @@ export default function LostItemPostForm({ id }: LostItemPostFormProps) {
                                         <FormInput
                                             label="Contact Information"
                                             name="contactDetails"
-                                            placeholder="Phone number, email, Instagram, etc."
+                                            placeholder="Leave your phone number, email, Instagram, etc."
                                             className="grow"
+                                            rows={3}
+                                            isTextarea
                                             defaultValue={
                                                 item?.contactInfo?.details || ""
                                             }
