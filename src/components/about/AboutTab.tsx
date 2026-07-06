@@ -38,7 +38,7 @@ export default function AboutTab() {
         {
             icon: <LuMapPin />,
             title: "Found Items Map",
-            desc: "Interactive map displaying reported items.",
+            desc: "View recent reported items on an interactive map.",
             href: "/map",
         },
         {
@@ -106,12 +106,8 @@ export default function AboutTab() {
                         around campus.
                     </p>
                     <p className="text-foreground/90">
-                        By being a hub for item tracking, reporting, and
-                        recovery, we hope that BuzzFinder allows people to{" "}
-                        <b className="text-foreground">
-                            reconnect with their lost items
-                        </b>
-                        .
+                        Take a look at some of our{" "}
+                        <b className="text-foreground">core features</b>.
                     </p>
                 </div>
 
